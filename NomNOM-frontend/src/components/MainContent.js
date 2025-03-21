@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowRight, Menu, X } from 'lucide-react';
 import Footer from './Footer.js';
-import { GiFruitBowl } from "react-icons/gi";
+import { GiFruitBowl, GiCookie } from "react-icons/gi";
 import { Link } from "react-router-dom";
 import { motion } from "motion/react"
 
@@ -41,7 +41,7 @@ export default function MainContent() {
                 className="text-xl mx-auto flex w-full items-center justify-between p-8 gap-4 bg-transparent"
               >
                 <button className="-m-1.5 flex flex-row items-center gap-2">
-                  <GiFruitBowl className="size-8 "/>
+                  <GiCookie className="size-8 "/>
                   <span className="text-3xl font-semibold flex ">
                   NomNOM.
                 </span>
@@ -63,7 +63,7 @@ export default function MainContent() {
                     <X className="size-8"/>
                   </button>
 
-                  {['Home', 'Reports', 'Support', 'Settings'].map((item) => (
+                  {['Home', 'Settings', 'Login', 'Register'].map((item) => (
                     <button
                       key={item}
                       className="nav-item w-full md:w-auto text-center"
