@@ -129,13 +129,13 @@ export default function MainContent() {
             className="hidden md:block border-l-2 border-white col-span-2 h-full w-full transition-all duration-300 bg-light_hover hover:bg-light_hover/80 text-dark"
             to={'/employees'}
           >
-            <div className="text-start text-xl px-10 pt-8 mb-6">{"Popular Picks"}</div>
+            <div className="text-start text-5xl font-semibold px-10 pt-8 mb-6">{"Popular Picks"}</div>
           </Link>
 
           {/* Actions Section */}
           <Link to={'/crops'}
             className="hidden md:block border-l-2 border-white col-span-2 h-full w-full transition-all duration-300 bg-light hover:bg-light/80 text-dark">
-            <div className="text-start text-xl px-10 pt-8 mb-6">{"Find Restaurants"}</div>
+            <div className="text-start text-5xl font-semibold px-10 pt-8 mb-6">{"Find Restaurants"}</div>
           </Link>
         </div>
 
