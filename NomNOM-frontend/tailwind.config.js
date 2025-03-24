@@ -6,14 +6,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        light_hover: '#e2eacb',  // Blue
-        //light: '#acc7d3',-
+        light_hover: '#e2eacb',
         light: '#e8e4cd',
-        //dark: '#0d0f05', // Darker Blue
-        dark: '#0d0f05', // Darker Blue
-        dark_hover: '#4c4c4c', // Darker Blue
-        accent: '#1e3a0f',
+        dark: '#0d0f05', 
+        dark_hover: '#4c4c4c',
         accent2: '#cfdbdf',
+        nomnom: '#12250a'
       },
     },
   },

@@ -137,9 +137,9 @@ const RestaurantsMap = ({ userLocation, restaurants, loading, error, expanded, o
   }, [mapInstance, restaurants]);
 
   return (
-    <div className="px-10">
+    <div className=" w-full ">
       <div
-        className="size-72 rounded-full overflow-hidden relative cursor-pointer"
+        className="w-screen h-full py-72 overflow-hidden relative cursor-pointer"
         onClick={onToggleExpansion}
         ref={mapContainerRef}
       >

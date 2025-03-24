@@ -10,7 +10,7 @@ export default function OrderBanner() {
 
   return (
     <div
-      className="text-black  top-28   flex flex-col content-center justify-center align-middle py-48 w-full  items-center">
+      className="text-black  top-28   flex flex-col content-center justify-center align-middle pt-48 pb-24 w-full  items-center">
       <GiCookie className="size-20 mb-8"/>
       <div className="font-semibold text-7xl">
         What are you looking for ?
