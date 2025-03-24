@@ -199,7 +199,7 @@ export default function MainContent() {
               >
                 <button className="-m-1.5 flex flex-row items-center gap-2">
                   <GiCookie className="size-8 "/>
-                  <span className="text-3xl font-semibold flex ">
+                  <span className="text-4xl font-semibold flex ">
                   NomNOM.
                 </span>
                 </button>
@@ -223,7 +223,7 @@ export default function MainContent() {
                   {['Home', 'Settings', 'Login', 'Register'].map((item) => (
                     <button
                       key={item}
-                      className="nav-item w-full md:w-auto text-center"
+                      className="nav-item w-full md:w-auto text-center text-2xl"
                       onClick={toggleMenu}
                     >
                       <div
@@ -248,9 +248,40 @@ export default function MainContent() {
               {/* Spacer to push list to bottom */}
               <div className="flex-1"/>
 
+              <div className="px-8 mb-48 text-center">
+                <p className="text-5xl text-accent2">What Do You Want Now ?</p>
+                <div className="relative w-full mt-6">
+                  <input
+                    type="text"
+                    placeholder="Search for items to order..."
+                    className="w-full p-2 pl-4 pr-12 bg-accent border-b-2 border-light_hover focus:outline-none placeholder:text-xl placeholder:text-neutral-600"
+                  />
+                  <button
+                    type="submit"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-neutral-600 hover:text-black transition-colors"
+                  >
+                    <svg
+                      className="h-6 w-6"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+
               {/* Fixed List - Always 4 items */}
               <div className="px-8 pb-8">
-                <div className="text-3xl text-light">
+                <div className="text-2xl text-light">
                   {listItems.map((item, index) => (
                     <div
                       key={index}
@@ -288,7 +319,7 @@ export default function MainContent() {
 
           {/* Desktop Columns */}
           <Link
-            className="hidden md:block border-l-2 border-white col-span-2 h-full w-full transition-all duration-300 bg-light_hover hover:bg-light_hover/80 text-dark"
+            className="hidden md:block border-l-2 border-white col-span-2 h-full w-full transition-all duration-300 bg-light_hover hover:bg-light_hover/80 text-accent"
             to={'/employees'}
           >
             <div className="text-start text-5xl font-semibold px-10 pt-8 mb-6">{"Popular Picks"}</div>
@@ -296,9 +327,9 @@ export default function MainContent() {
 
           {/* Restaurant Map Section */}
           <div
-            className="hidden md:block border-l-2 border-white col-span-2 h-full w-full transition-all duration-300 bg-light hover:bg-light/80 text-dark overflow-hidden"
+            className="hidden md:block border-l-2 border-white col-span-2 h-full w-full transition-all duration-300 bg-light hover:bg-light/80 text-accent overflow-hidden"
           >
-            <div className="text-start text-5xl px-10 pt-8 mb-6">{"Find Restaurants"}</div>
+            <div className="text-start text-5xl px-10 pt-8 mb-6 text-accent">{"Find Restaurants"}</div>
 
 
             {/* Use the new RestaurantMap component */}
