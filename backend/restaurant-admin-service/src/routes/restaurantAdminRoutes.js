@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { registerRestaurant, updateRestaurant, getRestaurant, deleteRestaurant } = require('../controllers/restaurantAdminController');
+const { registerRestaurant, updateRestaurant, getRestaurant, deleteRestaurant } = require('../controller/restaurantAdminController');
 
 // Mock authentication (development only)
 const mockAuth = (req, res, next) => {

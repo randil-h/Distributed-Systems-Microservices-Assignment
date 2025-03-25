@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const express = require('express');
-const restaurantAdminRoutes = require('../src/routes/restaurantAdminRoutes');
+const restaurantAdminRoutes = require('../restaurant-admin-service/src/routes/restaurantAdminRoutes');
 require('dotenv').config();
 
 const MONGODB_URI = "mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"; // Hardcoded URI
