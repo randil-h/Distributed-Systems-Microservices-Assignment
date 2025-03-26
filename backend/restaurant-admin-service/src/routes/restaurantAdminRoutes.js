@@ -1,17 +1,30 @@
 const express = require('express');
 const router = express.Router();
 const { registerRestaurant, updateRestaurant, getRestaurant, deleteRestaurant } = require('../controller/restaurantAdminController');
+const { authenticate, authorizeRole } = require('../middleware/restaurantAuthMiddleware');
 
-// Mock authentication (development only)
-const mockAuth = (req, res, next) => {
-    // For development, assume all requests are authenticated as restaurant admin.
-    req.user = { role: 'restaurant admin' }; // Simulate user role
-    next();
-};
+// Apply authentication and authorization middleware
+router.post('/register',
+    authenticate,
+    authorizeRole(['restaurant-admin']),
+    registerRestaurant
+);
 
-router.post('/register', mockAuth, registerRestaurant); // Use mockAuth middleware
-router.put('/:id', mockAuth, updateRestaurant);
-router.get('/:id', mockAuth, getRestaurant);
-router.delete('/:id', mockAuth, deleteRestaurant);
+router.put('/:id',
+    authenticate,
+    authorizeRole(['restaurant-admin', 'system-admin']),
+    updateRestaurant
+);
+
+router.get('/:id',
+    authenticate,
+    getRestaurant
+);
+
+router.delete('/:id',
+    authenticate,
+    authorizeRole(['restaurant-admin', 'system-admin']),
+    deleteRestaurant
+);
 
 module.exports = router;

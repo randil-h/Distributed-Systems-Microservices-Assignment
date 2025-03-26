@@ -25,7 +25,7 @@ mongoose.connect(process.env.MONGODB_URI, {
     useUnifiedTopology: true,
     dbName: 'AuthDB' // Specify the database name here
 })
-    .then(() => console.log('MongoDB Connected Successfully'))
+    .then(() => console.log('MongoDB Connected Successfully (Restaurant Admin Service)'))
     .catch(err => {
         console.error('MongoDB Connection Error:', err.message);
         process.exit(1);
