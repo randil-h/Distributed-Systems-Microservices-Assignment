@@ -1,11 +1,21 @@
 {
   "name": "api-gateway",
-  "description": "Express Gateway Instance Bootstraped from Command Line",
-  "repository": {},
-  "license": "UNLICENSED",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
   "dependencies": {
-    "express-gateway": "^1.16.11"
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "express-basic-auth": "^1.2.1",
+    "express-rate-limit": "^7.5.0",
+    "http-proxy": "^1.18.1",
+    "nodemon": "^3.1.9"
   }
 }
