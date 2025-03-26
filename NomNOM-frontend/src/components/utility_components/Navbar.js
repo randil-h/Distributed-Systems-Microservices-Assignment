@@ -40,23 +40,26 @@ export default function NavBar() {
                         </Link>
                         <Link to="/" className="nav-item">
                             <div className="h-full font-medium px-6 rounded-full transition-all duration-200 hover:underline hover:underline-offset-8">
-                                Explore
+                              Your Cart
                             </div>
                         </Link>
-                        <Link to="/" className="nav-item">
+                        <Link to="/dashboard" className="nav-item">
                             <div className="h-full font-medium px-6 rounded-full transition-all duration-200 hover:underline hover:underline-offset-8">
-                                Your Cart
+                                Dashboard
                             </div>
                         </Link>
                     </div>
 
                     {/* Contact Me button */}
                     <div className="hidden lg:flex flex-1 justify-end">
-                        <Link to="/" className="nav-item">
-                            <div className="h-full font-medium px-4 py-2 rounded-full bg-black  text-light transition-all duration-200 hover:underline hover:underline-offset-8">
-                                Login <span className=" text-green-400">| </span>Register
+                        <div to="/login" className="nav-item">
+                            <div className="h-full font-medium px-4 py-2 rounded-full bg-black  text-light ">
+                              <Link to='/login' className='transition-all duration-200 hover:underline hover:underline-offset-8'>Login</Link><span className=" text-green-400"> | </span><Link to='/signup' className='transition-all duration-200 hover:underline hover:underline-offset-8'>Register</Link>
+
                             </div>
-                        </Link>
+
+                        </div>
+
                     </div>
                 </nav>
             </div>

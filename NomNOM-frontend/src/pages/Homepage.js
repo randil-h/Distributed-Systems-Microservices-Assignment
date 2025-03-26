@@ -1,8 +1,8 @@
-import NavBar from "../components/Navbar";
-import OrderBanner from "../components/OrderBanner";
-import PopularNow from "../components/PopularNow";
-import Footer from "../components/Footer";
-import HomepageMap from "../components/HomepageMap";
+import NavBar from "../components/utility_components/Navbar";
+import OrderBanner from "../components/homepage_components/OrderBanner";
+import PopularNow from "../components/homepage_components/PopularNow";
+import Footer from "../components/utility_components/Footer";
+import HomepageMap from "../components/homepage_components/HomepageMap";
 
 const Homepage = () => {
   return (

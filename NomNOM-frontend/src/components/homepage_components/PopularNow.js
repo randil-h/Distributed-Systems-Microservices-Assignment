@@ -6,14 +6,14 @@ import { GiCookie } from "react-icons/gi";
 import { StarIcon, ClockIcon, TruckIcon } from '@heroicons/react/24/solid';
 
 // Import images
-import img1 from '../media/food/pexels-bemistermister-3434523.jpg';
-import img2 from '../media/food/pexels-chrslnz-588776.jpg';
-import img3 from '../media/food/pexels-dapur-melodi-192125-1109197.jpg';
-import img4 from '../media/food/pexels-jonathanborba-2983099.jpg';
-import img5 from '../media/food/pexels-karthik-reddy-130698-397913.jpg';
-import img6 from '../media/food/pexels-lisa-dol-307937-916925.jpg';
-import img7 from '../media/food/pexels-lum3n-44775-1410235.jpg';
-import img8 from '../media/food/pexels-sebastian-coman-photography-1598188-3659862.jpg';
+import img1 from '../../media/food/pexels-bemistermister-3434523.jpg';
+import img2 from '../../media/food/pexels-chrslnz-588776.jpg';
+import img3 from '../../media/food/pexels-dapur-melodi-192125-1109197.jpg';
+import img4 from '../../media/food/pexels-jonathanborba-2983099.jpg';
+import img5 from '../../media/food/pexels-karthik-reddy-130698-397913.jpg';
+import img6 from '../../media/food/pexels-lisa-dol-307937-916925.jpg';
+import img7 from '../../media/food/pexels-lum3n-44775-1410235.jpg';
+import img8 from '../../media/food/pexels-sebastian-coman-photography-1598188-3659862.jpg';
 
 
 export default function PopularNow() {

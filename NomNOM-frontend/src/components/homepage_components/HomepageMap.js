@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import React, {useEffect, useRef, useState} from "react";
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
 import {GiCookie} from "react-icons/gi";
-import RestaurantMap from "./main_sub/RestaurantsMap";
+import RestaurantMap from "./RestaurantsMap";
 import mapboxgl from "mapbox-gl";
 import { motion, AnimatePresence } from "motion/react";
 import {Star, X} from "lucide-react";
