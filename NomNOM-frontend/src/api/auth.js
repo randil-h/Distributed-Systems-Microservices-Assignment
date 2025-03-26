@@ -1,5 +1,5 @@
 import axios from "axios";
-const API_URL = process.env.AUTH_SERVICE_API_URL;
+const API_URL = process.env.REACT_APP_API_URL;
 
 axios.interceptors.request.use((config) => {
     const token = getToken();

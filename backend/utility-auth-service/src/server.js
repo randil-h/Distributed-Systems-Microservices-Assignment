@@ -64,5 +64,5 @@ app.use((req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT||6969;
 app.listen(PORT, () => console.log(`Authentication Service running on port ${PORT}`));
