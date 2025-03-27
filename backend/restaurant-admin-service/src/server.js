@@ -23,7 +23,7 @@ app.use(express.json());
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    dbName: 'AuthDB' // Specify the database name here
+    dbName: 'RestaurantDB' // Specify the database name here
 })
     .then(() => console.log('MongoDB Connected Successfully (Restaurant Admin Service)'))
     .catch(err => {
