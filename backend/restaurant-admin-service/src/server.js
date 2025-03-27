@@ -3,6 +3,7 @@ const express = require('express');
 const restaurantAdminRoutes = require('../src/routes/restaurantAdminRoutes');
 const dotenv = require('dotenv');
 const path = require('path');
+const cors = require('cors');
 
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, '../src/.env') });
@@ -17,13 +18,14 @@ requiredEnvVars.forEach(env => {
 });
 
 const app = express();
+app.use(cors()); // Add this line
 app.use(express.json());
 
 // MongoDB connection with improved configuration
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    dbName: 'AuthDB' // Specify the database name here
+    dbName: 'RestaurantDB' // Specify the database name here
 })
     .then(() => console.log('MongoDB Connected Successfully (Restaurant Admin Service)'))
     .catch(err => {
