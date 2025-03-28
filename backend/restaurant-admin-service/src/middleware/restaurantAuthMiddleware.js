@@ -5,15 +5,19 @@ const authenticate = async (req, res, next) => {
         const token = req.header('Authorization');
         if (!token) return res.status(401).json({ message: 'No token provided' });
 
-        // Call your auth microservice to verify token
-        const response = await axios.get('http://localhost:6969/api/auth', {
+        const response = await axios.get('http://localhost:6969/api/auth/verify', {
             headers: { Authorization: token }
         });
 
-        // Attach user data to request
+        if (!response.data || !response.data.user) {
+            console.error("Invalid response from auth service:", response.data);
+            return res.status(401).json({ message: 'Invalid token' });
+        }
+
         req.user = response.data.user;
         next();
     } catch (error) {
+        console.error("Authentication error:", error);
         res.status(401).json({ message: 'Invalid token' });
     }
 };
@@ -25,4 +29,4 @@ const authorizeRole = (roles) => async (req, res, next) => {
     next();
 };
 
-module.exports = { authenticate, authorizeRole };
+module.exports = { authenticate, authorizeRole };  const mongoose = require('mongoose');

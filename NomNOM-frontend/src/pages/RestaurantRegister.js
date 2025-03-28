@@ -25,16 +25,19 @@ const RestaurantRegister = () => {
 
         try {
             const token = localStorage.getItem("token");
+            if (!token) throw new Error("No authentication token found");
+            console.log("Sending request with token:", token); // Debug log
             await axios.post(
                 `${process.env.REACT_APP_RESTAURANT_API_URL}/restaurants/register`,
                 formData,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
                     }
                 }
             );
-            navigate("/"); // Or wherever you want to redirect after registration
+            navigate("/restaurant"); // Or wherever you want to redirect after registration
         } catch (err) {
             setError(err.response?.data?.message || "Registration failed");
         } finally {

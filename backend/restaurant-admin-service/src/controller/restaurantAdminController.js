@@ -3,6 +3,7 @@ const Restaurant = require('../models/restaurantModel');
 // Register a new restaurant
 const registerRestaurant = async (req, res) => {
     try {
+        console.log("req.user.role: ", req.user.role)
         // Ensure the user is a restaurant admin
         if (req.user.role !== 'restaurant-admin') {
             return res.status(403).json({ message: 'Only restaurant admins can register restaurants' });
