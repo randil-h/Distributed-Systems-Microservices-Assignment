@@ -9,6 +9,7 @@ import ProtectedRoute from "./components/auth_components/ProtectedRoute";
 import RestaurantDashboard from "./pages/RestaurantDashboard";
 import RestaurantRegister from "./pages/RestaurantRegister";
 import RestaurantList from "./pages/RestaurantList";
+import Payment from "./pages/Payment";
 
 // Page transition configuration
 const pageVariants = {
@@ -139,6 +140,23 @@ function App() {
                           <ProtectedRoute allowedRoles={["restaurant-admin"]}>
                               <RestaurantList />
                           </ProtectedRoute>
+                      </motion.div>
+                  </motion.div>
+              }
+          />
+          <Route
+              path="/payment"
+              element={
+                  <motion.div
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                  >
+                      <motion.div variants={childVariants}>
+                          {/*<ProtectedRoute> uncomment when access control is properly implemented*/}
+                              <Payment />
+                          {/*</ProtectedRoute>*/}
                       </motion.div>
                   </motion.div>
               }
