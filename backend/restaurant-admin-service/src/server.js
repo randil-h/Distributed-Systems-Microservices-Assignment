@@ -3,6 +3,7 @@ const express = require('express');
 const restaurantAdminRoutes = require('../src/routes/restaurantAdminRoutes');
 const dotenv = require('dotenv');
 const path = require('path');
+const cors = require('cors');
 
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, '../src/.env') });
@@ -17,6 +18,7 @@ requiredEnvVars.forEach(env => {
 });
 
 const app = express();
+app.use(cors()); // Add this line
 app.use(express.json());
 
 // MongoDB connection with improved configuration

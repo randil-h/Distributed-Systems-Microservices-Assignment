@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ProtectedRoute from "./components/auth_components/ProtectedRoute";
 import RestaurantDashboard from "./pages/RestaurantDashboard";
+import RestaurantRegister from "./pages/RestaurantRegister";
 
 // Page transition configuration
 const pageVariants = {
@@ -107,6 +108,23 @@ function App() {
             </motion.div>
           }
         />
+          <Route
+              path="/register-restaurant"
+              element={
+                  <motion.div
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                  >
+                      <motion.div variants={childVariants}>
+                          <ProtectedRoute allowedRoles={["restaurant-admin"]}>
+                              <RestaurantRegister />
+                          </ProtectedRoute>
+                      </motion.div>
+                  </motion.div>
+              }
+          />
       </Routes>
     </AnimatePresence>
   );

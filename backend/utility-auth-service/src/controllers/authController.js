@@ -41,14 +41,27 @@ exports.login = async (req, res) => {
         }
 
         const token = generateToken(user);
-        console.log("Generated token for:", email);
-
-        res.json({ token, role: user.role });
+        res.json({
+            token,
+            role: user.role,
+            id: user._id  // Add this line
+        });
     } catch (error) {
         console.error("Login error:", error); // This will show the actual error
         res.status(500).json({
             success: false,
             error: error.message // Send actual error message
         });
+    }
+};
+exports.verifyToken = (req, res) => {
+    const token = req.header("Authorization");
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    try {
+        const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET); // Remove 'Bearer '
+        res.json({ user: decoded }); // Send the user data
+    } catch (error) {
+        res.status(401).json({ message: "Invalid token" });
     }
 };
