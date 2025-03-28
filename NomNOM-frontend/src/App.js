@@ -8,6 +8,7 @@ import Signup from "./pages/Signup";
 import ProtectedRoute from "./components/auth_components/ProtectedRoute";
 import RestaurantDashboard from "./pages/RestaurantDashboard";
 import RestaurantRegister from "./pages/RestaurantRegister";
+import RestaurantList from "./pages/RestaurantList";
 
 // Page transition configuration
 const pageVariants = {
@@ -120,6 +121,23 @@ function App() {
                       <motion.div variants={childVariants}>
                           <ProtectedRoute allowedRoles={["restaurant-admin"]}>
                               <RestaurantRegister />
+                          </ProtectedRoute>
+                      </motion.div>
+                  </motion.div>
+              }
+          />
+          <Route
+              path="/restaurants"
+              element={
+                  <motion.div
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                  >
+                      <motion.div variants={childVariants}>
+                          <ProtectedRoute allowedRoles={["restaurant-admin"]}>
+                              <RestaurantList />
                           </ProtectedRoute>
                       </motion.div>
                   </motion.div>

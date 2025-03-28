@@ -25,7 +25,11 @@ const RestaurantRegister = () => {
 
         try {
             const token = localStorage.getItem("token");
-            if (!token) throw new Error("No authentication token found");
+            console.log("Token from localStorage:", token);
+            if (!token) {
+                console.error("Token is missing from localStorage!");
+                return; // Stop the request
+            }
             console.log("Sending request with token:", token); // Debug log
             await axios.post(
                 `${process.env.REACT_APP_RESTAURANT_API_URL}/restaurants/register`,
@@ -37,7 +41,7 @@ const RestaurantRegister = () => {
                     }
                 }
             );
-            navigate("/restaurant"); // Or wherever you want to redirect after registration
+            navigate("/restaurants");
         } catch (err) {
             setError(err.response?.data?.message || "Registration failed");
         } finally {
