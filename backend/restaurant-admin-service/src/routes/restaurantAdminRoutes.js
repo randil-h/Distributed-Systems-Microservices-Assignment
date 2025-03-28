@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { registerRestaurant, updateRestaurant, getRestaurant, deleteRestaurant } = require('../controller/restaurantAdminController');
+const { registerRestaurant, updateRestaurant, getRestaurant, deleteRestaurant,getAllRestaurants } = require('../controller/restaurantAdminController');
 const { authenticate, authorizeRole } = require('../middleware/restaurantAuthMiddleware');
 
 // Apply authentication and authorization middleware
@@ -26,5 +26,8 @@ router.delete('/:id',
     authorizeRole(['restaurant-admin', 'system-admin']),
     deleteRestaurant
 );
-
+router.get("/",
+    authenticate,
+    authorizeRole(['restaurant-admin', 'system-admin']),
+    getAllRestaurants);
 module.exports = router;
