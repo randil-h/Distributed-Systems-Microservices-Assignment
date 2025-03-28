@@ -3,7 +3,8 @@ const Restaurant = require('../models/restaurantModel');
 // Register a new restaurant
 const registerRestaurant = async (req, res) => {
     try {
-        console.log("req.user.role: ", req.user.role)
+        console.log("req.user.role: ", req.user.role);
+        console.log("req.user.id: ", req.user.id);
         // Ensure the user is a restaurant admin
         if (req.user.role !== 'restaurant-admin') {
             return res.status(403).json({ message: 'Only restaurant admins can register restaurants' });
@@ -29,11 +30,12 @@ const updateRestaurant = async (req, res) => {
     try {
         const restaurant = await Restaurant.findById(req.params.id);
 
-        // Check if restaurant exists and user is the owner
         if (!restaurant) {
             return res.status(404).json({ message: 'Restaurant not found' });
         }
-        if (restaurant.ownerId.toString() !== req.user.id) {
+
+        // Allow system-admins to update or check if the user is the owner
+        if (req.user.role !== 'system-admin' && restaurant.ownerId.toString() !== req.user.id) {
             return res.status(403).json({ message: 'Not authorized to update this restaurant' });
         }
 
@@ -80,4 +82,13 @@ const deleteRestaurant = async (req, res) => {
     }
 };
 
-module.exports = { registerRestaurant, updateRestaurant, getRestaurant, deleteRestaurant };
+// Get all restaurants (requires authentication)
+const getAllRestaurants = async (req, res) => {
+    try {
+        const restaurants = await Restaurant.find();
+        res.json(restaurants);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+module.exports = { registerRestaurant, updateRestaurant, getRestaurant, deleteRestaurant, getAllRestaurants };

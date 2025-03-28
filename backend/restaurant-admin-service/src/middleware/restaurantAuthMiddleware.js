@@ -3,6 +3,7 @@ const axios = require('axios');
 const authenticate = async (req, res, next) => {
     try {
         const token = req.header('Authorization');
+        console.log("Received token:", token);
         if (!token) return res.status(401).json({ message: 'No token provided' });
 
         const response = await axios.get('http://localhost:6969/api/auth/verify', {
