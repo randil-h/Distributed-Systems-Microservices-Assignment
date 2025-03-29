@@ -41,9 +41,9 @@ export default function NavBar() {
                                 Your Cart
                             </div>
                         </Link>
-                        <Link to="/dashboard" className="nav-item">
+                        <Link to="/resops-dashboard" className="nav-item">
                             <div className="font-medium px-4 py-1 rounded-full transition-all hover:underline hover:underline-offset-4">
-                                Dashboard
+                                Res Ops Dashboard
                             </div>
                         </Link>
                     </div>

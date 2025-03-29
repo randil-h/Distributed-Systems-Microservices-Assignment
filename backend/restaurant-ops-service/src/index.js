@@ -19,5 +19,5 @@ mongoose.connect(MONGOURI)
 app.use(express.json());
 
 app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+    console.log(`Server for restaurant-ops-service listening on port ${PORT}`);
 });

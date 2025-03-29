@@ -66,18 +66,19 @@ const Signup = () => {
                                 />
                             </div>
                             <div className="mb-6 w-full flex justify-center"> {/* Added flex justify-center */}
-                                <select
-                                    value={role}
-                                    onChange={(e) => setRole(e.target.value)}
-                                    className="w-2/3  p-3 pl-4 text-xl bg-white border-b-2 border-light_hover focus:outline-none"
-                                >
-                                    <option value="customer">Customer</option>
-                                    <option value="restaurant-admin">Restaurant Admin</option>
-                                    <option value="system-admin">System Admin</option>
-                                    <option value="delivery-personnel">Delivery Personnel</option>
-                                </select>
+                              <select
+                                value={role}
+                                onChange={(e) => setRole(e.target.value)}
+                                className="w-2/3  p-3 pl-4 text-xl bg-white border-b-2 border-light_hover focus:outline-none"
+                              >
+                                <option value="customer">Customer</option>
+                                <option value="restaurant-admin">Restaurant Admin</option>
+                                <option value="restaurant-admin">Restaurant Staff</option>
+                                <option value="system-admin">System Admin</option>
+                                <option value="delivery-personnel">Delivery Personnel</option>
+                              </select>
                             </div>
-                            {/* Terms & Conditions */}
+                          {/* Terms & Conditions */}
                             <div className="mb-6 w-full max-w-[400px] text-center">
                 <span className="text-sm text-gray-600">
                   By signing up, you agree to our{" "}
