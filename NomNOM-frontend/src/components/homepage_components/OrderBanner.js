@@ -1,8 +1,9 @@
-import { UserCircleIcon } from '@heroicons/react/24/solid';
-import { Link } from "react-router-dom";
-import React, { useState } from "react";
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
+import {UserCircleIcon} from '@heroicons/react/24/solid';
+import {Link} from "react-router-dom";
+import React, {useState} from "react";
+import {Bars3Icon, XMarkIcon} from '@heroicons/react/24/solid';
 import {GiCookie} from "react-icons/gi";
+import Icon from '../../media/icons/cookie.png';
 
 export default function OrderBanner() {
   const [showPopover, setShowPopover] = useState(false);
@@ -11,12 +12,13 @@ export default function OrderBanner() {
   return (
     <div
       className="text-black  top-28   flex flex-col content-center justify-center align-middle pt-48 pb-24 w-full  items-center">
-      <GiCookie className="size-20 mb-8"/>
-      <div className="font-semibold text-7xl">
+      <img src={Icon} className="size-20 mb-8" alt={'rf'}/>
+      <div className=" text-7xl">
         What are you looking for ?
       </div>
       <div className=" text-2xl text-neutral-400 pt-6">
-        Search for your favourite restaurants, dishes and even groceries. Get exclusive discounts for selected restaurants.
+        Search for your favourite restaurants, dishes and even groceries. Get exclusive discounts for selected
+        restaurants.
       </div>
       <div className="relative w-2/5 mt-16 ">
         <input

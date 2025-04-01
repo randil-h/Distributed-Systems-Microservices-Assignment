@@ -89,8 +89,12 @@ export default function PopularNow() {
   ];
 
   return (
-    <div className="text-black bg-nomnom rounded-t-3xl top-28 w-screen flex flex-col content-center justify-center align-middle py-16 items-center">
-      <div className="font-semibold text-5xl text-start text-light_hover px-12 w-full mb-8">
+    <div
+      className="text-black bg-nomnom rounded-t-3xl top-28 w-screen flex flex-col content-center justify-center align-middle py-16 items-center">
+      <div className=" text-xl text-start text-light_hover/50 px-12 w-full mb-2">
+        Explore the quickest delivery options
+      </div>
+      <div className=" text-6xl text-start text-light_hover px-12 w-full mb-12">
         Fastest Near You
       </div>
 
@@ -105,29 +109,29 @@ export default function PopularNow() {
               {/* Image background covering entire card */}
               <div
                 className="absolute inset-0 w-full h-full bg-cover bg-center"
-                style={{ backgroundImage: `url(${restaurant.image})` }}
+                style={{backgroundImage: `url(${restaurant.image})`}}
               />
 
               {/* Dark overlay for better text visibility */}
-              <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
 
               {/* Content positioned at the bottom */}
-              <div className="absolute bottom-0 left-0 right-0 p-5 text-light_hover font-semibold">
-                <h3 className="font-bold text-start text-4xl mb-2">{restaurant.name}</h3>
+              <div className="absolute bottom-0 left-0 right-0 p-5 text-light_hover ">
+                <h3 className=" text-start text-4xl mb-2">{restaurant.name}</h3>
 
                 <div className="flex items-center mb-2">
-                  <StarIcon className="h-5 w-5 text-yellow-500 mr-1" />
+                  <StarIcon className="h-5 w-5 text-yellow-500 mr-1"/>
                   <span className="font-medium">{restaurant.rating}</span>
                 </div>
 
                 <div className="flex justify-between items-center">
                   <div className="flex items-center">
-                    <TruckIcon className="h-4 w-4 mr-1" />
+                    <TruckIcon className="h-4 w-4 mr-1"/>
                     <span>{restaurant.deliveryFee}</span>
                   </div>
 
                   <div className="flex items-center">
-                    <ClockIcon className="h-4 w-4 mr-1" />
+                    <ClockIcon className="h-4 w-4 mr-1"/>
                     <span>{restaurant.deliveryTime}</span>
                   </div>
                 </div>
