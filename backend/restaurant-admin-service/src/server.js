@@ -6,7 +6,7 @@ const path = require('path');
 const cors = require('cors');
 
 // Load environment variables from .env file
-dotenv.config({ path: path.resolve(__dirname, '../src/.env') });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 // Validate required environment variables
 const requiredEnvVars = ['MONGODB_URI', 'PORT'];

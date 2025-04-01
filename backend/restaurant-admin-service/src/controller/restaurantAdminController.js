@@ -3,24 +3,55 @@ const Restaurant = require('../models/restaurantModel');
 // Register a new restaurant
 const registerRestaurant = async (req, res) => {
     try {
+        console.log("Received req.body:", req.body);
         console.log("req.user.role: ", req.user.role);
         console.log("req.user.id: ", req.user.id);
-        // Ensure the user is a restaurant admin
-        if (req.user.role !== 'restaurant-admin') {
-            return res.status(403).json({ message: 'Only restaurant admins can register restaurants' });
-        }
 
-        const { name, address, operatingHours } = req.body;
+        const {
+            name,
+            legalBusinessName,
+            registrationNumber,
+            cuisineType,
+            restaurantCategory,
+            address,
+            phone,
+            email,
+            website,
+            facebook,
+            instagram,
+            operatingHours,
+            deliveryOptions,
+            paymentMethods,
+            ownerName,
+            ownerEmail,
+            ownerPhone,
+        } = req.body;
+
         const restaurant = new Restaurant({
             name,
+            legalBusinessName,
+            registrationNumber,
+            cuisineType,
+            restaurantCategory,
             address,
+            phone,
+            email,
+            website,
+            facebook,
+            instagram,
             operatingHours,
-            ownerId: req.user.id // Use the authenticated user's ID
+            deliveryOptions,
+            paymentMethods,
+            ownerName,
+            ownerEmail,
+            ownerPhone,
+            ownerId: req.user.id,
         });
 
         await restaurant.save();
         res.status(201).json(restaurant);
     } catch (error) {
+        console.error("Error registering restaurant:", error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -34,7 +65,6 @@ const updateRestaurant = async (req, res) => {
             return res.status(404).json({ message: 'Restaurant not found' });
         }
 
-        // Allow system-admins to update or check if the user is the owner
         if (req.user.role !== 'system-admin' && restaurant.ownerId.toString() !== req.user.id) {
             return res.status(403).json({ message: 'Not authorized to update this restaurant' });
         }
@@ -91,4 +121,5 @@ const getAllRestaurants = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 module.exports = { registerRestaurant, updateRestaurant, getRestaurant, deleteRestaurant, getAllRestaurants };

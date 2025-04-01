@@ -1,55 +1,301 @@
-import React from 'react';
+import React from "react";
 
-const UpdateRestaurantModal = ({ isOpen, onClose, onUpdate, editedData, setEditedData }) => {
-    if (!isOpen) return null;
+const UpdateRestaurantModal = ({
+                                   isOpen,
+                                   onClose,
+                                   restaurant,
+                                   onUpdate,
+                                   editedData,
+                                   setEditedData,
+                               }) => {
+    if (!isOpen || !restaurant) return null;
+
+    const cuisineTypes = ["Italian", "Chinese", "Indian", "Mexican", "Japanese", "American", "Mediterranean", "Thai", "French", "Other"];
+    const restaurantCategories = ["Fine Dining", "Casual Dining", "Fast Casual", "Quick Service", "Cafe", "Bar/Pub", "Food Truck", "Other"];
+    const deliveryOptionsList = ["Delivery", "Pickup", "Dine-in"];
+    const paymentMethodsList = ["Credit Card", "Debit Card", "Cash", "Mobile Payment", "Online Payment"];
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setEditedData({ ...editedData, [name]: value });
+    };
+
+    const handleCheckboxChange = (e) => {
+        const { name, value, checked } = e.target;
+        setEditedData(prev => {
+            const currentValues = prev[name] || [];
+            if (checked) {
+                return { ...prev, [name]: [...currentValues, value] };
+            } else {
+                return { ...prev, [name]: currentValues.filter(item => item !== value) };
+            }
+        });
+    };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-60 overflow-y-auto h-full w-full flex items-center justify-center">
-            <div className="relative p-12 bg-gray-800 rounded-xl shadow-lg w-full max-w-md"> {/* Increased padding and dark background */}
-                <h3 className="text-2xl font-semibold mb-8 text-white">Edit Restaurant</h3> {/* White text */}
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+            <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
+                <h2 className="text-2xl font-bold mb-4">Edit Restaurant</h2>
 
-                <div className="mb-6">
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-300">Name</label>
-                    <input
-                        type="text"
-                        id="name"
-                        value={editedData.name}
-                        onChange={(e) => setEditedData({ ...editedData, name: e.target.value })}
-                        placeholder="Restaurant Name"
-                        className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Basic Business Information */}
+                    <div className="col-span-2">
+                        <h3 className="text-lg font-semibold mb-2 border-b pb-1">Business Information</h3>
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Restaurant Name*</label>
+                        <input
+                            type="text"
+                            name="name"
+                            value={editedData.name || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Legal Business Name</label>
+                        <input
+                            type="text"
+                            name="legalBusinessName"
+                            value={editedData.legalBusinessName || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Business Registration Number</label>
+                        <input
+                            type="text"
+                            name="registrationNumber"
+                            value={editedData.registrationNumber || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Cuisine Type*</label>
+                        <select
+                            name="cuisineType"
+                            value={editedData.cuisineType || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            required
+                        >
+                            <option value="">Select Cuisine Type</option>
+                            {cuisineTypes.map(type => (
+                                <option key={type} value={type}>{type}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Restaurant Category*</label>
+                        <select
+                            name="restaurantCategory"
+                            value={editedData.restaurantCategory || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            required
+                        >
+                            <option value="">Select Category</option>
+                            {restaurantCategories.map(category => (
+                                <option key={category} value={category}>{category}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Location and Contact Information */}
+                    <div className="col-span-2 mt-4">
+                        <h3 className="text-lg font-semibold mb-2 border-b pb-1">Location & Contact</h3>
+                    </div>
+
+                    <div className="mb-4 col-span-2">
+                        <label className="block text-gray-700 mb-2">Address*</label>
+                        <input
+                            type="text"
+                            name="address"
+                            value={editedData.address || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Phone Number*</label>
+                        <input
+                            type="tel"
+                            name="phone"
+                            value={editedData.phone || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Email Address*</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={editedData.email || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Website</label>
+                        <input
+                            type="url"
+                            name="website"
+                            value={editedData.website || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            placeholder="https://"
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Facebook</label>
+                        <input
+                            type="url"
+                            name="facebook"
+                            value={editedData.facebook || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            placeholder="https://facebook.com/yourpage"
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Instagram</label>
+                        <input
+                            type="url"
+                            name="instagram"
+                            value={editedData.instagram || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            placeholder="https://instagram.com/yourpage"
+                        />
+                    </div>
+
+                    {/* Operational Details */}
+                    <div className="col-span-2 mt-4">
+                        <h3 className="text-lg font-semibold mb-2 border-b pb-1">Operational Details</h3>
+                    </div>
+
+                    <div className="mb-4 col-span-2">
+                        <label className="block text-gray-700 mb-2">Operating Hours*</label>
+                        <textarea
+                            name="operatingHours"
+                            value={editedData.operatingHours || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            rows="3"
+                            placeholder="Example: Monday-Friday: 11:00 AM - 10:00 PM, Saturday-Sunday: 12:00 PM - 11:00 PM"
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-4 col-span-2">
+                        <label className="block text-gray-700 mb-2">Delivery Options*</label>
+                        <div className="flex flex-wrap gap-4">
+                            {deliveryOptionsList.map(option => (
+                                <label key={option} className="inline-flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        name="deliveryOptions"
+                                        value={option}
+                                        checked={editedData.deliveryOptions?.includes(option) || false}
+                                        onChange={handleCheckboxChange}
+                                        className="form-checkbox"
+                                    />
+                                    <span className="ml-2">{option}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mb-4 col-span-2">
+                        <label className="block text-gray-700 mb-2">Payment Methods*</label>
+                        <div className="flex flex-wrap gap-4">
+                            {paymentMethodsList.map(method => (
+                                <label key={method} className="inline-flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        name="paymentMethods"
+                                        value={method}
+                                        checked={editedData.paymentMethods?.includes(method) || false}
+                                        onChange={handleCheckboxChange}
+                                        className="form-checkbox"
+                                    />
+                                    <span className="ml-2">{method}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Owner Information */}
+                    <div className="col-span-2 mt-4">
+                        <h3 className="text-lg font-semibold mb-2 border-b pb-1">Owner/Administrator Information</h3>
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Full Name*</label>
+                        <input
+                            type="text"
+                            name="ownerName"
+                            value={editedData.ownerName || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Email Address*</label>
+                        <input
+                            type="email"
+                            name="ownerEmail"
+                            value={editedData.ownerEmail || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            required
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Phone Number*</label>
+                        <input
+                            type="tel"
+                            name="ownerPhone"
+                            value={editedData.ownerPhone || ""}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            required
+                        />
+                    </div>
                 </div>
 
-                <div className="mb-6">
-                    <label htmlFor="address" className="block text-sm font-medium text-gray-300">Address</label>
-                    <input
-                        type="text"
-                        id="address"
-                        value={editedData.address}
-                        onChange={(e) => setEditedData({ ...editedData, address: e.target.value })}
-                        placeholder="Restaurant Address"
-                        className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    />
-                </div>
-
-                <div className="mb-8">
-                    <label htmlFor="hours" className="block text-sm font-medium text-gray-300">Operating Hours</label>
-                    <input
-                        type="text"
-                        id="hours"
-                        value={editedData.operatingHours || ""}
-                        onChange={(e) => setEditedData({ ...editedData, operatingHours: e.target.value })}
-                        placeholder="e.g., 9:00 AM - 10:00 PM"
-                        className="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    />
-                </div>
-
-                <div className="flex justify-end gap-4">
-                    <button onClick={onUpdate} className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg">
-                        Update
-                    </button>
-                    <button onClick={onClose} className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg">
+                <div className="flex justify-end space-x-2 mt-6">
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
+                    >
                         Cancel
+                    </button>
+                    <button
+                        onClick={onUpdate}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    >
+                        Update Restaurant
                     </button>
                 </div>
             </div>

@@ -37,12 +37,15 @@ const RestaurantList = () => {
     const handleDelete = async (id) => {
         try {
             const token = localStorage.getItem("token");
-            await axios.delete(`${process.env.REACT_APP_RESTAURANT_API_URL}/restaurants/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            fetchRestaurants(); // Refresh list after delete
+            await axios.delete(
+                `${process.env.REACT_APP_RESTAURANT_API_URL}/restaurants/${id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            fetchRestaurants();
         } catch (err) {
             setError(err);
         }
@@ -52,8 +55,22 @@ const RestaurantList = () => {
         setEditingRestaurant(restaurant);
         setEditedData({
             name: restaurant.name,
+            legalBusinessName: restaurant.legalBusinessName || "",
+            registrationNumber: restaurant.registrationNumber || "",
+            cuisineType: restaurant.cuisineType || "",
+            restaurantCategory: restaurant.restaurantCategory || "",
             address: restaurant.address,
+            phone: restaurant.phone || "",
+            email: restaurant.email || "",
+            website: restaurant.website || "",
+            facebook: restaurant.facebook || "",
+            instagram: restaurant.instagram || "",
             operatingHours: restaurant.operatingHours,
+            deliveryOptions: restaurant.deliveryOptions || [],
+            paymentMethods: restaurant.paymentMethods || [],
+            ownerName: restaurant.ownerName || "",
+            ownerEmail: restaurant.ownerEmail || "",
+            ownerPhone: restaurant.ownerPhone || ""
         });
         setIsModalOpen(true);
     };
@@ -61,60 +78,103 @@ const RestaurantList = () => {
     const handleUpdate = async () => {
         try {
             const token = localStorage.getItem("token");
-            const url = `<span class="math-inline">\{process\.env\.REACT\_APP\_RESTAURANT\_API\_URL\}/</span>{editingRestaurant._id}`;
-            console.log("Update URL:", url);
-            console.log("Restaurant ID:", editingRestaurant._id);
-            console.log("update data", editedData);
+
             await axios.put(
                 `${process.env.REACT_APP_RESTAURANT_API_URL}/restaurants/${editingRestaurant._id}`,
                 editedData,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
                     },
                 }
             );
-            setEditingRestaurant(null);
             setIsModalOpen(false);
-            fetchRestaurants(); // Refresh list after update
+            fetchRestaurants();
         } catch (err) {
-            setError(err);
+            setError(err.response?.data?.message || "Update failed");
         }
     };
+
     const closeModal = () => {
         setIsModalOpen(false);
     };
 
     if (loading) {
-        return <p>Loading restaurants...</p>;
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <p className="text-xl">Loading restaurants...</p>
+            </div>
+        );
     }
 
     if (error) {
-        return <p>Error loading restaurants: {error.message}</p>;
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <p className="text-xl text-red-500">
+                    Error loading restaurants: {error.message}
+                </p>
+            </div>
+        );
     }
 
     return (
-        <div>
+        <div className="min-h-screen bg-gray-100">
             <NavBar />
-            <div className="top-24 mt-32 p-4">
-                <h2 className="text-2xl font-bold mb-4">Registered Restaurants</h2>
+            <div className="container mx-auto px-4 py-8 mt-24">
+                <h2 className="text-3xl font-bold mb-8 text-gray-800">
+                    Registered Restaurants
+                </h2>
+
                 {restaurants.length > 0 ? (
-                    <ul className="space-y-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {restaurants.map((restaurant) => (
-                            <li key={restaurant._id} className="p-3 border rounded">
-                                <p className="font-medium">{restaurant.name}</p>
-                                <p>{restaurant.address}</p>
-                                <p>Hours: {restaurant.operatingHours || "Not specified"}</p>
-                                <div className="flex gap-2 mt-2">
-                                    <button onClick={() => handleEdit(restaurant)} className="bg-blue-500 text-white px-2 py-1 rounded">Edit</button>
-                                    <button onClick={() => handleDelete(restaurant._id)} className="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
+                            <div
+                                key={restaurant._id}
+                                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                            >
+                                {/* Restaurant Image Placeholder */}
+                                <div className="h-48 bg-gray-200 overflow-hidden relative">
+                                    <div className="w-full h-full flex items-center justify-center bg-gray-300">
+                                        <span className="text-gray-500">No Image Available</span>
+                                    </div>
                                 </div>
-                            </li>
+
+                                <div className="p-6">
+                                    <h3 className="text-xl font-semibold mb-2 text-gray-800">
+                                        {restaurant.name}
+                                    </h3>
+                                    <p className="text-gray-600 mb-2">
+                                        <span className="font-medium">Address:</span> {restaurant.address}
+                                    </p>
+                                    <p className="text-gray-600 mb-4">
+                                        <span className="font-medium">Hours:</span> {restaurant.operatingHours || "Not specified"}
+                                    </p>
+
+                                    <div className="flex justify-end space-x-2">
+                                        <button
+                                            onClick={() => handleEdit(restaurant)}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(restaurant._id)}
+                                            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 ) : (
-                    <p>No restaurants registered yet.</p>
+                    <div className="text-center py-12">
+                        <p className="text-xl text-gray-600">No restaurants registered yet.</p>
+                    </div>
                 )}
+
                 <UpdateRestaurantModal
                     isOpen={isModalOpen}
                     onClose={closeModal}
