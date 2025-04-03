@@ -8,7 +8,7 @@ import { StarIcon, ClockIcon, TruckIcon } from '@heroicons/react/24/solid';
 // Import images
 import img1 from '../../media/food/pexels-bemistermister-3434523.jpg';
 import img2 from '../../media/food/pexels-chrslnz-588776.jpg';
-import img3 from '../../media/food/pexels-dapur-melodi-192125-1109197.jpg';
+import img3 from '../../media/food/IMG_8982.JPG';
 import img4 from '../../media/food/pexels-jonathanborba-2983099.jpg';
 import img5 from '../../media/food/pexels-karthik-reddy-130698-397913.jpg';
 import img6 from '../../media/food/pexels-lisa-dol-307937-916925.jpg';

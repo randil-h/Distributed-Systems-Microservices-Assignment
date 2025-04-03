@@ -1,173 +1,134 @@
-import React from 'react';
 import './App.css';
 import { Route, Routes, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import Homepage from "./pages/Homepage.js";
+import { motion, AnimatePresence } from "framer-motion";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ProtectedRoute from "./components/auth_components/ProtectedRoute";
 import RestaurantDashboard from "./pages/RestaurantDashboard";
 import ResOpsDashboard from "./pages/ResOpsDashboard";
-import RestaurantRegister from "./pages/RestaurantRegister";
-import RestaurantList from "./pages/RestaurantList";
-
-// Page transition configuration
-const pageVariants = {
-  initial: {
-    opacity: 0,
-    y: 50
-  },
-  in: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      staggerChildren: 0.1
-    }
-  },
-  out: {
-    opacity: 0,
-    y: -50
-  }
-};
-
-const childVariants = {
-  initial: {
-    opacity: 0,
-    y: 50
-  },
-  in: {
-    opacity: 1,
-    y: 0
-  }
-};
+import { useEffect } from 'react';
 
 function App() {
   const location = useLocation();
 
+  // Prevent scrollbar flicker during transitions
+  useEffect(() => {
+    document.body.classList.add('no-scrollbar-shift');
+
+    return () => {
+      document.body.classList.remove('no-scrollbar-shift');
+    };
+  }, []);
+
   return (
-    <AnimatePresence mode='wait'>
-      <Routes location={location} key={location.pathname}>
-        <Route
-          path="/"
-          element={
-            <motion.div
-              initial="initial"
-              animate="in"
-              exit="out"
-              variants={pageVariants}
-            >
-              <motion.div variants={childVariants}>
-                <Homepage/>
-              </motion.div>
-            </motion.div>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <motion.div
-              initial="initial"
-              animate="in"
-              exit="out"
-              variants={pageVariants}
-            >
-              <motion.div variants={childVariants}>
+    <div className="App overflow-hidden">
+      <AnimatePresence mode="wait" initial={false}>
+        <Routes location={location} key={location.pathname}>
+          <Route
+            path="/"
+            element={
+              <PageTransition>
+                <Homepage />
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <PageTransition>
                 <Login />
-              </motion.div>
-            </motion.div>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <motion.div
-              initial="initial"
-              animate="in"
-              exit="out"
-              variants={pageVariants}
-            >
-              <motion.div variants={childVariants}>
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <PageTransition>
                 <Signup />
-              </motion.div>
-            </motion.div>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <motion.div
-              initial="initial"
-              animate="in"
-              exit="out"
-              variants={pageVariants}
-            >
-              <motion.div variants={childVariants}>
+              </PageTransition>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <PageTransition>
                 <ProtectedRoute allowedRoles={["restaurant-admin"]}>
                   <RestaurantDashboard />
                 </ProtectedRoute>
-              </motion.div>
-            </motion.div>
-          }
-        />
-        <Route
-          path="/resops-dashboard"
-          element={
-            <motion.div
-              initial="initial"
-              animate="in"
-              exit="out"
-              variants={pageVariants}
-            >
-              <motion.div variants={childVariants}>
-                {/*<ProtectedRoute allowedRoles={["restaurant-staff"]}>*/}
-                  <ResOpsDashboard />
-                {/*</ProtectedRoute>*/}
-              </motion.div>
-            </motion.div>
-          }
-        />
-          <Route
-              path="/register-restaurant"
-              element={
-                  <motion.div
-                      initial="initial"
-                      animate="in"
-                      exit="out"
-                      variants={pageVariants}
-                  >
-                      <motion.div variants={childVariants}>
-                          <ProtectedRoute allowedRoles={["restaurant-admin"]}>
-                              <RestaurantRegister />
-                          </ProtectedRoute>
-                      </motion.div>
-                  </motion.div>
-              }
+              </PageTransition>
+            }
           />
           <Route
-              path="/restaurants"
-              element={
-                  <motion.div
-                      initial="initial"
-                      animate="in"
-                      exit="out"
-                      variants={pageVariants}
-                  >
-                      <motion.div variants={childVariants}>
-                          <ProtectedRoute allowedRoles={["restaurant-admin"]}>
-                              <RestaurantList />
-                          </ProtectedRoute>
-                      </motion.div>
-                  </motion.div>
-              }
+            path="/resops-dashboard"
+            element={
+              <PageTransition>
+                <ResOpsDashboard />
+              </PageTransition>
+            }
           />
-      </Routes>
-    </AnimatePresence>
+        </Routes>
+      </AnimatePresence>
+    </div>
   );
 }
 
-export default App;
+// Ultra-smooth page transition component
+const PageTransition = ({ children }) => {
+  useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = 'hidden';
 
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
+
+  // Refined animation variants with smoother transitions
+  const pageVariants = {
+    initial: {
+      opacity: 0,
+      scale: 0.99,
+      y: 8
+    },
+    animate: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.33, 1, 0.68, 1], // Custom cubic-bezier for smoother motion
+        opacity: { duration: 0.45 },
+        scale: { duration: 0.6 },
+        y: { duration: 0.45, ease: [0.33, 1, 0.68, 1] }
+      }
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.99,
+      y: -8,
+      transition: {
+        duration: 0.4,
+        ease: [0.33, 0, 0.67, 0],
+        opacity: { duration: 0.35 }
+      }
+    }
+  };
+
+  return (
+    <motion.div
+      className="page-content"
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+export default App;
 
 // import './App.css';
 // import {Route, Routes} from "react-router-dom";

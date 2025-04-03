@@ -11,10 +11,14 @@ export default function Dashboard() {
 
   return (
     <div
-      className="text-black  top-28   flex flex-col content-center justify-center align-middle pt-48 pb-24 w-full  items-center">
-
-      <div className=" text-7xl">
-        Dashboard
+      className="text-black flex flex-col content-center justify-center align-middle w-full items-center">
+      <div className="py-6 px-6 text-3xl border-b border-gray-400  w-full">
+        Aunty ge kade
+      </div>
+      <div className="h-screen text-3xl border-b border-gray-400 w-full flex justify-between">
+        <div className="w-1/3 text-center border-r border-gray-400 py-6">Pending Orders</div>
+        <div className="w-1/3 text-center border-r border-gray-400 py-6">Blah1</div>
+        <div className="w-1/3 text-center border-r border-gray-400 py-6">Blah2</div>
       </div>
 
     </div>

@@ -53,7 +53,7 @@ const ResOpsDashboard = () => {
 
   return (
     <SidebarProvider>
-      <div className="flex text-2xl font-mono h-screen bg-gray-50">
+      <div className="flex text-2xl  h-screen bg-gray-50">
         <DesktopSidebar>
           <SidebarHeader />
           <div className="mt-6  flex flex-col gap-1 px-2">
@@ -96,7 +96,7 @@ const ResOpsDashboard = () => {
           </div>
         </MobileSidebar>
 
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto ">
           <MobileHeader />
           {sidebarMenuItems.find((item) => item.label === activeTab)?.component}
         </div>
