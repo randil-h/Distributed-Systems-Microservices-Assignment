@@ -1,5 +1,5 @@
-import SideBar from "../components/SideBar";
-import Navbar from "../components/Navbar";
+import SideBar from "../components/SideBar.jsx";
+import Navbar from "../components/Navbar.jsx";
 
 const FinancesPage = () => {
     return (

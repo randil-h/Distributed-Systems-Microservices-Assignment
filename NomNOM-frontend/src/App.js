@@ -171,7 +171,7 @@ export default App;
 
 // import './App.css';
 // import {Route, Routes} from "react-router-dom";
-// import Homepage from "./pages/Homepage.js";
+// import Homepage from "./pages/Homepage.jsx";
 // import { motion } from "motion/react"
 // import Login from "./pages/Login";
 // import Signup from "./pages/Signup";

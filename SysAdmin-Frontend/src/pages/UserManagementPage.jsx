@@ -1,6 +1,6 @@
-import SideBar from "../components/SideBar";
-import Navbar from "../components/Navbar";
-import UserManagement from "../components/UserManagement";
+import SideBar from "../components/SideBar.jsx";
+import Navbar from "../components/Navbar.jsx";
+import UserManagement from "../components/UserManagement.jsx";
 
 const UserManagementPage = () => {
     return (

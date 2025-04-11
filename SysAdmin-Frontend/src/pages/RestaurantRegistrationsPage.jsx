@@ -1,6 +1,6 @@
-import SideBar from "../components/SideBar";
-import Navbar from "../components/Navbar";
-import RestaurantVerification from "../components/RestaurantVerification";
+import SideBar from "../components/SideBar.jsx";
+import Navbar from "../components/Navbar.jsx";
+import RestaurantVerification from "../components/RestaurantVerification.jsx";
 
 const RestaurantRegistrationsPage = () => {
     return (
