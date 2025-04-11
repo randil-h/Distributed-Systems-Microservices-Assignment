@@ -121,46 +121,46 @@ function App() {
             >
               <motion.div variants={childVariants}>
                 {/*<ProtectedRoute allowedRoles={["restaurant-staff"]}>*/}
-                  <ResOpsDashboard />
+                <ResOpsDashboard />
                 {/*</ProtectedRoute>*/}
               </motion.div>
             </motion.div>
           }
         />
-          <Route
-              path="/register-restaurant"
-              element={
-                  <motion.div
-                      initial="initial"
-                      animate="in"
-                      exit="out"
-                      variants={pageVariants}
-                  >
-                      <motion.div variants={childVariants}>
-                          <ProtectedRoute allowedRoles={["restaurant-admin"]}>
-                              <RestaurantRegister />
-                          </ProtectedRoute>
-                      </motion.div>
-                  </motion.div>
-              }
-          />
-          <Route
-              path="/restaurants"
-              element={
-                  <motion.div
-                      initial="initial"
-                      animate="in"
-                      exit="out"
-                      variants={pageVariants}
-                  >
-                      <motion.div variants={childVariants}>
-                          <ProtectedRoute allowedRoles={["restaurant-admin"]}>
-                              <RestaurantList />
-                          </ProtectedRoute>
-                      </motion.div>
-                  </motion.div>
-              }
-          />
+        <Route
+          path="/register-restaurant"
+          element={
+            <motion.div
+              initial="initial"
+              animate="in"
+              exit="out"
+              variants={pageVariants}
+            >
+              <motion.div variants={childVariants}>
+                <ProtectedRoute allowedRoles={["restaurant-admin"]}>
+                  <RestaurantRegister />
+                </ProtectedRoute>
+              </motion.div>
+            </motion.div>
+          }
+        />
+        <Route
+          path="/restaurants"
+          element={
+            <motion.div
+              initial="initial"
+              animate="in"
+              exit="out"
+              variants={pageVariants}
+            >
+              <motion.div variants={childVariants}>
+                <ProtectedRoute allowedRoles={["restaurant-admin"]}>
+                  <RestaurantList />
+                </ProtectedRoute>
+              </motion.div>
+            </motion.div>
+          }
+        />
       </Routes>
     </AnimatePresence>
   );

@@ -32,30 +32,30 @@ export default function NavBar() {
                     {/* Navbar items */}
                     <div className={`${menuOpen ? 'absolute top-16 left-0 right-0 bg-neutral-300/95 py-3' : 'hidden'} lg:flex gap-1 lg:gap-2 w-full lg:w-auto justify-center`}>
                         <Link to="/" className="nav-item">
-                            <div className="font-medium px-4 py-1 rounded-full transition-all hover:underline hover:underline-offset-4">
+                            <div className="text-lg  px-4 py-1 rounded-full transition-all hover:underline hover:underline-offset-8">
                                 Home
                             </div>
                         </Link>
                         <Link to="/" className="nav-item">
-                            <div className="font-medium px-4 py-1 rounded-full transition-all hover:underline hover:underline-offset-4">
+                            <div className="text-lg px-4 py-1 rounded-full transition-all hover:underline hover:underline-offset-8">
                                 Your Cart
                             </div>
                         </Link>
                         <Link to="/resops-dashboard" className="nav-item">
-                            <div className="font-medium px-4 py-1 rounded-full transition-all hover:underline hover:underline-offset-4">
-                                Res Ops Dashboard
+                            <div className="text-lg px-4 py-1 rounded-full transition-all hover:underline hover:underline-offset-8">
+                                ResOps Dashboard
                             </div>
                         </Link>
                     </div>
 
                     {/* Login/Register */}
                     <div className="hidden lg:flex flex-1 justify-end">
-                        <div className="flex gap-1 items-center">
-                            <Link to='/login' className='px-3 py-1 text-sm font-medium rounded-full hover:underline hover:underline-offset-4'>
+                        <div className="flex gap-1 items-center bg-nomnom rounded-full text-light_hover">
+                            <Link to='/login' className='px-3 py-1 text-lg font-medium rounded-full hover:underline hover:underline-offset-4'>
                                 Login
                             </Link>
                             <span className="text-green-400">|</span>
-                            <Link to='/signup' className='px-3 py-1 text-sm font-medium rounded-full hover:underline hover:underline-offset-4'>
+                            <Link to='/signup' className='px-3 py-1 text-lg font-medium rounded-full hover:underline hover:underline-offset-4'>
                                 Register
                             </Link>
                         </div>
