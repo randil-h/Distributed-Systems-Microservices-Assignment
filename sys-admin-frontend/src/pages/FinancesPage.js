@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 
 const FinancesPage = () => {
     return (
-        <div className="flex flex-col h-screen w-screen overflow-hidden">
+        <div className="flex bg-gray-800 flex-col h-screen w-screen overflow-hidden">
             <Navbar/>
             <SideBar />
         </div>

@@ -103,14 +103,14 @@ const UserManagement = () => {
     );
 
     return (
-        <div className="bg-white shadow-xl rounded-xl max-w-5xl mx-auto my-10 overflow-hidden">
-            <div className="p-6 bg-gray-50 border-b">
-                <h2 className="text-3xl font-semibold text-gray-800">User Management</h2>
+        <div className="bg-gray-900 shadow-xl rounded-xl max-w-5xl mx-auto my-10 overflow-hidden">
+            <div className="p-6 bg-gray-800 border-b border-gray-700">
+                <h2 className="text-3xl font-semibold text-gray-100">User Management</h2>
             </div>
 
             <button
                 onClick={() => setIsAddAdminModalOpen(true)}
-                className="fixed top-20 right-40 justify-center mt-5 mr-56 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center"
+                className="fixed top-20 right-40 justify-center mt-5 mr-56 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center"
             >
                 <Plus className="mr-2" size={16} /> Add Admin
             </button>
@@ -126,11 +126,11 @@ const UserManagement = () => {
                                     key={role}
                                     onClick={() => handleFilterChange(role)}
                                     className={`
-                                        flex items-center space-x-2 px-3 py-2 rounded-lg 
-                                        transition-all duration-200 ease-in-out
-                                        ${isSelected ? config.activeColor : config.inactiveColor}
-                                        hover:scale-105 focus:outline-none focus:ring-2 focus:ring-opacity-50
-                                    `}
+                                flex items-center space-x-2 px-3 py-2 rounded-lg 
+                                transition-all duration-200 ease-in-out
+                                ${isSelected ? config.activeColor : config.inactiveColor.replace('bg-gray-100', 'bg-gray-700').replace('text-gray-600', 'text-gray-300')}
+                                hover:scale-105 focus:outline-none focus:ring-2 focus:ring-opacity-50
+                            `}
                                 >
                                     <Icon size={16} />
                                     <span className="text-sm font-medium">{config.label}</span>
@@ -144,11 +144,11 @@ const UserManagement = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                            <tr className="border-b">
+                            <tr className="border-b border-gray-700">
                                 {['ID', 'Name', 'Email', 'Role', 'Actions'].map((header) => (
                                     <th
                                         key={header}
-                                        className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        className="py-3 px-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider"
                                     >
                                         {header}
                                     </th>
@@ -163,21 +163,21 @@ const UserManagement = () => {
                                 return (
                                     <tr
                                         key={user.id}
-                                        className="hover:bg-gray-50 transition-colors duration-200"
+                                        className="hover:bg-gray-800 transition-colors duration-200"
                                     >
-                                        <td className="py-4 px-4 text-sm text-gray-600">{user.id}</td>
-                                        <td className="py-4 px-4 text-sm text-gray-800 font-medium">{user.name}</td>
-                                        <td className="py-4 px-4 text-sm text-gray-600">{user.email}</td>
+                                        <td className="py-4 px-4 text-sm text-gray-300">{user.id}</td>
+                                        <td className="py-4 px-4 text-sm text-gray-200 font-medium">{user.name}</td>
+                                        <td className="py-4 px-4 text-sm text-gray-300">{user.email}</td>
                                         <td className="py-4 px-4">
                                             <div className="flex items-center space-x-2">
                                                 <Icon size={16} className={roleConfig.inactiveColor.split(' ')[1]} />
-                                                <span className="text-sm text-gray-700">{roleConfig.label}</span>
+                                                <span className="text-sm text-gray-300">{roleConfig.label}</span>
                                             </div>
                                         </td>
                                         <td className="py-4 px-4">
                                             <button
                                                 onClick={() => handleUserSelect(user)}
-                                                className="px-3 py-1 border rounded-lg hover:bg-gray-100"
+                                                className="px-3 py-1 border border-gray-600 rounded-lg hover:bg-gray-700 text-gray-200"
                                             >
                                                 View Details
                                             </button>
@@ -197,24 +197,24 @@ const UserManagement = () => {
 
             {/* User Details Modal */}
             {isDetailsModalOpen && selectedUser && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-xl w-96">
-                        <h2 className="text-xl font-semibold mb-4">User Details</h2>
+                <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+                    <div className="bg-gray-800 p-6 rounded-lg shadow-xl w-96">
+                        <h2 className="text-xl font-semibold mb-4 text-gray-100">User Details</h2>
                         <div className="space-y-4">
                             <div>
-                                <p className="font-semibold">{selectedUser.name}</p>
-                                <p className="text-sm text-gray-500">{selectedUser.email}</p>
-                                <p className="text-sm text-gray-600">
+                                <p className="font-semibold text-gray-100">{selectedUser.name}</p>
+                                <p className="text-sm text-gray-400">{selectedUser.email}</p>
+                                <p className="text-sm text-gray-300">
                                     Role: {ROLE_CONFIG[selectedUser.role].label}
                                 </p>
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-700">Block User</label>
+                                <label className="block text-sm font-medium text-gray-300">Block User</label>
                                 <div className="flex space-x-2 items-center">
                                     <select
                                         value={blockDuration}
                                         onChange={(e) => setBlockDuration(e.target.value)}
-                                        className="w-full px-2 py-1 border rounded-lg"
+                                        className="w-full px-2 py-1 border border-gray-600 rounded-lg bg-gray-700 text-gray-200"
                                     >
                                         <option value="24h">24 Hours</option>
                                         <option value="72h">72 Hours</option>
@@ -224,7 +224,7 @@ const UserManagement = () => {
                                     </select>
                                     <button
                                         onClick={handleBlockUser}
-                                        className="bg-red-500 text-white px-3 py-1 rounded-lg flex items-center"
+                                        className="bg-red-600 text-white px-3 py-1 rounded-lg flex items-center"
                                     >
                                         <Ban className="mr-2" size={16} /> Block
                                     </button>
@@ -233,13 +233,13 @@ const UserManagement = () => {
                             <div className="flex justify-between mt-4">
                                 <button
                                     onClick={handleDeleteUser}
-                                    className="bg-red-500 text-white px-4 py-2 rounded-lg flex items-center"
+                                    className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center"
                                 >
                                     <Trash2 className="mr-2" size={16} /> Delete Account
                                 </button>
                                 <button
                                     onClick={() => setIsDetailsModalOpen(false)}
-                                    className="border px-4 py-2 rounded-lg"
+                                    className="border border-gray-600 px-4 py-2 rounded-lg text-gray-200"
                                 >
                                     Close
                                 </button>
@@ -251,37 +251,37 @@ const UserManagement = () => {
 
             {/* Add Admin Modal */}
             {isAddAdminModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg shadow-xl w-96">
-                        <h2 className="text-xl font-semibold mb-4">Add New Admin</h2>
+                <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+                    <div className="bg-gray-800 p-6 rounded-lg shadow-xl w-96">
+                        <h2 className="text-xl font-semibold mb-4 text-gray-100">Add New Admin</h2>
                         <div className="space-y-4">
                             <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                                <label htmlFor="name" className="block text-sm font-medium text-gray-300">Name</label>
                                 <input
                                     id="name"
                                     value={newAdminUser.name}
                                     onChange={(e) => setNewAdminUser({...newAdminUser, name: e.target.value})}
                                     placeholder="Enter full name"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-lg"
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-gray-200"
                                 />
                             </div>
                             <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-300">Email</label>
                                 <input
                                     id="email"
                                     type="email"
                                     value={newAdminUser.email}
                                     onChange={(e) => setNewAdminUser({...newAdminUser, email: e.target.value})}
                                     placeholder="Enter email address"
-                                    className="mt-1 block w-full px-3 py-2 border rounded-lg"
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-gray-200"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Admin Role</label>
+                                <label className="block text-sm font-medium text-gray-300">Admin Role</label>
                                 <select
                                     value={newAdminUser.role}
                                     onChange={(e) => setNewAdminUser({...newAdminUser, role: e.target.value})}
-                                    className="mt-1 block w-full px-3 py-2 border rounded-lg"
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-gray-200"
                                 >
                                     <option value="restaurant_admin">Restaurant Admin</option>
                                     <option value="system_admin">System Admin</option>
@@ -291,13 +291,13 @@ const UserManagement = () => {
                                 <button
                                     onClick={handleAddAdmin}
                                     disabled={!newAdminUser.name || !newAdminUser.email}
-                                    className="bg-green-500 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+                                    className="bg-green-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
                                 >
                                     Add Admin
                                 </button>
                                 <button
                                     onClick={() => setIsAddAdminModalOpen(false)}
-                                    className="border px-4 py-2 rounded-lg"
+                                    className="border border-gray-600 px-4 py-2 rounded-lg text-gray-200"
                                 >
                                     Cancel
                                 </button>

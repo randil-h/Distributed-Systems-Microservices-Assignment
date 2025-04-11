@@ -4,7 +4,7 @@ import RestaurantVerification from "../components/RestaurantVerification";
 
 const RestaurantRegistrationsPage = () => {
     return (
-        <div className="flex flex-col h-screen w-screen overflow-hidden">
+        <div className="flex bg-gray-800 flex-col h-screen w-screen overflow-hidden">
             <Navbar/>
             <SideBar />
             <RestaurantVerification/>
