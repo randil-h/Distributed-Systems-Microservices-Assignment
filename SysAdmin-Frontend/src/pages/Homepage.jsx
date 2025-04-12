@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Lock, User, AlertTriangle } from 'lucide-react';
 
 export default function SystemAdminLogin() {
@@ -34,15 +34,16 @@ export default function SystemAdminLogin() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
-            <div className="w-full max-w-md bg-white shadow-md rounded-lg overflow-hidden">
-                <div className="bg-blue-600 text-white text-center py-4">
+        <div className="w-screen h-screen bg-gray-900 flex items-center justify-center">
+            <div className="w-full max-w-md bg-gray-800 shadow-lg rounded-lg overflow-hidden border border-gray-700">
+                <div className="bg-blue-800 text-white text-center py-4">
                     <h2 className="text-2xl font-bold">System Admin Login</h2>
                 </div>
-                <form onSubmit={handleLogin} className="p-6 space-y-6">
+
+                <form onSubmit={handleLogin} className="p-6 space-y-4">
                     {error && (
-                        <div className="flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                            <AlertTriangle className="mr-2 text-red-500" />
+                        <div className="flex items-center bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded relative" role="alert">
+                            <AlertTriangle className="mr-2 text-red-300" />
                             <span className="block sm:inline">{error}</span>
                         </div>
                     )}
@@ -56,7 +57,7 @@ export default function SystemAdminLogin() {
                             placeholder="Username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
 
@@ -69,19 +70,19 @@ export default function SystemAdminLogin() {
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full pl-10 pr-3 py-2 border border-gray-600 rounded-md bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
 
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                        className="w-full bg-blue-700 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                     >
                         Login
                     </button>
 
-                    <div className="text-center">
-                        <a href="#" className="text-sm text-blue-600 hover:underline">Forgot Password?</a>
+                    <div className="text-center mt-4">
+                        <a href="#" className="text-sm text-blue-400 hover:text-blue-300">Forgot Password?</a>
                     </div>
                 </form>
             </div>
