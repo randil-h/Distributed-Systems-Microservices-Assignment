@@ -100,7 +100,7 @@ export default function SideBar() {
                     <Link key={item.name} to={item.path} className="w-full">
                         <li
                             className={`flex text-gray-300 w-full h-12 my-1 focus:outline-none focus:ring focus:ring-lime-400 transition-all duration-200 px-1 ${
-                                isActive(item.path) ? "bg-gray-800 text-gray-100 rounded-xl px-3" : "hover:bg-red-900 hover:text-red-400 hover:shadow-lg hover:rounded-xl"
+                                isActive(item.path) ? "bg-gray-800 text-gray-100 rounded-xl px-3" : "hover:bg-red-900 hover:shadow-lg hover:rounded-xl"
                             }`}
                         >
                             <div className="flex items-center justify-between w-full">

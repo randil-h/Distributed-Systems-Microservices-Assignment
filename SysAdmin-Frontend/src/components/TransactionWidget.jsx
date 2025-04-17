@@ -7,7 +7,8 @@ const TotalTransactionsWidget = () => {
     useEffect(() => {
         const fetchPayments = async () => {
             try {
-                const response = await axios.get('http://localhost:5555/stripe');
+                const response = await axios.get('http://localhost:3270/stripe');
+                console.log(response);
                 const total = response.data.data.reduce((sum, payment) => sum + payment.amount, 0);
                 setTotalAmount(total);
             } catch (err) {
