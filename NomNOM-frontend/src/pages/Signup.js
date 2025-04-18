@@ -32,7 +32,7 @@ const Signup = () => {
                 <div className="w-full ">
                     <div className="flex flex-col items-center w-full">
                         <GiCookie className="size-14 mb-6 text-nomnom" />
-                        <h2 className="text-5xl font-bold text-center mb-4">Join Us Now!</h2>
+                        <h2 className="text-5xl text-center mb-4">Join Us Now!</h2>
                         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
                         <form onSubmit={handleSignup} className="w-full flex flex-col items-center">
                             <div className="mb-6 w-full flex justify-center"> {/* Added flex justify-center */}
@@ -66,18 +66,19 @@ const Signup = () => {
                                 />
                             </div>
                             <div className="mb-6 w-full flex justify-center"> {/* Added flex justify-center */}
-                                <select
-                                    value={role}
-                                    onChange={(e) => setRole(e.target.value)}
-                                    className="w-2/3  p-3 pl-4 text-xl bg-white border-b-2 border-light_hover focus:outline-none"
-                                >
-                                    <option value="customer">Customer</option>
-                                    <option value="restaurant-admin">Restaurant Admin</option>
-                                    <option value="system-admin">System Admin</option>
-                                    <option value="delivery-personnel">Delivery Personnel</option>
-                                </select>
+                              <select
+                                value={role}
+                                onChange={(e) => setRole(e.target.value)}
+                                className="w-2/3  p-3 pl-4 text-xl bg-white border-b-2 border-light_hover focus:outline-none"
+                              >
+                                <option value="customer">Customer</option>
+                                <option value="restaurant-admin">Restaurant Admin</option>
+                                <option value="restaurant-admin">Restaurant Staff</option>
+                                <option value="system-admin">System Admin</option>
+                                <option value="delivery-personnel">Delivery Personnel</option>
+                              </select>
                             </div>
-                            {/* Terms & Conditions */}
+                          {/* Terms & Conditions */}
                             <div className="mb-6 w-full max-w-[400px] text-center">
                 <span className="text-sm text-gray-600">
                   By signing up, you agree to our{" "}
@@ -117,7 +118,7 @@ const Signup = () => {
                 />
                 {/* Title & Description */}
                 <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center px-6">
-                    <h2 className="text-5xl font-bold mb-4">Delicious Meals, Delivered to You!</h2>
+                    <h2 className="text-5xl  mb-4">Delicious Meals, Delivered to You!</h2>
                     <p className="text-xl max-w-lg">
                         Sign up now and explore a variety of restaurants offering mouth-watering dishes, all available at your fingertips.
                     </p>
