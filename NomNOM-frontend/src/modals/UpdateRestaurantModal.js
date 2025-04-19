@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const UpdateRestaurantModal = ({
                                    isOpen,
@@ -8,6 +8,35 @@ const UpdateRestaurantModal = ({
                                    editedData,
                                    setEditedData,
                                }) => {
+    // Initialize editedData when modal opens
+    useEffect(() => {
+        if (isOpen && restaurant) {
+            setEditedData({
+                name: restaurant.name || "",
+                legalBusinessName: restaurant.legalBusinessName || "",
+                registrationNumber: restaurant.registrationNumber || "",
+                cuisineType: restaurant.cuisineType || "",
+                restaurantCategory: restaurant.restaurantCategory || "",
+                address: restaurant.address || "",
+                phone: restaurant.phone || "",
+                email: restaurant.email || "",
+                website: restaurant.website || "",
+                facebook: restaurant.facebook || "",
+                instagram: restaurant.instagram || "",
+                operatingHours: restaurant.operatingHours || "",
+                deliveryOptions: [...(restaurant.deliveryOptions || [])],
+                paymentMethods: [...(restaurant.paymentMethods || [])],
+                ownerName: restaurant.ownerName || "",
+                ownerEmail: restaurant.ownerEmail || "",
+                ownerPhone: restaurant.ownerPhone || "",
+                logo: restaurant.logo || null
+            });
+        }
+    }, [isOpen, restaurant, setEditedData]); // Reverted dependency array
+
+    if (!isOpen || !restaurant) return null;
+
+
     if (!isOpen || !restaurant) return null;
 
     const cuisineTypes = ["Italian", "Chinese", "Indian", "Mexican", "Japanese", "American", "Mediterranean", "Thai", "French", "Other"];
@@ -17,7 +46,7 @@ const UpdateRestaurantModal = ({
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setEditedData({ ...editedData, [name]: value });
+        setEditedData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleCheckboxChange = (e) => {
@@ -30,6 +59,17 @@ const UpdateRestaurantModal = ({
                 return { ...prev, [name]: currentValues.filter(item => item !== value) };
             }
         });
+    };
+
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setEditedData(prev => ({ ...prev, logo: reader.result }));
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     return (
@@ -48,9 +88,9 @@ const UpdateRestaurantModal = ({
                         <input
                             type="text"
                             name="name"
-                            value={editedData.name || ""}
+                            value={editedData.name}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>
@@ -60,9 +100,9 @@ const UpdateRestaurantModal = ({
                         <input
                             type="text"
                             name="legalBusinessName"
-                            value={editedData.legalBusinessName || ""}
+                            value={editedData.legalBusinessName}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
@@ -71,9 +111,9 @@ const UpdateRestaurantModal = ({
                         <input
                             type="text"
                             name="registrationNumber"
-                            value={editedData.registrationNumber || ""}
+                            value={editedData.registrationNumber}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
@@ -81,9 +121,9 @@ const UpdateRestaurantModal = ({
                         <label className="block text-gray-700 mb-2">Cuisine Type*</label>
                         <select
                             name="cuisineType"
-                            value={editedData.cuisineType || ""}
+                            value={editedData.cuisineType}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         >
                             <option value="">Select Cuisine Type</option>
@@ -97,9 +137,9 @@ const UpdateRestaurantModal = ({
                         <label className="block text-gray-700 mb-2">Restaurant Category*</label>
                         <select
                             name="restaurantCategory"
-                            value={editedData.restaurantCategory || ""}
+                            value={editedData.restaurantCategory}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         >
                             <option value="">Select Category</option>
@@ -119,9 +159,9 @@ const UpdateRestaurantModal = ({
                         <input
                             type="text"
                             name="address"
-                            value={editedData.address || ""}
+                            value={editedData.address}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>
@@ -131,9 +171,9 @@ const UpdateRestaurantModal = ({
                         <input
                             type="tel"
                             name="phone"
-                            value={editedData.phone || ""}
+                            value={editedData.phone}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>
@@ -143,9 +183,9 @@ const UpdateRestaurantModal = ({
                         <input
                             type="email"
                             name="email"
-                            value={editedData.email || ""}
+                            value={editedData.email}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>
@@ -155,10 +195,9 @@ const UpdateRestaurantModal = ({
                         <input
                             type="url"
                             name="website"
-                            value={editedData.website || ""}
+                            value={editedData.website}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
-                            placeholder="https://"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
@@ -167,9 +206,9 @@ const UpdateRestaurantModal = ({
                         <input
                             type="url"
                             name="facebook"
-                            value={editedData.facebook || ""}
+                            value={editedData.facebook}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="https://facebook.com/yourpage"
                         />
                     </div>
@@ -179,9 +218,9 @@ const UpdateRestaurantModal = ({
                         <input
                             type="url"
                             name="instagram"
-                            value={editedData.instagram || ""}
+                            value={editedData.instagram}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="https://instagram.com/yourpage"
                         />
                     </div>
@@ -195,9 +234,9 @@ const UpdateRestaurantModal = ({
                         <label className="block text-gray-700 mb-2">Operating Hours*</label>
                         <textarea
                             name="operatingHours"
-                            value={editedData.operatingHours || ""}
+                            value={editedData.operatingHours}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             rows="3"
                             placeholder="Example: Monday-Friday: 11:00 AM - 10:00 PM, Saturday-Sunday: 12:00 PM - 11:00 PM"
                             required
@@ -213,11 +252,11 @@ const UpdateRestaurantModal = ({
                                         type="checkbox"
                                         name="deliveryOptions"
                                         value={option}
-                                        checked={editedData.deliveryOptions?.includes(option) || false}
+                                        checked={editedData.deliveryOptions?.includes(option)}
                                         onChange={handleCheckboxChange}
-                                        className="form-checkbox"
+                                        className="form-checkbox h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                     />
-                                    <span className="ml-2">{option}</span>
+                                    <span className="ml-2 text-gray-700">{option}</span>
                                 </label>
                             ))}
                         </div>
@@ -232,14 +271,34 @@ const UpdateRestaurantModal = ({
                                         type="checkbox"
                                         name="paymentMethods"
                                         value={method}
-                                        checked={editedData.paymentMethods?.includes(method) || false}
+                                        checked={editedData.paymentMethods?.includes(method)}
                                         onChange={handleCheckboxChange}
-                                        className="form-checkbox"
+                                        className="form-checkbox h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                     />
-                                    <span className="ml-2">{method}</span>
+                                    <span className="ml-2 text-gray-700">{method}</span>
                                 </label>
                             ))}
                         </div>
+                    </div>
+
+                    <div className="mb-4 col-span-2">
+                        <label className="block text-gray-700 mb-2">Restaurant Logo</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        {editedData.logo && (
+                            <div className="mt-2">
+                                <p className="text-sm text-gray-600">Current Logo:</p>
+                                <img
+                                    src={editedData.logo}
+                                    alt="Logo Preview"
+                                    className="h-24 mt-2 border border-gray-300 rounded"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* Owner Information */}
@@ -252,9 +311,9 @@ const UpdateRestaurantModal = ({
                         <input
                             type="text"
                             name="ownerName"
-                            value={editedData.ownerName || ""}
+                            value={editedData.ownerName}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>
@@ -264,9 +323,9 @@ const UpdateRestaurantModal = ({
                         <input
                             type="email"
                             name="ownerEmail"
-                            value={editedData.ownerEmail || ""}
+                            value={editedData.ownerEmail}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>
@@ -276,9 +335,9 @@ const UpdateRestaurantModal = ({
                         <input
                             type="tel"
                             name="ownerPhone"
-                            value={editedData.ownerPhone || ""}
+                            value={editedData.ownerPhone}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded"
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         />
                     </div>
@@ -287,13 +346,13 @@ const UpdateRestaurantModal = ({
                 <div className="flex justify-end space-x-2 mt-6">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
+                        className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={onUpdate}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                     >
                         Update Restaurant
                     </button>

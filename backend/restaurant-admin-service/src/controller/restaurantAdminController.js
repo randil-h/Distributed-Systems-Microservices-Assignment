@@ -25,6 +25,7 @@ const registerRestaurant = async (req, res) => {
             ownerName,
             ownerEmail,
             ownerPhone,
+            logo,
         } = req.body;
 
         const restaurant = new Restaurant({
@@ -46,6 +47,7 @@ const registerRestaurant = async (req, res) => {
             ownerEmail,
             ownerPhone,
             ownerId: req.user.id,
+            logo,
         });
 
         await restaurant.save();
@@ -71,7 +73,7 @@ const updateRestaurant = async (req, res) => {
 
         const updatedRestaurant = await Restaurant.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            { ...req.body },
             { new: true }
         );
         res.json(updatedRestaurant);
@@ -106,9 +108,13 @@ const deleteRestaurant = async (req, res) => {
         }
 
         await Restaurant.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Restaurant deleted successfully' });
+        res.status(200).json({ message: 'Restaurant deleted successfully' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Delete error:", error);
+        res.status(500).json({
+            message: 'Server error during deletion',
+            error: error.message
+        });
     }
 };
 

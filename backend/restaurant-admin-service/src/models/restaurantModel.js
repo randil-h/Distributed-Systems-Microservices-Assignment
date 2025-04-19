@@ -27,6 +27,7 @@ const restaurantSchema = new mongoose.Schema({
     // Reference to owner
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     registrationStatus: { type: String, default: 'pending' }
+
 });
 
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
