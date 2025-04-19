@@ -24,16 +24,16 @@ const RestaurantAdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, fetchRestaura
             label: 'My Restaurants',
             onClick: () => navigate("/restaurants")
         },
-        {
-            icon: <BookOpen className="w-5 h-5 mr-3" />,
-            label: 'Current Menu Items',
-            onClick: () => navigate("/menu-items") // You'll need to define this route
-        },
-        {
-            icon: <Plus className="w-5 h-5 mr-3" />,
-            label: 'Add Menu Item',
-            onClick: () => navigate("/add-menu-item") // You'll need to define this route
-        },
+        // {
+        //     icon: <BookOpen className="w-5 h-5 mr-3" />,
+        //     label: 'Current Menu Items',
+        //     onClick: () => navigate("/menu-items") // You'll need to define this route
+        // },
+        // {
+        //     icon: <Plus className="w-5 h-5 mr-3" />,
+        //     label: 'Add Menu Item',
+        //     onClick: () => navigate("/add-menu-item") // You'll need to define this route
+        // },
         {
             icon: <PlusCircle className="w-5 h-5 mr-3" />,
             label: 'Add Restaurant',

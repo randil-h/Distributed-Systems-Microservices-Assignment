@@ -5,6 +5,7 @@ import UpdateRestaurantModal from "../modals/UpdateRestaurantModal";
 import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
 import RestaurantAdminSidebar from '../components/admin_components/RestaurantAdminSidebar';
 import {useNavigate} from "react-router-dom"; // Import the sidebar
+import { BookOpen } from 'lucide-react';
 
 const RestaurantList = () => {
     const [restaurants, setRestaurants] = useState([]);
@@ -175,7 +176,7 @@ const RestaurantList = () => {
             />
 
             {/* Main Content Area */}
-            <div className="flex-1 overflow-y-auto p-8 mt-0"> {/* Adjust marginTop to account for NavBar */}
+            <div className="flex-1 overflow-y-auto p-8 mt-0">
                 <div className="container mx-auto px-4 py-8">
                     <h2 className="text-3xl font-bold mb-8 text-gray-800">
                         Registered Restaurants
@@ -214,20 +215,29 @@ const RestaurantList = () => {
                                             <span className="font-medium">Hours:</span> {restaurant.operatingHours || "Not specified"}
                                         </p>
 
-                                        <div className="flex justify-end space-x-2">
+                                        <div className="flex justify-between items-center">
                                             <button
-                                                onClick={() => handleEdit(restaurant)}
-                                                className="px-4 py-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-800 hover:text-white transition-colors"
-                                                className="px-4 py-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-800 hover:text-white transition-colors"
+                                                onClick={() => navigate(`/menu-items/${restaurant._id}`)}
+                                                className="flex items-center text-blue-500 hover:text-blue-700"
                                             >
-                                                Edit
+                                                <BookOpen className="w-4 h-4 mr-1" />
+                                                View Menu
                                             </button>
-                                            <button
-                                                onClick={() => showDeleteConfirmation(restaurant)}
-                                                className="px-4 py-2 bg-red-200 text-red-800 rounded-md hover:bg-red-700 hover:text-white transition-colors"
-                                            >
-                                                Delete
-                                            </button>
+
+                                            <div className="flex space-x-2">
+                                                <button
+                                                    onClick={() => handleEdit(restaurant)}
+                                                    className="px-4 py-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-800 hover:text-white transition-colors"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => showDeleteConfirmation(restaurant)}
+                                                    className="px-4 py-2 bg-red-200 text-red-800 rounded-md hover:bg-red-700 hover:text-white transition-colors"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -238,7 +248,6 @@ const RestaurantList = () => {
                             <p className="text-xl text-gray-600">No restaurants registered yet.</p>
                         </div>
                     )}
-
                     <UpdateRestaurantModal
                         isOpen={isModalOpen}
                         onClose={closeModal}

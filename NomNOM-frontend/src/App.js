@@ -10,6 +10,8 @@ import RestaurantDashboard from "./pages/RestaurantDashboard";
 import ResOpsDashboard from "./pages/ResOpsDashboard";
 import RestaurantRegister from "./pages/RestaurantRegister";
 import RestaurantList from "./pages/RestaurantList";
+import MenuItemsPage from "./pages/MenuItemsPage"; // Add this import
+import MenuItemForm from "./components/admin_components/MenuItemForm"; // Add this import
 
 // Page transition configuration
 const pageVariants = {
@@ -156,6 +158,57 @@ function App() {
                       <motion.div variants={childVariants}>
                           <ProtectedRoute allowedRoles={["restaurant-admin"]}>
                               <RestaurantList />
+                          </ProtectedRoute>
+                      </motion.div>
+                  </motion.div>
+              }
+          />
+          <Route
+              path="/menu-items/:restaurantId"
+              element={
+                  <motion.div
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                  >
+                      <motion.div variants={childVariants}>
+                          <ProtectedRoute allowedRoles={["restaurant-admin"]}>
+                              <MenuItemsPage />
+                          </ProtectedRoute>
+                      </motion.div>
+                  </motion.div>
+              }
+          />
+          <Route
+              path="/add-menu-item/:restaurantId"
+              element={
+                  <motion.div
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                  >
+                      <motion.div variants={childVariants}>
+                          <ProtectedRoute allowedRoles={["restaurant-admin"]}>
+                              <MenuItemForm />
+                          </ProtectedRoute>
+                      </motion.div>
+                  </motion.div>
+              }
+          />
+          <Route
+              path="/edit-menu-item/:id"
+              element={
+                  <motion.div
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                  >
+                      <motion.div variants={childVariants}>
+                          <ProtectedRoute allowedRoles={["restaurant-admin"]}>
+                              <MenuItemForm isEdit={true} />
                           </ProtectedRoute>
                       </motion.div>
                   </motion.div>
