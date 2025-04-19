@@ -29,7 +29,7 @@ const Login = () => {
                 <div className="w-full ">
                     <div className="flex flex-col items-center w-full">
                         <GiCookie className="size-14 mb-6 text-nomnom" />
-                        <h2 className="text-5xl font-bold text-center mb-4">Welcome Back!</h2>
+                        <h2 className="text-5xl  text-center mb-4">Welcome Back!</h2>
                         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
                         <form onSubmit={handleLogin} className="w-full flex flex-col items-center">
                             <div className="mb-6 w-full flex justify-center "> {/* Added flex justify-center */}
@@ -88,7 +88,7 @@ const Login = () => {
                 />
                 {/* Title & Description */}
                 <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center px-6">
-                    <h2 className="text-5xl font-bold mb-4">Your Favorite Meals, Just a Click Away!</h2>
+                    <h2 className="text-5xl  mb-4">Your Favorite Meals, Just a Click Away!</h2>
                     <p className="text-xl max-w-lg">
                         Discover delicious dishes from top-rated restaurants and get them delivered to your doorstep in no time.
                     </p>
