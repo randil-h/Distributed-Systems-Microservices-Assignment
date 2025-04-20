@@ -4,7 +4,7 @@ const restaurantAdminRoutes = require('../src/routes/restaurantAdminRoutes');
 const dotenv = require('dotenv');
 const path = require('path');
 const cors = require('cors');
-
+const menuItemRoutes = require('../src/routes/menuItemRoutes');
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -35,7 +35,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 // Routes
 app.use('/api/restaurants', restaurantAdminRoutes);
-
+app.use('/api/menu-items', menuItemRoutes);
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);

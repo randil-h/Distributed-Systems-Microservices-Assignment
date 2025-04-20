@@ -18,7 +18,19 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    address: {
+        type: String,
+    },
+    isBlocked: {
+        type: Boolean,
+        default: false
+    },
+    blockExpiry: {
+        type: Date,
+        default: null
+    },
 });
+
 
 // Hash password before saving
 UserSchema.pre("save", async function (next) {

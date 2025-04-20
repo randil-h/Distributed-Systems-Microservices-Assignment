@@ -10,6 +10,8 @@ import RestaurantDashboard from "./pages/RestaurantDashboard";
 import ResOpsDashboard from "./pages/ResOpsDashboard";
 import RestaurantRegister from "./pages/RestaurantRegister";
 import RestaurantList from "./pages/RestaurantList";
+import MenuItemsPage from "./pages/MenuItemsPage"; // Add this import
+import MenuItemForm from "./components/admin_components/MenuItemForm";
 import Payment from "./pages/Payment";
 
 // Page transition configuration
@@ -122,63 +124,97 @@ function App() {
             >
               <motion.div variants={childVariants}>
                 {/*<ProtectedRoute allowedRoles={["restaurant-staff"]}>*/}
-                <ResOpsDashboard />
+                  <ResOpsDashboard />
                 {/*</ProtectedRoute>*/}
               </motion.div>
             </motion.div>
           }
         />
-        <Route
-          path="/register-restaurant"
-          element={
-            <motion.div
-              initial="initial"
-              animate="in"
-              exit="out"
-              variants={pageVariants}
-            >
-              <motion.div variants={childVariants}>
-                <ProtectedRoute allowedRoles={["restaurant-admin"]}>
-                  <RestaurantRegister />
-                </ProtectedRoute>
-              </motion.div>
-            </motion.div>
-          }
-        />
-        <Route
-          path="/restaurants"
-          element={
-            <motion.div
-              initial="initial"
-              animate="in"
-              exit="out"
-              variants={pageVariants}
-            >
-              <motion.div variants={childVariants}>
-                <ProtectedRoute allowedRoles={["restaurant-admin"]}>
-                  <RestaurantList />
-                </ProtectedRoute>
-              </motion.div>
-            </motion.div>
-          }
-        />
-      <Route
-          path="/payment"
-          element={
-              <motion.div
-                  initial="initial"
-                  animate="in"
-                  exit="out"
-                  variants={pageVariants}
-              >
-                  <motion.div variants={childVariants}>
-                      {/*<ProtectedRoute> uncomment when access control is properly implemented*/}
-                      <Payment />
-                      {/*</ProtectedRoute>*/}
+          <Route
+              path="/register-restaurant"
+              element={
+                  <motion.div
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                  >
+                      <motion.div variants={childVariants}>
+                          <ProtectedRoute allowedRoles={["restaurant-admin"]}>
+                              <RestaurantRegister />
+                          </ProtectedRoute>
+                      </motion.div>
                   </motion.div>
-              </motion.div>
-          }
-      />
+              }
+          />
+          <Route
+              path="/restaurants"
+              element={
+                  <motion.div
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                  >
+                      <motion.div variants={childVariants}>
+                          <ProtectedRoute allowedRoles={["restaurant-admin"]}>
+                              <RestaurantList />
+                          </ProtectedRoute>
+                      </motion.div>
+                  </motion.div>
+              }
+          />
+          <Route
+              path="/menu-items/:restaurantId"
+              element={
+                  <motion.div
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                  >
+                      <motion.div variants={childVariants}>
+                          <ProtectedRoute allowedRoles={["restaurant-admin"]}>
+                              <MenuItemsPage />
+                          </ProtectedRoute>
+                      </motion.div>
+                  </motion.div>
+              }
+          />
+          <Route
+              path="/edit-menu-item/:id"
+              element={
+                  <motion.div
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                  >
+                      <motion.div variants={childVariants}>
+                          <ProtectedRoute allowedRoles={["restaurant-admin"]}>
+                              <MenuItemForm isEdit={true} />
+                          </ProtectedRoute>
+                      </motion.div>
+                  </motion.div>
+              }
+          />
+          <Route
+              path="/payment"
+              element={
+                  <motion.div
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                  >
+                      <motion.div variants={childVariants}>
+                          {/*<ProtectedRoute> uncomment when access control is properly implemented*/}
+                          <Payment />
+                          {/*</ProtectedRoute>*/}
+                      </motion.div>
+                  </motion.div>
+              }
+          />
       </Routes>
     </AnimatePresence>
   );
