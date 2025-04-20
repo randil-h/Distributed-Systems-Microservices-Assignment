@@ -3,7 +3,8 @@ import { logout } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import { PlusCircle, List, Clock } from 'lucide-react';
 import axios from "axios";
-import RestaurantAdminSidebar from '../components/admin_components/RestaurantAdminSidebar'; // Import the sidebar component
+import RestaurantAdminSidebar from '../components/admin_components/RestaurantAdminSidebar';
+import NavBar from "../components/utility_components/Navbar"; // Import the sidebar component
 
 const RestaurantDashboard = () => {
     const navigate = useNavigate();
@@ -39,6 +40,12 @@ const RestaurantDashboard = () => {
 
     return (
         <div className="flex h-screen bg-gray-50">
+            <NavBar
+                isSidebarOpen={isSidebarOpen}
+                setIsSidebarOpen={setIsSidebarOpen}
+                handleLogout={handleLogout}
+            />
+
             {/* Sidebar Component */}
             <RestaurantAdminSidebar
                 isSidebarOpen={isSidebarOpen}
@@ -50,7 +57,7 @@ const RestaurantDashboard = () => {
             {/* Main Content Area */}
             <div className="flex-1 overflow-y-auto p-8">
                 <div className="max-w-7xl mx-auto">
-                    <div className="flex justify-between items-center mb-8">
+                    <div className="flex justify-between items-center mb-8 mt-12">
                         <h2 className="text-2xl font-bold text-gray-800">
                             Restaurant Management
                         </h2>

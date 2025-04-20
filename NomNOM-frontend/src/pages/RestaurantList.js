@@ -167,6 +167,7 @@ const RestaurantList = () => {
 
     return (
         <div className="flex h-screen bg-gray-100">
+
             {/* Sidebar Component */}
             <RestaurantAdminSidebar
                 isSidebarOpen={isSidebarOpen}

@@ -3,6 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Trash2, Edit, Plus } from 'lucide-react';
 import RestaurantAdminSidebar from '../components/admin_components/RestaurantAdminSidebar';
+import EditMenuItemModal from '../modals/EditMenuItemModal';
+import DeleteConfirmationModal from '../modals/DeleteConfirmationModal';
+import AddMenuItemModal from '../modals/AddMenuItemModal'; // Import the new modal
 
 const MenuItemsPage = () => {
     const { restaurantId } = useParams();
@@ -12,6 +15,13 @@ const MenuItemsPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editingMenuItem, setEditingMenuItem] = useState(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState(null);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false); // State for add modal
 
     useEffect(() => {
         const fetchData = async () => {
@@ -39,21 +49,81 @@ const MenuItemsPage = () => {
         fetchData();
     }, [restaurantId]);
 
-    const handleDelete = async (id) => {
+    const confirmDeleteItem = (item) => {
+        setItemToDelete(item);
+        setDeleteModalOpen(true);
+        setDeleteError(null);
+    };
+
+    const performDeleteItem = async () => {
+        setIsDeleting(true);
+        setDeleteError(null);
+
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`${process.env.REACT_APP_RESTAURANT_API_URL}/menu-items/${id}`, {
+            await axios.delete(`${process.env.REACT_APP_RESTAURANT_API_URL}/menu-items/${itemToDelete._id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setMenuItems(menuItems.filter(item => item._id !== id));
+            setMenuItems(menuItems.filter(item => item._id !== itemToDelete._id));
+            closeDeleteModal();
         } catch (err) {
+            setDeleteError(err.response?.data?.message || 'Failed to delete menu item');
             console.error('Failed to delete menu item:', err);
+        } finally {
+            setIsDeleting(false);
         }
+    };
+
+    const closeDeleteModal = () => {
+        setDeleteModalOpen(false);
+        setItemToDelete(null);
+        setIsDeleting(false);
+        setDeleteError(null);
     };
 
     const handleLogout = () => {
         localStorage.removeItem('token');
         navigate('/login');
+    };
+
+    const openEditModal = (item) => {
+        setEditingMenuItem(item);
+        setIsEditModalOpen(true);
+    };
+
+    const closeEditModal = () => {
+        setIsEditModalOpen(false);
+        setEditingMenuItem(null);
+    };
+
+    const handleSaveEditedItem = async (updatedItem) => {
+        try {
+            setMenuItems(prevItems =>
+                prevItems.map(item => (item._id === updatedItem._id ? updatedItem : item))
+            );
+            closeEditModal();
+        } catch (err) {
+            console.error('Failed to save edited item in parent:', err);
+        }
+    };
+
+    const openAddModal = () => {
+        setIsAddModalOpen(true);
+    };
+
+    const closeAddModal = () => {
+        setIsAddModalOpen(false);
+    };
+
+    const handleSaveNewItem = async (newItem) => {
+        try {
+            setMenuItems(prevItems => [...prevItems, newItem]);
+            closeAddModal();
+            // Optionally, show a success message
+        } catch (err) {
+            console.error('Failed to save new item in parent:', err);
+            // Optionally, show an error message
+        }
     };
 
     if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
@@ -73,47 +143,85 @@ const MenuItemsPage = () => {
                         Menu for {restaurant?.name}
                     </h1>
                     <button
-                        onClick={() => navigate(`/add-menu-item/${restaurantId}`)}
-                        className="flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        onClick={openAddModal} // Open the add modal instead of navigating
+                        className="flex items-center bg-black text-white px-4 py-2 rounded-xl hover:bg-blue-600"
                     >
-                        <Plus className="w-4 h-4 mr-2" />
+                        <Plus className="w-4 h-4 mr-2"/>
                         Add Menu Item
                     </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {menuItems.map((item) => (
-                        <div key={item._id} className="border rounded-lg p-4 shadow-sm">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <h3 className="font-bold text-lg">{item.name}</h3>
-                                    <p className="text-gray-600">{item.category}</p>
+                        <div key={item._id} className="border rounded-lg shadow-sm overflow-hidden">
+                            {/* Image Section */}
+                            {item.image && (
+                                <div className="h-32 bg-gray-200 overflow-hidden">
+                                    <img
+                                        src={item.image}
+                                        alt={item.name}
+                                        className="w-full h-full object-cover"
+                                    />
                                 </div>
-                                <span className="font-bold">${item.price.toFixed(2)}</span>
-                            </div>
-                            <p className="my-2 text-sm">{item.description}</p>
-                            {item.ingredients && item.ingredients.length > 0 && (
-                                <p className="text-xs text-gray-500">
-                                    Ingredients: {item.ingredients.join(', ')}
-                                </p>
                             )}
-                            <div className="flex justify-end mt-4 space-x-2">
-                                <button
-                                    onClick={() => navigate(`/edit-menu-item/${item._id}`)}
-                                    className="p-2 text-blue-500 hover:bg-blue-50 rounded"
-                                >
-                                    <Edit className="w-4 h-4" />
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(item._id)}
-                                    className="p-2 text-red-500 hover:bg-red-50 rounded"
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                </button>
+                            <div className="p-4">
+                                <div className="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h3 className="font-bold text-lg">{item.name}</h3>
+                                        <p className="text-gray-600 text-sm">{item.category}</p>
+                                    </div>
+                                    <span className="font-bold">${item.price.toFixed(2)}</span>
+                                </div>
+                                <p className="text-sm text-gray-700 mb-3">{item.description}</p>
+                                {item.ingredients && item.ingredients.length > 0 && (
+                                    <p className="text-xs text-gray-500 mb-2">
+                                        Ingredients: {item.ingredients.join(', ')}
+                                    </p>
+                                )}
+                                <div className="flex justify-end mt-2 space-x-2">
+                                    <button
+                                        onClick={() => openEditModal(item)}
+                                        className="p-2 text-blue-500 hover:bg-blue-50 rounded"
+                                    >
+                                        <Edit className="w-4 h-4"/>
+                                    </button>
+                                    <button
+                                        onClick={() => confirmDeleteItem(item)}
+                                        className="p-2 text-red-500 hover:bg-red-50 rounded"
+                                    >
+                                        <Trash2 className="w-4 h-4"/>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}
                 </div>
+
+                {editingMenuItem && (
+                    <EditMenuItemModal
+                        isOpen={isEditModalOpen}
+                        onClose={closeEditModal}
+                        menuItem={editingMenuItem}
+                        onSave={handleSaveEditedItem}
+                        restaurantId={restaurantId}
+                    />
+                )}
+
+                <DeleteConfirmationModal
+                    isOpen={deleteModalOpen}
+                    onClose={closeDeleteModal}
+                    onConfirm={performDeleteItem}
+                    itemName={itemToDelete?.name || ''}
+                    isDeleting={isDeleting}
+                    error={deleteError}
+                />
+
+                <AddMenuItemModal
+                    isOpen={isAddModalOpen}
+                    onClose={closeAddModal}
+                    onSave={handleSaveNewItem}
+                    restaurantId={restaurantId}
+                />
             </div>
         </div>
     );
