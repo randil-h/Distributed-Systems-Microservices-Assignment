@@ -9,7 +9,15 @@ const UserSchema = new mongoose.Schema({
         type: String,
         enum: ["customer", "restaurant-admin", "system-admin", "delivery-personnel", "restaurant-staff"],
         required: true
-    }
+    },
+    location: {
+        type: String,
+        required: true,
+    },
+    status: {
+        type: String,
+        required: true,
+    },
 });
 
 // Hash password before saving
