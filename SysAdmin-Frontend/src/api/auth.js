@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:6969/api/auth";
+const API_URL = import.meta.env.VITE_API_AUTH_URL || "http://localhost:6969/api/auth";
 
 axios.interceptors.request.use((config) => {
     const token = getToken();
