@@ -10,6 +10,7 @@ const Signup = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [role, setRole] = useState("customer");
+    const [address, setAddress] = useState(""); // New state for address
     const [error, setError] = useState("");
     const [agree, setAgree] = useState(false);
     const navigate = useNavigate();
@@ -17,7 +18,7 @@ const Signup = () => {
     const handleSignup = async (e) => {
         e.preventDefault();
         try {
-            await register(name, email, password, role);
+            await register(name, email, password, role, address); // Include address in the register call
             navigate("/login");
         } catch (err) {
             setError("Registration failed");
@@ -65,20 +66,30 @@ const Signup = () => {
                                     className="w-2/3  p-3 pl-4 text-xl bg-white border-b-2 border-light_hover focus:outline-none placeholder:text-lg placeholder:text-neutral-600"
                                 />
                             </div>
+                            {/* New Address Field */}
                             <div className="mb-6 w-full flex justify-center"> {/* Added flex justify-center */}
-                              <select
-                                value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                                className="w-2/3  p-3 pl-4 text-xl bg-white border-b-2 border-light_hover focus:outline-none"
-                              >
-                                <option value="customer">Customer</option>
-                                <option value="restaurant-admin">Restaurant Admin</option>
-                                <option value="restaurant-admin">Restaurant Staff</option>
-                                <option value="system-admin">System Admin</option>
-                                <option value="delivery-personnel">Delivery Personnel</option>
-                              </select>
+                                <input
+                                    type="text"
+                                    placeholder="Your Address"
+                                    value={address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                    className="w-2/3  p-3 pl-4 text-xl bg-white border-b-2 border-light_hover focus:outline-none placeholder:text-lg placeholder:text-neutral-600"
+                                />
                             </div>
-                          {/* Terms & Conditions */}
+                            <div className="mb-6 w-full flex justify-center"> {/* Added flex justify-center */}
+                                <select
+                                    value={role}
+                                    onChange={(e) => setRole(e.target.value)}
+                                    className="w-2/3  p-3 pl-4 text-xl bg-white border-b-2 border-light_hover focus:outline-none"
+                                >
+                                    <option value="customer">Customer</option>
+                                    <option value="restaurant-admin">Restaurant Admin</option>
+                                    <option value="restaurant-staff">Restaurant Staff</option>
+                                    <option value="system-admin">System Admin</option>
+                                    <option value="delivery-personnel">Delivery Personnel</option>
+                                </select>
+                            </div>
+                            {/* Terms & Conditions */}
                             <div className="mb-6 w-full max-w-[400px] text-center">
                 <span className="text-sm text-gray-600">
                   By signing up, you agree to our{" "}

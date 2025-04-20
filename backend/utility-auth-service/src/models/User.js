@@ -18,6 +18,9 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    address: { // New address field
+        type: String,
+    },
 });
 
 // Hash password before saving
