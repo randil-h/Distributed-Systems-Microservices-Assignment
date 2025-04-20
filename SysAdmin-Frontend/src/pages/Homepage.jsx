@@ -1,36 +1,32 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Lock, User, AlertTriangle } from 'lucide-react';
+import { login } from '../api/auth.js';
 
 export default function SystemAdminLogin() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        // Basic validation
+
         if (!username || !password) {
             setError('Please enter both username and password');
             return;
         }
 
-        // Reset error
-        setError('');
+        setError('')
 
-        if (username === 'randil' && password === '6969') {
+        try {
+            await login(username, password);
             console.log('Login successful');
-            // Redirect to the dashboard screen
             navigate('/dashboard');
-            return;
-        } else {
-            setError('Invalid username or password');
+        } catch (err) {
+            console.error('Login failed:', err);
+            setError("Invalid credentials. Please try again.");
         }
-
-        // Here you would typically add your authentication logic
-        console.log('Login attempt', { username, password });
     };
 
     return (
