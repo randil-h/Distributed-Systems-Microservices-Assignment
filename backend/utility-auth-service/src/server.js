@@ -2,10 +2,12 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
+const listenForAssignmentRequests = require("./services/consumer");
 
 // Initialize configuration
 dotenv.config();
@@ -47,6 +49,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use("/api/auth", limiter, authRoutes);
+app.use("/api/user", userRoutes);
 
 // Error handling
 app.use((err, req, res, next) => {
@@ -66,3 +69,4 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT||6969;
 app.listen(PORT, () => console.log(`Authentication Service running on port ${PORT}`));
+listenForAssignmentRequests();
