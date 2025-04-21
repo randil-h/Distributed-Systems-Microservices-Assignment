@@ -16,8 +16,8 @@ router.post('/',
 );
 
 router.get('/restaurant/:restaurantId',
-    authenticate,
-    authorizeRole(['restaurant-admin', 'system-admin']),
+    // authenticate,
+    // authorizeRole(['restaurant-admin', 'system-admin']),
     getMenuItemsByRestaurant
 );
 
