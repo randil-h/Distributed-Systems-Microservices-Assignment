@@ -17,7 +17,7 @@ router.put('/:id',
 );
 
 router.get('/:id',
-    authenticate,
+    // authenticate,
     getRestaurant
 );
 
@@ -27,7 +27,7 @@ router.delete('/:id',
     deleteRestaurant
 );
 router.get("/",
-    authenticate,
-    authorizeRole(['restaurant-admin', 'system-admin']),
+    //authenticate,
+    // authorizeRole(['restaurant-admin', 'system-admin']),
     getAllRestaurants);
 module.exports = router;

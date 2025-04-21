@@ -12,6 +12,8 @@ import RestaurantRegister from "./pages/RestaurantRegister";
 import RestaurantList from "./pages/RestaurantList";
 import MenuItemsPage from "./pages/MenuItemsPage"; // Add this import
 import MenuItemForm from "./components/admin_components/MenuItemForm";
+import Payment from "./pages/Payment";
+import Restaurant from "./pages/Restaurant";
 
 // Page transition configuration
 const pageVariants = {
@@ -197,6 +199,41 @@ function App() {
                   </motion.div>
               }
           />
+          <Route
+              path="/payment"
+              element={
+                  <motion.div
+                      initial="initial"
+                      animate="in"
+                      exit="out"
+                      variants={pageVariants}
+                  >
+                      <motion.div variants={childVariants}>
+                          {/*<ProtectedRoute> uncomment when access control is properly implemented*/}
+                          <Payment />
+                          {/*</ProtectedRoute>*/}
+                      </motion.div>
+                  </motion.div>
+              }
+          />
+        <Route
+          path="/restaurant/:restaurantId"
+          element={
+            <motion.div
+              initial="initial"
+              animate="in"
+              exit="out"
+              variants={pageVariants}
+            >
+              <motion.div variants={childVariants}>
+                {/* <ProtectedRoute> */}
+                <Restaurant />
+                {/* </ProtectedRoute> */}
+              </motion.div>
+            </motion.div>
+          }
+        />
+
       </Routes>
     </AnimatePresence>
   );
