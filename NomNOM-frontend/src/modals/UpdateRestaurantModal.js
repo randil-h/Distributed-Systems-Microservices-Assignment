@@ -29,7 +29,8 @@ const UpdateRestaurantModal = ({
                 ownerName: restaurant.ownerName || "",
                 ownerEmail: restaurant.ownerEmail || "",
                 ownerPhone: restaurant.ownerPhone || "",
-                logo: restaurant.logo || null
+                logo: restaurant.logo || null,
+                coverImage: restaurant.coverImage || null,
             });
         }
     }, [isOpen, restaurant, setEditedData]); // Reverted dependency array
@@ -62,15 +63,17 @@ const UpdateRestaurantModal = ({
     };
 
     const handleImageUpload = (e) => {
-        const file = e.target.files[0];
+        const { name, files } = e.target;
+        const file = files[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setEditedData(prev => ({ ...prev, logo: reader.result }));
+                setEditedData(prev => ({ ...prev, [name]: reader.result }));
             };
             reader.readAsDataURL(file);
         }
     };
+
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -296,6 +299,28 @@ const UpdateRestaurantModal = ({
                                     src={editedData.logo}
                                     alt="Logo Preview"
                                     className="h-24 mt-2 border border-gray-300 rounded"
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* New Cover Image Update */}
+                    <div className="mb-4 col-span-2">
+                        <label className="block text-gray-700 mb-2">Cover Image</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            name="coverImage"
+                            onChange={handleImageUpload}
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        {editedData.coverImage && (
+                            <div className="mt-2">
+                                <p className="text-sm text-gray-600">Current Cover Image:</p>
+                                <img
+                                    src={editedData.coverImage}
+                                    alt="Cover Image Preview"
+                                    className="h-32 mt-2 border border-gray-300 rounded object-cover"
                                 />
                             </div>
                         )}

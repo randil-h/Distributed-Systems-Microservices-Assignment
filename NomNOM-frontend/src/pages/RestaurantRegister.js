@@ -27,6 +27,7 @@ const RestaurantRegister = () => {
         ownerEmail: "",
         ownerPhone: "",
         logo: null,
+        coverImage: null,
     });
 
     const [error, setError] = useState("");
@@ -67,13 +68,14 @@ const RestaurantRegister = () => {
         });
     };
     const handleImageUpload = (e) => {
-        const file = e.target.files[0];
+        const { name, files } = e.target;
+        const file = files[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setFormData({
                     ...formData,
-                    logo: reader.result // This is the Base64 string
+                    [name]: reader.result // Store Base64 string, name will be 'logo' or 'coverImage'
                 });
             };
             reader.readAsDataURL(file);
@@ -250,6 +252,7 @@ const RestaurantRegister = () => {
                                 <input
                                     type="file"
                                     accept="image/*"
+                                    name="logo"
                                     onChange={handleImageUpload}
                                     className="w-full p-2 border rounded"
                                 />
@@ -260,6 +263,27 @@ const RestaurantRegister = () => {
                                             src={formData.logo}
                                             alt="Logo Preview"
                                             className="h-24 mt-2 border rounded"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                            {/* New Cover Image Upload */}
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Cover Image</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    name="coverImage" // Name for the cover image field
+                                    onChange={handleImageUpload}
+                                    className="w-full p-2 border rounded"
+                                />
+                                {formData.coverImage && (
+                                    <div className="mt-2">
+                                        <p className="text-sm text-gray-600">Cover Image Preview:</p>
+                                        <img
+                                            src={formData.coverImage}
+                                            alt="Cover Image Preview"
+                                            className="h-32 mt-2 border rounded object-cover"
                                         />
                                     </div>
                                 )}

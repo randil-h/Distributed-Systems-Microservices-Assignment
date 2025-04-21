@@ -24,6 +24,7 @@ const restaurantSchema = new mongoose.Schema({
     ownerPhone: { type: String, required: true },
     // Image
     logo: { type: String }, // This will store the Base64 string
+    coverImage: { type: String },
     // Reference to owner
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     registrationStatus: { type: String, default: 'pending' }

@@ -26,6 +26,7 @@ const registerRestaurant = async (req, res) => {
             ownerEmail,
             ownerPhone,
             logo,
+            coverImage,
         } = req.body;
 
         const restaurant = new Restaurant({
@@ -48,6 +49,7 @@ const registerRestaurant = async (req, res) => {
             ownerPhone,
             ownerId: req.user.id,
             logo,
+            coverImage,
         });
 
         await restaurant.save();

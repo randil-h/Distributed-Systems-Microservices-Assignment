@@ -19,8 +19,7 @@ requiredEnvVars.forEach(env => {
 
 const app = express();
 app.use(cors()); // Add this line
-app.use(express.json());
-
+app.use(express.json({ limit: '5mb' }));
 // MongoDB connection with improved configuration
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,

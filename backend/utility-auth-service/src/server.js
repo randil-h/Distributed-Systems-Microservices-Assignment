@@ -2,7 +2,6 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
-const userRoutes = require("./routes/userRoutes");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
@@ -49,7 +48,6 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use("/api/auth", limiter, authRoutes);
-app.use("/api/user", userRoutes);
 
 // Error handling
 app.use((err, req, res, next) => {
