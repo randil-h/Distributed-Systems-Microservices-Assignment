@@ -28,6 +28,7 @@ const RestaurantRegister = () => {
         ownerPhone: "",
         logo: null,
         coverImage: null,
+        description: "",
     });
 
     const [error, setError] = useState("");
@@ -170,7 +171,21 @@ const RestaurantRegister = () => {
                                     className="w-full p-2 border rounded bg-white"
                                 />
                             </div>
-
+                            {/* Restaurant Description Section */}
+                            <div className="mb-8">
+                                <h2 className="text-xl font-semibold mb-4 border-b pb-2">Restaurant Description</h2>
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 mb-2">Description</label>
+                                    <textarea
+                                        name="description"
+                                        value={formData.description}
+                                        onChange={handleChange}
+                                        className="w-full p-2 border rounded bg-white"
+                                        rows="4"
+                                        placeholder="Tell us more about your restaurant..."
+                                    />
+                                </div>
+                            </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="mb-4">
                                     <label className="block text-gray-700 mb-2">Cuisine Type*</label>

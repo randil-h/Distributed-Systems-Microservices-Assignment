@@ -15,6 +15,7 @@ const UpdateRestaurantModal = ({
                 name: restaurant.name || "",
                 legalBusinessName: restaurant.legalBusinessName || "",
                 registrationNumber: restaurant.registrationNumber || "",
+                description: restaurant.description || "",
                 cuisineType: restaurant.cuisineType || "",
                 restaurantCategory: restaurant.restaurantCategory || "",
                 address: restaurant.address || "",
@@ -119,7 +120,21 @@ const UpdateRestaurantModal = ({
                             className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-
+                    {/* Restaurant Description */}
+                    <div className="col-span-2 mt-4">
+                        <h3 className="text-lg font-semibold mb-2 border-b pb-1">Restaurant Description</h3>
+                    </div>
+                    <div className="mb-4 col-span-2">
+                        <label className="block text-gray-700 mb-2">Description</label>
+                        <textarea
+                            name="description"
+                            value={editedData.description}
+                            onChange={handleChange}
+                            className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            rows="4"
+                            placeholder="Tell us more about your restaurant..."
+                        />
+                    </div>
                     <div className="mb-4">
                         <label className="block text-gray-700 mb-2">Cuisine Type*</label>
                         <select
