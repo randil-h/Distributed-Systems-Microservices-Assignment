@@ -74,11 +74,11 @@ const Restaurant = () => {
         {/* Background Image from First Menu Item */}
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${backgroundImage})` }}
+          style={{ backgroundImage: `url(${restaurant.coverImage})` }}
         ></div>
 
         {/* Dark overlay for better text visibility */}
-        <div className="absolute w-full inset-0 bg-black opacity-70"></div>
+        <div className="absolute w-full inset-0 bg-black opacity-80"></div>
 
         {/* Optional: Subtle pattern overlay */}
         <div className="absolute w-full inset-0  opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNjY2MiPjwvcmVjdD4KPC9zdmc+')]"></div>
