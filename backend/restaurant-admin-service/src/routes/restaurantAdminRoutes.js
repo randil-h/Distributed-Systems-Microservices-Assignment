@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { registerRestaurant, updateRestaurant, getRestaurant, deleteRestaurant,getAllRestaurants } = require('../controller/restaurantAdminController');
+const { registerRestaurant, updateRestaurant, getRestaurant, deleteRestaurant,getAllRestaurants, getPendingRestaurants } = require('../controller/restaurantAdminController');
 const { authenticate, authorizeRole } = require('../middleware/restaurantAuthMiddleware');
 
 // Apply authentication and authorization middleware
@@ -30,4 +30,11 @@ router.get("/",
     //authenticate,
     // authorizeRole(['restaurant-admin', 'system-admin']),
     getAllRestaurants);
+
+// New route to get pending restaurants
+router.get('/pending',
+    authenticate,
+    authorizeRole(['system-admin']), // Only system admins should see pending requests
+    getPendingRestaurants
+);
 module.exports = router;

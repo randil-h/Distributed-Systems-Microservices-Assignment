@@ -28,7 +28,10 @@ const restaurantSchema = new mongoose.Schema({
     coverImage: { type: String },
     // Reference to owner
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    registrationStatus: { type: String, default: 'pending' }
+    //system admin configurations
+    registrationStatus: { type: String, default: 'pending', enum: ['pending', 'accepted', 'rejected'] },
+    rejectionReason: { type: String },
+
 
 });
 
