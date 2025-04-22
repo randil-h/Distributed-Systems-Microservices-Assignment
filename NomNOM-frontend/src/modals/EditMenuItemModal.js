@@ -1,4 +1,3 @@
-// src/components/modals/EditMenuItemModal.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -17,6 +16,7 @@ const EditMenuItemModal = ({
         ingredients: '',
         dietaryRestrictions: [],
         preparationTime: 0,
+        image: '',
         isAvailable: true
     });
     const [loading, setLoading] = useState(false);
@@ -42,19 +42,8 @@ const EditMenuItemModal = ({
                 ingredients: Array.isArray(menuItem.ingredients) ? menuItem.ingredients.join(', ') : '',
                 dietaryRestrictions: menuItem.dietaryRestrictions || [],
                 preparationTime: menuItem.preparationTime || 0,
+                image: menuItem.image || '',
                 isAvailable: menuItem.isAvailable || true
-            });
-        } else {
-            // Optionally reset the form if menuItem is null/undefined
-            setFormData({
-                name: '',
-                description: '',
-                price: 0,
-                category: '',
-                ingredients: '',
-                dietaryRestrictions: [],
-                preparationTime: 0,
-                isAvailable: true
             });
         }
     }, [menuItem]);
@@ -77,6 +66,27 @@ const EditMenuItemModal = ({
                 dietaryRestrictions: newRestrictions
             };
         });
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData(prev => ({
+                    ...prev,
+                    image: reader.result
+                }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setFormData(prev => ({
+            ...prev,
+            image: ''
+        }));
     };
 
     const handleSubmit = async (e) => {
@@ -191,21 +201,6 @@ const EditMenuItemModal = ({
                             </select>
                         </div>
 
-                        {/* Ingredients */}
-                        {/*<div>*/}
-                        {/*    <label className="block text-sm font-medium text-gray-700">*/}
-                        {/*        Ingredients (comma separated)*/}
-                        {/*    </label>*/}
-                        {/*    <input*/}
-                        {/*        type="text"*/}
-                        {/*        name="ingredients"*/}
-                        {/*        value={formData.ingredients}*/}
-                        {/*        onChange={handleChange}*/}
-                        {/*        placeholder="e.g., flour, sugar, eggs"*/}
-                        {/*        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"*/}
-                        {/*    />*/}
-                        {/*</div>*/}
-
                         {/* Dietary Restrictions */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -240,6 +235,41 @@ const EditMenuItemModal = ({
                                 min="0"
                                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white"
                             />
+                        </div>
+
+                        {/* Image Upload */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Item Image</label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="mt-1 block w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-md file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100"
+                            />
+                            {formData.image && (
+                                <div className="mt-2 relative">
+                                    <img
+                                        src={formData.image}
+                                        alt="Current item"
+                                        className="h-32 w-full object-contain rounded border border-gray-200"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleRemoveImage}
+                                        className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                                        title="Remove image"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         {/* Availability */}
