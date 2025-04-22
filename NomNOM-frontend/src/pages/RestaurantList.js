@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import NavBar from "../components/utility_components/Navbar";
+import { useNavigate } from "react-router-dom";
+import { BookOpen, Edit3, Trash2, Plus, Menu, X } from "lucide-react";
 import UpdateRestaurantModal from "../modals/UpdateRestaurantModal";
 import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
 import RestaurantAdminSidebar from '../components/admin_components/RestaurantAdminSidebar';
-import {useNavigate} from "react-router-dom"; // Import the sidebar
-import { BookOpen } from 'lucide-react';
 
 const RestaurantList = () => {
     const [restaurants, setRestaurants] = useState([]);
@@ -18,16 +17,16 @@ const RestaurantList = () => {
     const [restaurantToDelete, setRestaurantToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteError, setDeleteError] = useState(null);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar visibility
-    const navigate = useNavigate(); // Import useNavigate
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchRestaurants();
     }, []);
 
-
     const handleLogout = () => {
-        localStorage.removeItem("token"); // Clear the token
+        localStorage.removeItem("token");
         navigate("/login");
     };
 
@@ -49,10 +48,11 @@ const RestaurantList = () => {
             setLoading(false);
         }
     };
+
     const showDeleteConfirmation = (restaurant) => {
         setRestaurantToDelete(restaurant);
         setDeleteModalOpen(true);
-        setDeleteError(null); // Reset any previous errors
+        setDeleteError(null);
     };
 
     const hideDeleteConfirmation = () => {
@@ -140,25 +140,40 @@ const RestaurantList = () => {
         setIsModalOpen(false);
     };
 
+    const filteredRestaurants = restaurants.filter(restaurant =>
+        restaurant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        restaurant.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        restaurant.cuisineType?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <p className="text-xl">Loading restaurants...</p>
+            <div className="flex justify-center items-center h-screen bg-gray-50">
+                <div className="animate-pulse flex flex-col items-center">
+                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4"></div>
+                    <p className="text-lg font-medium text-gray-700">Loading restaurants...</p>
+                </div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="flex flex-col justify-center items-center h-screen bg-gray-100 text-gray-700">
-                <div className="text-6xl mb-4 text-red-400">
-                    🚫
+            <div className="flex flex-col justify-center items-center h-screen bg-gray-50 text-gray-700 p-6">
+                <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
+                    <X className="w-10 h-10 text-red-500" />
                 </div>
-                <h1 className="text-2xl font-semibold mb-2">Access Denied</h1>
-                <p className="text-base text-center px-6 max-w-md">
-                    Sorry, we couldn't load the restaurant list. You might not have permission to view this content or something went wrong on our end.
+                <h1 className="text-2xl font-bold mb-3">Access Denied</h1>
+                <p className="text-base text-center px-6 max-w-md mb-6 text-gray-600">
+                    We couldn't load the restaurant list. Please check your permissions or try again later.
                 </p>
-                <p className="mt-2 text-sm text-gray-500">
+                <button
+                    onClick={() => window.location.reload()}
+                    className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                >
+                    Try Again
+                </button>
+                <p className="mt-4 text-sm text-gray-500">
                     {error.message}
                 </p>
             </div>
@@ -166,32 +181,77 @@ const RestaurantList = () => {
     }
 
     return (
-        <div className="flex h-screen bg-gray-100">
+        <div className="flex h-screen bg-gray-50">
+            {/* Mobile Sidebar Toggle */}
+            <button
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-md"
+            >
+                {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
 
             {/* Sidebar Component */}
             <RestaurantAdminSidebar
                 isSidebarOpen={isSidebarOpen}
                 setIsSidebarOpen={setIsSidebarOpen}
-                fetchRestaurants={fetchRestaurants} // Pass the fetchRestaurants function
-                handleLogout={handleLogout}       // Pass the handleLogout function
+                fetchRestaurants={fetchRestaurants}
+                handleLogout={handleLogout}
             />
 
-            {/* Main Content Area */}
-            <div className="flex-1 overflow-y-auto p-8 mt-0">
-                <div className="container mx-auto px-4 py-8">
-                    <h2 className="text-3xl font-bold mb-8 text-gray-800">
-                        Registered Restaurants
-                    </h2>
+            {/* Main Content Area - Removed container mx-auto to prevent centering */}
+            <div className={`flex-1 overflow-y-auto transition-all duration-300 ${isSidebarOpen ? 'ml-6 pl-6' : 'ml-0 pl-0'}`}>
+                <div className="px-4 py-8">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                        <div>
+                            <h1 className="text-3xl font-bold text-gray-900">Restaurants</h1>
+                            <p className="text-gray-500 mt-1">Manage your restaurant listings</p>
+                        </div>
+                        {/* Changed Add Restaurant button to black */}
+                        <button
+                            onClick={() => navigate("/register-restaurant")}
+                            className="mt-4 md:mt-0 flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-all shadow-md"
+                        >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Add Restaurant
+                        </button>
+                    </div>
 
-                    {restaurants.length > 0 ? (
+                    {/* Search and Filter Bar */}
+                    <div className="bg-white p-4 rounded-xl shadow-sm mb-8 border border-gray-200">
+                        <div className="relative">
+                            <input
+                                type="text"
+                                placeholder="Search restaurants..."
+                                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-gray-50"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <svg
+                                className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+
+                    {filteredRestaurants.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {restaurants.map((restaurant) => (
+                            {filteredRestaurants.map((restaurant) => (
                                 <div
                                     key={restaurant._id}
-                                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                                    className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-300 border border-gray-100"
                                 >
-                                    {/* Restaurant Image Placeholder */}
-                                    <div className="h-48 bg-gray-200 overflow-hidden relative">
+                                    {/* Restaurant Image */}
+                                    <div className="h-80 bg-gradient-to-r from-gray-100 to-gray-200 overflow-hidden relative">
                                         {restaurant.logo ? (
                                             <img
                                                 src={restaurant.logo}
@@ -199,27 +259,44 @@ const RestaurantList = () => {
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-gray-300">
-                                                <span className="text-gray-500">No Image Available</span>
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <span className="text-gray-400 text-sm">No logo available</span>
                                             </div>
                                         )}
                                     </div>
 
-                                    <div className="p-6">
-                                        <h3 className="text-xl font-semibold mb-2 text-gray-800">
-                                            {restaurant.name}
-                                        </h3>
-                                        <p className="text-gray-600 mb-2">
-                                            <span className="font-medium">Address:</span> {restaurant.address}
-                                        </p>
-                                        <p className="text-gray-600 mb-4">
-                                            <span className="font-medium">Hours:</span> {restaurant.operatingHours || "Not specified"}
-                                        </p>
+                                    <div className="p-5">
+                                        <div className="flex justify-between items-start mb-3">
+                                            <h3 className="text-xl font-semibold text-gray-900 line-clamp-1">
+                                                {restaurant.name}
+                                            </h3>
+                                            {restaurant.cuisineType && (
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 ml-2">
+                                                    {restaurant.cuisineType}
+                                                </span>
+                                            )}
+                                        </div>
 
-                                        <div className="flex justify-between items-center">
+                                        <div className="space-y-2 mb-4">
+                                            <div className="flex items-center text-gray-600">
+                                                <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                                <span className="text-sm">{restaurant.address}</span>
+                                            </div>
+                                            <div className="flex items-center text-gray-600">
+                                                <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                <span className="text-sm">{restaurant.operatingHours || "Hours not specified"}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-between items-center pt-3 border-t border-gray-100">
                                             <button
                                                 onClick={() => navigate(`/menu-items/${restaurant._id}`)}
-                                                className="flex items-center text-blue-500 hover:text-blue-700"
+                                                className="flex items-center text-indigo-600 hover:text-indigo-800 text-sm font-medium"
                                             >
                                                 <BookOpen className="w-4 h-4 mr-1" />
                                                 View Menu
@@ -228,15 +305,17 @@ const RestaurantList = () => {
                                             <div className="flex space-x-2">
                                                 <button
                                                     onClick={() => handleEdit(restaurant)}
-                                                    className="px-4 py-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-800 hover:text-white transition-colors"
+                                                    className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors"
+                                                    title="Edit"
                                                 >
-                                                    Edit
+                                                    <Edit3 className="w-4 h-4" />
                                                 </button>
                                                 <button
                                                     onClick={() => showDeleteConfirmation(restaurant)}
-                                                    className="px-4 py-2 bg-red-200 text-red-800 rounded-md hover:bg-red-700 hover:text-white transition-colors"
+                                                    className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                                                    title="Delete"
                                                 >
-                                                    Delete
+                                                    <Trash2 className="w-4 h-4" />
                                                 </button>
                                             </div>
                                         </div>
@@ -245,28 +324,44 @@ const RestaurantList = () => {
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-12">
-                            <p className="text-xl text-gray-600">No restaurants registered yet.</p>
+                        <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+                            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            <h3 className="mt-2 text-lg font-medium text-gray-900">No restaurants found</h3>
+                            <p className="mt-1 text-gray-500">
+                                {searchTerm ? "Try adjusting your search query." : "Get started by adding a new restaurant."}
+                            </p>
+                            <div className="mt-6">
+                                <button
+                                    onClick={() => navigate("/add-restaurant")}
+                                    className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                    <Plus className="-ml-1 mr-2 h-5 w-5" />
+                                    Add Restaurant
+                                </button>
+                            </div>
                         </div>
                     )}
-                    <UpdateRestaurantModal
-                        isOpen={isModalOpen}
-                        onClose={closeModal}
-                        restaurant={editingRestaurant}
-                        onUpdate={handleUpdate}
-                        editedData={editedData}
-                        setEditedData={setEditedData}
-                    />
-                    <DeleteConfirmationModal
-                        isOpen={deleteModalOpen}
-                        onClose={hideDeleteConfirmation}
-                        onConfirm={handleDelete}
-                        itemName={restaurantToDelete?.name || ""}
-                        isDeleting={isDeleting}
-                        error={deleteError}
-                    />
                 </div>
             </div>
+
+            <UpdateRestaurantModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                restaurant={editingRestaurant}
+                onUpdate={handleUpdate}
+                editedData={editedData}
+                setEditedData={setEditedData}
+            />
+            <DeleteConfirmationModal
+                isOpen={deleteModalOpen}
+                onClose={hideDeleteConfirmation}
+                onConfirm={handleDelete}
+                itemName={restaurantToDelete?.name || ""}
+                isDeleting={isDeleting}
+                error={deleteError}
+            />
         </div>
     );
 };

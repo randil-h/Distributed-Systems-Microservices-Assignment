@@ -304,6 +304,7 @@ const UpdateRestaurantModal = ({
                         <input
                             type="file"
                             accept="image/*"
+                            name="logo"
                             onChange={handleImageUpload}
                             className="w-full p-2 border border-gray-300 rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />

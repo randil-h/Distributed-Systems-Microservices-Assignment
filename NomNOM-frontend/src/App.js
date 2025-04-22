@@ -10,7 +10,7 @@ import RestaurantDashboard from "./pages/RestaurantDashboard";
 import ResOpsDashboard from "./pages/ResOpsDashboard";
 import RestaurantRegister from "./pages/RestaurantRegister";
 import RestaurantList from "./pages/RestaurantList";
-import MenuItemsPage from "./pages/MenuItemsPage"; // Add this import
+import MenuItemsPage from "./pages/MenuItemsPage";
 import MenuItemForm from "./components/admin_components/MenuItemForm";
 import Payment from "./pages/Payment";
 import Restaurant from "./pages/Restaurant";
