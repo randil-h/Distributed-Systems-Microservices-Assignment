@@ -151,10 +151,10 @@ const Restaurant = () => {
                 </div>
 
                 <div className="flex gap-4">
-                  <a href="#menu" className="px-6 py-3 bg-white text-nomnom font-medium rounded-lg hover:bg-gray-100 transition-colors">
+                  <a href="#menu" className="px-6 py-3 bg-white text-nomnom font-medium rounded-full hover:bg-gray-100 transition-colors">
                     View Menu
                   </a>
-                  <a href={`tel:${restaurant.phone || '123-456-7890'}`} className="px-6 py-3 bg-nomnom text-white font-medium rounded-lg hover:bg-nomnom/90 transition-colors flex items-center">
+                  <a href={`tel:${restaurant.phone || '123-456-7890'}`} className="px-6 py-3 bg-nomnom text-white font-medium rounded-full hover:bg-nomnom/90 transition-colors flex items-center">
                     <FaPhoneAlt className="mr-2" />
                     Contact
                   </a>

@@ -15,9 +15,13 @@ import StaffManagement from "../components/resops_dashboard_components/StaffMana
 import Schedules from "../components/resops_dashboard_components/Schedules";
 import Shifts from "../components/resops_dashboard_components/Shifts";
 import Inventory from "../components/resops_dashboard_components/Inventory";
+import { logout } from "../api/auth";
+import { useNavigate } from "react-router-dom";
 
 const cn = (...classes) => classes.filter(Boolean).join(" ");
 const SidebarContext = createContext(undefined);
+
+
 
 const useSidebar = () => {
   const context = useContext(SidebarContext);
@@ -36,11 +40,11 @@ const SidebarProvider = ({ children }) => {
 
 const ResOpsDashboard = () => {
   const [activeTab, setActiveTab] = useState("Dashboard");
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userData");
-    window.location.href = "/login";
+    logout();
+    navigate("/login");
   };
 
   const sidebarMenuItems = [
