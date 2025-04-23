@@ -304,17 +304,17 @@ const Restaurant = () => {
                     <div className="mt-auto pt-4 space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 font-medium">Quantity:</span>
-                        <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+                        <div className="flex items-center  rounded-full overflow-hidden">
                           <button
                             onClick={() => handleQuantityChange(item._id, -1)}
-                            className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
+                            className="px-3 size-8 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full transition-colors"
                           >
                             -
                           </button>
                           <span className="px-4 py-1 text-center min-w-8">{getItemQuantity(item._id)}</span>
                           <button
                             onClick={() => handleQuantityChange(item._id, 1)}
-                            className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
+                            className="px-3 size-8 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full transition-colors"
                           >
                             +
                           </button>
