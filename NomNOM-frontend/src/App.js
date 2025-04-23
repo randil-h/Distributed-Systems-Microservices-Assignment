@@ -136,10 +136,15 @@ function App() {
             </motion.div>
           }
         />
+        <Route
+          path="/cart"
+          element={
+            <motion.div {...fadeTransition}>
+          <CartPage />
+            </motion.div>
+        }
+        />
       </Routes>
-        <Routes>
-          <Route path="/cart" element={<CartPage />} />
-        </Routes>
       </CartProvider>
     </AnimatePresence>
   );

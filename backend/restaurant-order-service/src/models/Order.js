@@ -11,16 +11,20 @@ const orderSchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
-  menuItemId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "MenuItem",
-    required: true
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    min: 1
-  },
+  items: [ // Changed from single menuItemId to an array of items
+    {
+      menuItemId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "MenuItem",
+        required: true
+      },
+      quantity: {
+        type: Number,
+        required: true,
+        min: 1
+      }
+    }
+  ],
   status: {
     type: String,
     enum: ["pending", "confirmed", "preparing", "delivered", "cancelled"],

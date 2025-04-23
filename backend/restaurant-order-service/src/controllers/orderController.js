@@ -1,25 +1,39 @@
 const orderService = require("../services/orderService");
+const { publishOrder } = require("../services/rabbitmq");
 
-// Create a new order
+// Create orders in bulk (handle multiple restaurants in one request)
 const createOrder = async (req, res) => {
   try {
-    const { restaurantId, menuItemId, quantity } = req.body;
-    const userId = req.user.id;
+    const { orders } = req.body; // This should be an array of orders
 
-    if (!restaurantId || !menuItemId || !quantity) {
-      return res.status(400).json({ error: "Missing required fields" });
+    if (!orders || orders.length === 0) {
+      return res.status(400).json({ error: "Orders must be a non-empty array" });
     }
 
-    const newOrder = await orderService.createOrder({
-      restaurantId,
-      menuItemId,
-      quantity,
-      userId
-    });
+    // Validate each order
+    for (let orderData of orders) {
+      const { restaurantId, menuItems } = orderData;
 
-    res.status(201).json(newOrder);
+      if (!restaurantId || !menuItems || menuItems.length === 0) {
+        return res.status(400).json({ error: "Missing required fields for an order" });
+      }
+
+      // Validate each menu item
+      for (let item of menuItems) {
+        const { id: menuItemId, quantity } = item;
+
+        if (!menuItemId || !quantity) {
+          return res.status(400).json({ error: "Missing menu item ID or quantity" });
+        }
+      }
+    }
+
+    // Pass the orders to the service
+    const createdOrders = await orderService.createOrder({ orders });
+
+    res.status(201).json(createdOrders); // Return all created orders
   } catch (error) {
-    console.error("Error creating order:", error);
+    console.error("Error creating orders:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
