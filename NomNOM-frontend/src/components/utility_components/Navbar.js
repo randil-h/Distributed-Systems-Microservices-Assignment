@@ -51,7 +51,7 @@ export default function NavBar() {
                         ResOps Dashboard
                       </div>
                     </Link>
-                    <Link to="/" className="nav-item">
+                    <Link to="/cart" className="nav-item">
                       <ShoppingCart/>
                     </Link>
                   </div>
