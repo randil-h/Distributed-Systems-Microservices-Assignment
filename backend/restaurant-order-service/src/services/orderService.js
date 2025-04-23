@@ -1,13 +1,12 @@
 const Order = require("../models/Order");
 const { publishOrder } = require("../services/rabbitmq"); // Import RabbitMQ service
 
-// Modified to handle bulk order creation
 const createOrder = async (orderData) => {
   const createdOrders = [];
 
   // Iterate through the orders
   for (let order of orderData) {
-    const { restaurantId, userId, menuItems } = order;
+    const { restaurantId, userId, menuItems, totalAmount } = order;
 
     if (!menuItems || menuItems.length === 0) {
       throw new Error('Menu items are required');
@@ -27,22 +26,29 @@ const createOrder = async (orderData) => {
       };
     });
 
+    // Ensure totalAmount is provided
+    if (!totalAmount) {
+      throw new Error('Total amount is required');
+    }
+
     // Build the order model with the correctly structured items
     const newOrder = new Order({
       restaurantId,
       userId,
       items, // Ensure the items array is properly populated with valid data
       status: 'pending',
+      totalAmount,  // Store the totalAmount in the order
     });
 
     const savedOrder = await newOrder.save();
 
-    // Publish the order to RabbitMQ
+    // Publish the order to RabbitMQ, including totalAmount
     await publishOrder({
       orderId: savedOrder._id,
       restaurantId,
       userId,
       menuItems: items, // Send as-is, since it already has { menuItemId, quantity }
+      totalAmount,  // Include totalAmount in the RabbitMQ message
     });
 
     createdOrders.push(savedOrder); // Add saved order to the created orders array
@@ -50,6 +56,7 @@ const createOrder = async (orderData) => {
 
   return createdOrders; // Return all created orders
 };
+
 
 
 

@@ -64,19 +64,40 @@ const CartPage = () => {
         }
         acc[item.restaurantId].push({
           id: item._id,
+          price: item.price, // Assuming price is available in the item object
           quantity: item.quantity
         });
         return acc;
       }, {});
 
-      // Prepare the order payload
-      const orders = Object.keys(groupedItems).map(restaurantId => ({
-        restaurantId,
-        menuItems: groupedItems[restaurantId]
-      }));
+      // Prepare the order payload with calculated totalAmount, VAT, and shipping fee for each restaurant
+      const orders = Object.keys(groupedItems).map(restaurantId => {
+        const menuItems = groupedItems[restaurantId];
+        let totalAmount = 0;
 
-      console.log("Final order payload:", { orders });
+        // Calculate totalAmount for this restaurant's order
+        menuItems.forEach(item => {
+          totalAmount += item.price * item.quantity;
+        });
 
+        // Calculate VAT (18%) and shipping fee (10)
+        const taxAmount = totalAmount * 0.18;
+        const shippingFee = totalAmount > 100 ? 0 : 10;
+
+        totalAmount = totalAmount + taxAmount + shippingFee;
+
+        return {
+          restaurantId,
+          menuItems,
+          totalAmount, // Include totalAmount in the payload
+          tax: taxAmount, // Add VAT to the payload
+          shipping: shippingFee // Add shipping fee to the payload
+        };
+      });
+
+      console.log("Final order payload with total amount:", { orders });
+
+      // Send the orders to the backend
       await axios.post(
         `${process.env.REACT_APP_RESTAURANT_ORDER_API_URL}/orders/checkout`,
         { orders },
@@ -254,24 +275,21 @@ const CartPage = () => {
 
                   <div className="flex justify-between">
                     <span className="text-gray-600">Shipping</span>
-                    <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
+                    <span>${shipping.toFixed(2)}</span>
                   </div>
 
-                  <div className="border-t pt-4 mt-4">
-                    <div className="flex justify-between font-semibold text-lg">
-                      <span>Total</span>
-                      <span>${total.toFixed(2)}</span>
-                    </div>
+                  <div className="flex justify-between font-semibold text-lg">
+                    <span>Total</span>
+                    <span>${total.toFixed(2)}</span>
                   </div>
                 </div>
 
-                <button onClick={handleCheckout} className="w-full mt-8 py-4 bg-nomnom text-light_hover text-lg font-medium rounded-full hover:bg-nomnom/90 transition-colors">
-                  Proceed to Checkout
+                <button
+                  onClick={handleCheckout}
+                  className="mt-8 w-full py-3 bg-nomnom text-white rounded-full hover:bg-nomnom/90 transition-colors"
+                >
+                  Checkout
                 </button>
-
-                <div className="mt-4 text-sm text-gray-500 text-center">
-                  Secure checkout powered by Stripe
-                </div>
               </div>
             </div>
           </div>
@@ -280,24 +298,5 @@ const CartPage = () => {
     </div>
   );
 };
-
-// Add these styles to your global CSS or stylesheet
-// @keyframes fade-in {
-//   0% { opacity: 0; transform: scale(0.95); }
-//   100% { opacity: 1; transform: scale(1); }
-// }
-//
-// @keyframes progress-bar {
-//   0% { width: 0%; }
-//   100% { width: 100%; }
-// }
-//
-// .animate-fade-in {
-//   animation: fade-in 0.3s ease-out forwards;
-// }
-//
-// .animate-progress-bar {
-//   animation: progress-bar 3s linear forwards;
-// }
 
 export default CartPage;

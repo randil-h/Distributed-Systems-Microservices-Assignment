@@ -11,7 +11,7 @@ const orderSchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
-  items: [ // Changed from single menuItemId to an array of items
+  menuItems: [
     {
       menuItemId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -20,19 +20,18 @@ const orderSchema = new mongoose.Schema({
       },
       quantity: {
         type: Number,
-        required: true,
-        min: 1
+        required: true
       }
     }
   ],
+  totalAmount: {
+    type: Number,
+    required: true
+  },
   status: {
     type: String,
     enum: ["pending", "confirmed", "preparing", "delivered", "cancelled"],
     default: "pending"
-  },
-  totalAmount: {  // New field to store the total order amount
-    type: Number,
-    required: true,
   },
   createdAt: {
     type: Date,

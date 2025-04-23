@@ -27,9 +27,9 @@ router.post("/checkout", authenticate, async (req, res) => {
     const createdOrders = [];
 
     for (const order of orders) {
-      const { restaurantId, menuItems } = order;
+      const { restaurantId, menuItems, totalAmount } = order;
 
-      if (!restaurantId || !menuItems || menuItems.length === 0) {
+      if (!restaurantId || !menuItems || menuItems.length === 0 || !totalAmount) {
         return res.status(400).json({ error: "Missing required fields in one of the orders" });
       }
 
@@ -37,6 +37,7 @@ router.post("/checkout", authenticate, async (req, res) => {
         restaurantId,
         menuItems,
         userId,
+        totalAmount,
       }]); // Pass the orders array directly to the service
 
       createdOrders.push(newOrder);
