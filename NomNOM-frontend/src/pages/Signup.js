@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { register } from "../api/auth";
 import NavBar from "../components/utility_components/Navbar";
 import { GiCookie } from "react-icons/gi";
 import SignupBackgroundImage from "../media/food/pexels-rajesh-tp-749235-1633525.jpg";
+import axios from "axios";
 
 const Signup = () => {
     const [name, setName] = useState("");
@@ -14,16 +15,43 @@ const Signup = () => {
     const [error, setError] = useState("");
     const [agree, setAgree] = useState(false);
     const navigate = useNavigate();
+  const [restaurants, setRestaurants] = useState([]);
+  const [selectedRestaurant, setSelectedRestaurant] = useState('');
 
-    const handleSignup = async (e) => {
-        e.preventDefault();
-        try {
-            await register(name, email, password, role, address); // Include address in the register call
-            navigate("/login");
-        } catch (err) {
-            setError("Registration failed");
-        }
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    try {
+      // The register function expects individual parameters in this order:
+      // register(name, email, password, role, selectedRestaurant)
+      // But we need to pass address and use restaurantId instead of selectedRestaurant
+
+      // First, we'll extract the restaurantId from selectedRestaurant when appropriate
+      const restaurantId = role === 'restaurant-staff' ? selectedRestaurant : null;
+
+      // Then modify how we call register to match its expected parameters
+      // We need to modify the request body in-place at the API call
+      await register(name, email, password, role, restaurantId, address);
+
+      navigate("/login");
+    } catch (err) {
+      setError(err.response?.data?.message || "Registration failed");
+    }
+  };
+
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_RESTAURANT_API_URL}/restaurants`);
+        setRestaurants(response.data);
+      } catch (error) {
+        console.error("Failed to fetch restaurants", error);
+      }
     };
+
+    if (role === 'restaurant-staff') {
+      fetchRestaurants();
+    }
+  }, [role]);
 
     return (
         <div className="min-h-screen flex overflow-hidden">
@@ -89,6 +117,23 @@ const Signup = () => {
                                     <option value="delivery-personnel">Delivery Personnel</option>
                                 </select>
                             </div>
+                          {role === 'restaurant-staff' && (
+                            <div className="mb-6 w-full flex justify-center">
+                              <select
+                                value={selectedRestaurant}
+                                onChange={(e) => setSelectedRestaurant(e.target.value)}
+                                required
+                                className="w-2/3 p-3 pl-4 text-xl bg-white border-b-2 border-light_hover focus:outline-none"
+                              >
+                                <option value="">Select Restaurant</option>
+                                {restaurants.map(restaurant => (
+                                  <option key={restaurant._id} value={restaurant._id}>
+                                    {restaurant.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
                             {/* Terms & Conditions */}
                             <div className="mb-6 w-full max-w-[400px] text-center">
                 <span className="text-sm text-gray-600">

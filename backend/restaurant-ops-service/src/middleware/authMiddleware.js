@@ -1,24 +1,33 @@
-const jwt = require("jsonwebtoken");
-require("dotenv").config();
+const axios = require('axios');
 
-const authenticate = (req, res, next) => {
-  const token = req.header("Authorization");
-  if (!token) return res.status(401).json({ message: "Unauthorized" });
-
+const authenticate = async (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    const token = req.header('Authorization');
+    console.log("Received token:", token);
+    if (!token) return res.status(401).json({ message: 'No token provided' });
+
+    const response = await axios.get('http://localhost:6969/api/auth/verify', {
+      headers: { Authorization: token }
+    });
+
+    if (!response.data || !response.data.user) {
+      console.error("Invalid response from auth service:", response.data);
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+
+    req.user = response.data.user;
     next();
   } catch (error) {
-    res.status(403).json({ message: "Invalid token" });
+    console.error("Authentication error:", error);
+    res.status(401).json({ message: 'Invalid token' });
   }
 };
 
-const authorizeRole = (roles) => (req, res, next) => {
+const authorizeRole = (roles) => async (req, res, next) => {
   if (!roles.includes(req.user.role)) {
-    return res.status(403).json({ message: "Forbidden: Insufficient privileges" });
+    return res.status(403).json({ message: 'Unauthorized' });
   }
   next();
 };
 
-module.exports = { authenticate, authorizeRole };
+module.exports = { authenticate, authorizeRole };  const mongoose = require('mongoose');

@@ -30,8 +30,9 @@ const UserSchema = new mongoose.Schema({
         default: null
     },
     restaurantId: {
-      type: String,
-      required: false,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Restaurant',
+        required: function() { return this.role === 'restaurant-staff'; }
     },
 });
 

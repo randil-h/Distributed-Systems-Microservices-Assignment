@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from "react";
+import React, {useState, createContext, useContext, useEffect} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home,
@@ -17,6 +17,7 @@ import Shifts from "../components/resops_dashboard_components/Shifts";
 import Inventory from "../components/resops_dashboard_components/Inventory";
 import { logout } from "../api/auth";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const cn = (...classes) => classes.filter(Boolean).join(" ");
 const SidebarContext = createContext(undefined);
@@ -40,19 +41,101 @@ const SidebarProvider = ({ children }) => {
 
 const ResOpsDashboard = () => {
   const [activeTab, setActiveTab] = useState("Dashboard");
+  const [restaurant, setRestaurant] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  console.log("RestaurantId from token", localStorage.getItem('restaurantId'));
+  console.log("Token", localStorage.getItem('token'));
+
+  useEffect(() => {
+    const fetchRestaurantData = async () => {
+      try {
+        // Get restaurant ID from user data (stored in JWT/localStorage)
+        const restaurantId = localStorage.getItem('restaurantId');
+
+        if (!restaurantId) {
+          throw new Error("No restaurant assigned");
+        }
+
+        // Fetch restaurant details
+        const restaurantRes = await axios.get(
+          `${process.env.REACT_APP_RESTAURANT_API_URL}/restaurants/${restaurantId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+        console.log("Restaurant response:", restaurantRes.data);
+        console.log("Calling orders endpoint at:", `${process.env.REACT_APP_RESTAURANT_OPS_API_URL}/orders?restaurantId=${restaurantId}`);
+
+
+        // Fetch restaurant orders
+        const ordersRes = await axios.get(
+          `${process.env.REACT_APP_RESTAURANT_OPS_API_URL}/orders?restaurantId=${restaurantId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+        console.log("Order response:", ordersRes.data);
+        console.log("Token", localStorage.getItem('token'));
+
+        setRestaurant(restaurantRes.data);
+        setOrders(ordersRes.data);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+        // Handle error (e.g., redirect if no restaurant assigned)
+        if (error.message.includes("No restaurant assigned")) {
+          navigate("/login");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRestaurantData();
+  }, [navigate]);
+
+
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
+  console.log("Orders", restaurant);
+  console.log("restaurants", restaurant);
+
   const sidebarMenuItems = [
-    { icon: <Home size={28} />, label: "Dashboard", component: <Dashboard /> },
-    { icon: <Users size={28} />, label: "Staff Management", component: <StaffManagement /> },
-    { icon: <Calendar size={28} />, label: "Schedules", component: <Schedules /> },
-    { icon: <Clock size={28} />, label: "Shifts", component: <Shifts /> },
-    { icon: <ClipboardList size={28} />, label: "Inventory", component: <Inventory /> },
+    {
+      icon: <Home size={28} />,
+      label: "Dashboard",
+      component: <Dashboard restaurant={restaurant} orders={orders} loading={loading} />
+    },
+    {
+      icon: <Users size={28} />,
+      label: "Staff Management",
+      component: <StaffManagement restaurantId={restaurant?._id} />
+    },
+    {
+      icon: <Calendar size={28} />,
+      label: "Schedules",
+      component: <Schedules restaurantId={restaurant?._id} />
+    },
+    {
+      icon: <Clock size={28} />,
+      label: "Shifts",
+      component: <Shifts restaurantId={restaurant?._id} />
+    },
+    {
+      icon: <ClipboardList size={28} />,
+      label: "Inventory",
+      component: <Inventory restaurantId={restaurant?._id} />
+    },
   ];
 
   return (

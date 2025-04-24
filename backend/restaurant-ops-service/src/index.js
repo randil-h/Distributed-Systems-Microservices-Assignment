@@ -9,12 +9,14 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());  // Optional: if you want to enable CORS
+app.use(cors({
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));  // Optional: if you want to enable CORS
 
 dotenv.config();
 
 // Routes
-app.use('/api', orderRoutes);
+app.use('/api/orders', orderRoutes);
 
 // MongoDB connection
 mongoose
@@ -26,7 +28,7 @@ mongoose
 });
 
 // Start RabbitMQ consumer
-orderService.startRabbitMQConsumer();  // Start the RabbitMQ consumer from the service
+//orderService.startRabbitMQConsumer();  // Start the RabbitMQ consumer from the service
 
 // Start the server
 const PORT = process.env.PORT || 6966;
