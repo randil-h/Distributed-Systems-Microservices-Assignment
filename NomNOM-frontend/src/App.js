@@ -14,6 +14,8 @@ import MenuItemsPage from "./pages/MenuItemsPage";
 import MenuItemForm from "./components/admin_components/MenuItemForm";
 import Payment from "./pages/Payment";
 import Restaurant from "./pages/Restaurant";
+import {CartProvider} from "./context/CartContext";
+import CartPage from "./pages/CartPage";
 
 // Simple fade transition
 const fadeTransition = {
@@ -28,6 +30,7 @@ function App() {
 
   return (
     <AnimatePresence mode='wait'>
+      <CartProvider>
       <Routes location={location} key={location.pathname}>
         <Route
           path="/"
@@ -67,9 +70,9 @@ function App() {
           path="/resops-dashboard"
           element={
             <motion.div {...fadeTransition}>
-              {/*<ProtectedRoute allowedRoles={["restaurant-staff"]}>*/}
+              <ProtectedRoute allowedRoles={["restaurant-staff"]}>
               <ResOpsDashboard />
-              {/*</ProtectedRoute>*/}
+              </ProtectedRoute>
             </motion.div>
           }
         />
@@ -133,7 +136,16 @@ function App() {
             </motion.div>
           }
         />
+        <Route
+          path="/cart"
+          element={
+            <motion.div {...fadeTransition}>
+          <CartPage />
+            </motion.div>
+        }
+        />
       </Routes>
+      </CartProvider>
     </AnimatePresence>
   );
 }

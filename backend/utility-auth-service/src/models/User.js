@@ -12,11 +12,11 @@ const UserSchema = new mongoose.Schema({
     },
     location: {
         type: String,
-        required: true,
+        required: false,
     },
     status: {
         type: String,
-        required: true,
+        required: false,
     },
     address: {
         type: String,
@@ -28,6 +28,10 @@ const UserSchema = new mongoose.Schema({
     blockExpiry: {
         type: Date,
         default: null
+    },
+    restaurantId: {
+      type: String,
+      required: false,
     },
 });
 
