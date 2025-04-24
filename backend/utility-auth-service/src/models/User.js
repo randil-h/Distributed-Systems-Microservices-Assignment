@@ -29,6 +29,10 @@ const UserSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
+    restaurantId: {
+      type: String,
+      required: false,
+    },
 });
 
 
