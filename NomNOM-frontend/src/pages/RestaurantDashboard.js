@@ -98,8 +98,11 @@ const RestaurantDashboard = () => {
                             </div>
                         ) : restaurants.length > 0 ? (
                             <ul className="divide-y">
-                                {restaurants.map(restaurant => (
-                                    <li key={restaurant._id} className="p-4 hover:bg-gray-50 transition-colors">
+                                {restaurants.map((restaurant, index) => (
+                                    <li
+                                        key={restaurant._id}
+                                        className={`p-4 transition-colors ${index % 2 === 0 ? 'bg-gray-100' : 'bg-green-50'}`}
+                                    >
                                         <div className="flex justify-between items-start">
                                             <div>
                                                 <h4 className="font-medium text-gray-900">{restaurant.name}</h4>

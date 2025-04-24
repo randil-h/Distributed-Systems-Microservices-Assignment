@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AddMenuItemModal = ({ isOpen, onClose, onSave, restaurantId }) => {
-    const [formData, setFormData] = useState({
+    // Define initial form state outside component to avoid recreation
+    const initialFormData = {
         name: '',
         description: '',
         price: 0,
@@ -12,10 +13,13 @@ const AddMenuItemModal = ({ isOpen, onClose, onSave, restaurantId }) => {
         preparationTime: 0,
         image: '',
         isAvailable: true,
-        restaurantId: restaurantId // Receive restaurantId as a prop
-    });
+        restaurantId: restaurantId
+    };
+
+    const [formData, setFormData] = useState(initialFormData);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const fileInputRef = React.useRef(null);
 
     const dietaryOptions = [
         'Vegetarian',
@@ -26,6 +30,21 @@ const AddMenuItemModal = ({ isOpen, onClose, onSave, restaurantId }) => {
         'Kosher',
         'Halal'
     ];
+
+    // Reset form when modal opens or restaurantId changes
+    useEffect(() => {
+        if (isOpen) {
+            resetForm();
+        }
+    }, [isOpen, restaurantId]);
+
+    const resetForm = () => {
+        setFormData(initialFormData);
+        setError('');
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ''; // Clear file input
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -83,7 +102,8 @@ const AddMenuItemModal = ({ isOpen, onClose, onSave, restaurantId }) => {
                 }
             );
 
-            onSave(response.data); // Call the onSave callback with the new item data
+            onSave(response.data);
+            resetForm(); // Reset form after successful submission
             onClose();
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to save menu item');
@@ -214,6 +234,7 @@ const AddMenuItemModal = ({ isOpen, onClose, onSave, restaurantId }) => {
                             <label className="block text-sm font-medium text-gray-700">Item Image</label>
                             <input
                                 type="file"
+                                ref={fileInputRef}
                                 accept="image/*"
                                 onChange={handleImageChange}
                                 className="mt-1 block w-full text-sm text-gray-500
