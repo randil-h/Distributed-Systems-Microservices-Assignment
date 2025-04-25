@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { CheckCircle2, XCircle, AlertCircle, X } from 'lucide-react';
 import RestaurantDetailsModal from './RestaurantDetailsModal';
+import '../assets/animations.css';
 
 const RestaurantVerification = () => {
     const [restaurants, setRestaurants] = useState([]);
     const [selectedRestaurant, setSelectedRestaurant] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rejectionReason, setRejectionReason] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const token = localStorage.getItem("token");
 
@@ -26,6 +27,8 @@ const RestaurantVerification = () => {
             setRestaurants(response.data);
         } catch (error) {
             console.error('Error fetching restaurants:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -58,7 +61,6 @@ const RestaurantVerification = () => {
             setRestaurants(restaurants.map(r =>
                 r._id === restaurantId ? { ...r, registrationStatus: 'accepted' } : r
             ));
-
             closeModal();
             alert(`Restaurant has been approved successfully.`);
         } catch (error) {
@@ -89,11 +91,9 @@ const RestaurantVerification = () => {
                     }
                 }
             );
-
             setRestaurants(restaurants.map(r =>
                 r._id === restaurantId ? { ...r, registrationStatus: 'rejected', rejectionReason } : r
             ));
-
             closeModal();
             alert(`Restaurant has been rejected.`);
         } catch (error) {
@@ -114,7 +114,13 @@ const RestaurantVerification = () => {
                     </h2>
                 </div>
 
-                {restaurants.filter(r => r.registrationStatus === 'pending').length === 0 ? (
+                {loading ? (
+                    <div className="p-6">
+                        <div className="animate-shimmer bg-gradient-to-r from-transparent via-white/10 to-transparent h-12 mb-4 rounded"></div>
+                        <div className="animate-shimmer bg-gradient-to-r from-transparent via-white/10 to-transparent h-12 mb-4 rounded"></div>
+                        <div className="animate-shimmer bg-gradient-to-r from-transparent via-white/10 to-transparent h-12 mb-4 rounded"></div>
+                    </div>
+                ) : restaurants.filter(r => r.registrationStatus === 'pending').length === 0 ? (
                     <div className="p-6 text-center text-gray-400">
                         <p className="text-xl">No restaurants are currently pending verification.</p>
                     </div>
