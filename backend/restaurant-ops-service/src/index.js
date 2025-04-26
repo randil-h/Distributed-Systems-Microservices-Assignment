@@ -1,23 +1,37 @@
 const express = require('express');
-const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const orderRoutes = require('./routes/orderRoutes');
+const orderService = require('./services/orderService');  // Import the service to start RabbitMQ consumer
+const cors = require('cors');  // Optional: to enable cross-origin requests
+const dotenv = require("dotenv");
+
+const app = express();
+
+// Middleware
+app.use(express.json());
+app.use(cors({
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));  // Optional: if you want to enable CORS
 
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 5556;
-const MONGOURI = process.env.MONGOURI;
+// Routes
+app.use('/api/orders', orderRoutes);
 
-mongoose.connect(MONGOURI)
-    .then(() => {
-        console.log('MongoDB Connected');
-    })
-    .catch((err) => {
-        console.error("Error connecting to MongoDB", err);
-    })
+// MongoDB connection
+mongoose
+.connect(process.env.MONGO_URI || 'mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/OrderDB?retryWrites=true&w=majority&appName=Cluster0', {
+}).then(() => {
+  console.log('Connected to MongoDB');
+}).catch((err) => {
+  console.error('Error connecting to MongoDB:', err);
+});
 
-app.use(express.json());
+// Start RabbitMQ consumer
+//orderService.startRabbitMQConsumer();  // Start the RabbitMQ consumer from the service
 
+// Start the server
+const PORT = process.env.PORT || 6966;
 app.listen(PORT, () => {
-    console.log(`Server for restaurant-ops-service listening on port ${PORT}`);
+  console.log(`Restaurant Operations Service is running on port ${PORT}`);
 });

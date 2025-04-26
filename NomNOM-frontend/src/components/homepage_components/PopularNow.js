@@ -1,143 +1,115 @@
-import { UserCircleIcon } from '@heroicons/react/24/solid';
-import { Link } from "react-router-dom";
-import React, { useState } from "react";
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
-import { GiCookie } from "react-icons/gi";
 import { StarIcon, ClockIcon, TruckIcon } from '@heroicons/react/24/solid';
-
-// Import images
-import img1 from '../../media/food/pexels-bemistermister-3434523.jpg';
-import img2 from '../../media/food/pexels-chrslnz-588776.jpg';
-import img3 from '../../media/food/IMG_8982.JPG';
-import img4 from '../../media/food/pexels-jonathanborba-2983099.jpg';
-import img5 from '../../media/food/pexels-karthik-reddy-130698-397913.jpg';
-import img6 from '../../media/food/pexels-lisa-dol-307937-916925.jpg';
-import img7 from '../../media/food/pexels-lum3n-44775-1410235.jpg';
-import img8 from '../../media/food/pexels-sebastian-coman-photography-1598188-3659862.jpg';
-
+import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function PopularNow() {
-  const [showPopover, setShowPopover] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [restaurants, setRestaurants] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample restaurant data with images from the food folder
-  const restaurants = [
-    {
-      id: 1,
-      name: "Burger Palace",
-      image: img1,
-      deliveryFee: "$2.99",
-      rating: 4.8,
-      deliveryTime: "15-25 min"
-    },
-    {
-      id: 2,
-      name: "Pizza Heaven",
-      image: img2,
-      deliveryFee: "$1.99",
-      rating: 4.6,
-      deliveryTime: "20-30 min"
-    },
-    {
-      id: 3,
-      name: "Sushi Express",
-      image: img3,
-      deliveryFee: "$3.49",
-      rating: 4.9,
-      deliveryTime: "25-35 min"
-    },
-    {
-      id: 4,
-      name: "Taco Fiesta",
-      image: img4,
-      deliveryFee: "$2.49",
-      rating: 4.7,
-      deliveryTime: "15-25 min"
-    },
-    {
-      id: 5,
-      name: "Noodle House",
-      image: img5,
-      deliveryFee: "$3.99",
-      rating: 4.5,
-      deliveryTime: "30-40 min"
-    },
-    {
-      id: 6,
-      name: "Pink Salt",
-      image: img6,
-      deliveryFee: "$2.99",
-      rating: 4.4,
-      deliveryTime: "20-30 min"
-    },
-    {
-      id: 7,
-      name: "Anohana",
-      image: img7,
-      deliveryFee: "$2.99",
-      rating: 4.4,
-      deliveryTime: "20-30 min"
-    },
-    {
-      id: 8,
-      name: "Aunty's Kade",
-      image: img8,
-      deliveryFee: "$2.99",
-      rating: 4.4,
-      deliveryTime: "20-30 min"
-    }
-  ];
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(`${process.env.REACT_APP_RESTAURANT_API_URL}/restaurants`); // Ensure your auth token is sent if needed
+        setRestaurants(res.data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Failed to fetch restaurants", err);
+        setLoading(false);
+      }
+    };
+    fetchRestaurants();
+  }, []);
+
+  // Skeleton loader component
+  const SkeletonCard = () => (
+    <div className="relative bg-white rounded-3xl overflow-hidden w-72 h-96 flex-shrink-0">
+      {/* Skeleton background */}
+      <div className="absolute inset-0 w-full h-full bg-gray-200 animate-pulse"></div>
+
+      {/* Skeleton content */}
+      <div className="absolute bottom-0 left-0 right-0 p-5">
+        <div className="h-10 bg-gray-300 rounded-lg w-3/4 mb-4 animate-pulse"></div>
+
+        <div className="flex items-center mb-4">
+          <div className="h-5 w-5 bg-gray-300 rounded-full mr-2 animate-pulse"></div>
+          <div className="h-4 w-12 bg-gray-300 rounded animate-pulse"></div>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <div className="h-4 w-4 bg-gray-300 rounded-full mr-2 animate-pulse"></div>
+            <div className="h-4 w-16 bg-gray-300 rounded animate-pulse"></div>
+          </div>
+
+          <div className="flex items-center">
+            <div className="h-4 w-4 bg-gray-300 rounded-full mr-2 animate-pulse"></div>
+            <div className="h-4 w-20 bg-gray-300 rounded animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div
-      className="text-black bg-nomnom rounded-t-3xl top-28 w-screen flex flex-col content-center justify-center align-middle py-16 items-center">
-      <div className=" text-xl text-start text-light_hover/50 px-12 w-full mb-2">
+    <div className="text-black bg-nomnom rounded-t-3xl top-28 w-screen flex flex-col content-center justify-center align-middle py-16 items-center">
+      <div className="text-xl text-start text-light_hover/50 px-12 w-full mb-2">
         Explore the quickest delivery options
       </div>
-      <div className=" text-6xl text-start text-light_hover px-12 w-full mb-12">
+      <div className="text-6xl text-start text-light_hover px-12 w-full mb-12">
         Fastest Near You
       </div>
 
       {/* Scrollable cards container */}
       <div className="w-full px-12 overflow-x-auto pb-4 no-scrollbar">
         <div className="flex space-x-4 min-w-max">
-          {restaurants.map((restaurant) => (
-            <div
-              key={restaurant.id}
-              className="relative bg-white rounded-3xl overflow-hidden w-72 h-96 flex-shrink-0 "
-            >
-              {/* Image background covering entire card */}
-              <div
-                className="absolute inset-0 w-full h-full bg-cover bg-center"
-                style={{backgroundImage: `url(${restaurant.image})`}}
-              />
+          {loading ? (
+            // Show skeleton loaders while loading
+            Array(8).fill().map((_, index) => (
+              <SkeletonCard key={index} />
+            ))
+          ) : (
+            // Show actual restaurant cards when loaded
+            restaurants.map((restaurant) => (
+              <Link
+                to={`/restaurant/${restaurant._id}`} // Navigate to the Restaurant page
+                key={restaurant._id}
+                className="relative bg-white rounded-3xl overflow-hidden w-72 h-96 flex-shrink-0"
+              >
+                {/* Image background */}
+                <div
+                  className="absolute inset-0 w-full h-full bg-cover bg-center"
+                  style={{ backgroundImage: `url(${restaurant.coverImage || "/default-image.jpg"})` }}
+                />
 
-              {/* Dark overlay for better text visibility */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
 
-              {/* Content positioned at the bottom */}
-              <div className="absolute bottom-0 left-0 right-0 p-5 text-light_hover ">
-                <h3 className=" text-start text-4xl mb-2">{restaurant.name}</h3>
+                {/* Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-5 text-light_hover">
+                  <h3 className="text-start text-4xl mb-2">{restaurant.name}</h3>
 
-                <div className="flex items-center mb-2">
-                  <StarIcon className="h-5 w-5 text-yellow-500 mr-1"/>
-                  <span className="font-medium">{restaurant.rating}</span>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <TruckIcon className="h-4 w-4 mr-1"/>
-                    <span>{restaurant.deliveryFee}</span>
+                  <div className="flex items-center mb-2">
+                    <StarIcon className="h-5 w-5 text-yellow-500 mr-1" />
+                    <span className="font-medium">{restaurant.rating || "4.5"}</span>
                   </div>
 
-                  <div className="flex items-center">
-                    <ClockIcon className="h-4 w-4 mr-1"/>
-                    <span>{restaurant.deliveryTime}</span>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      <TruckIcon className="h-4 w-4 mr-1" />
+                      <span>{restaurant.deliveryFee || "$2.99"}</span>
+                    </div>
+
+                    <div className="flex items-center">
+                      <ClockIcon className="h-4 w-4 mr-1" />
+                      <span>{restaurant.deliveryTime || "20-30 min"}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              </Link>
+            ))
+          )}
         </div>
       </div>
     </div>

@@ -2,20 +2,40 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
 const generateToken = (user) => {
-    return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: process.env.TOKEN_EXPIRY });
+    return jwt.sign({
+      id: user._id,
+      role: user.role,
+      restaurantId: user.restaurantId
+    }, process.env.JWT_SECRET, { expiresIn: process.env.TOKEN_EXPIRY });
 };
 
 // User Registration
 exports.register = async (req, res) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password, role, address, location, status, restaurantId } = req.body;
         const existingUser = await User.findOne({ email });
         if (existingUser) return res.status(400).json({ message: "User already exists" });
 
-        const newUser = new User({ name, email, password, role });
+      // Validate restaurantId for staff
+      if (role === 'restaurant-staff' && !restaurantId) {
+        return res.status(400).json({ message: "Restaurant selection is required for staff" });
+      }
+
+        const newUser = new User({
+          name,
+          email,
+          password,
+          role,
+          address,
+          location,
+          status,
+          restaurantId: role === 'restaurant-staff' ? restaurantId : undefined
+        });
+
         await newUser.save();
         res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
+        console.error("Registration error:", error);
         res.status(500).json({ message: "Registration failed" });
     }
 };
@@ -44,7 +64,8 @@ exports.login = async (req, res) => {
         res.json({
             token,
             role: user.role,
-            id: user._id  // Add this line
+            id: user._id,
+            restaurantId: user.restaurantId
         });
     } catch (error) {
         console.error("Login error:", error); // This will show the actual error

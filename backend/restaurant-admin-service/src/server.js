@@ -4,9 +4,9 @@ const restaurantAdminRoutes = require('../src/routes/restaurantAdminRoutes');
 const dotenv = require('dotenv');
 const path = require('path');
 const cors = require('cors');
-
+const menuItemRoutes = require('../src/routes/menuItemRoutes');
 // Load environment variables from .env file
-dotenv.config({ path: path.resolve(__dirname, '../src/.env') });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 // Validate required environment variables
 const requiredEnvVars = ['MONGODB_URI', 'PORT'];
@@ -19,8 +19,7 @@ requiredEnvVars.forEach(env => {
 
 const app = express();
 app.use(cors()); // Add this line
-app.use(express.json());
-
+app.use(express.json({ limit: '5mb' }));
 // MongoDB connection with improved configuration
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
@@ -35,7 +34,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 // Routes
 app.use('/api/restaurants', restaurantAdminRoutes);
-
+app.use('/api/menu-items', menuItemRoutes);
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);

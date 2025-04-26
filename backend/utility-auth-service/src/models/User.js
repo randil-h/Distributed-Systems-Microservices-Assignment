@@ -12,13 +12,30 @@ const UserSchema = new mongoose.Schema({
     },
     location: {
         type: String,
-        required: true,
+        required: false,
     },
     status: {
         type: String,
-        required: true,
+        required: false,
+    },
+    address: {
+        type: String,
+    },
+    isBlocked: {
+        type: Boolean,
+        default: false
+    },
+    blockExpiry: {
+        type: Date,
+        default: null
+    },
+    restaurantId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Restaurant',
+        required: function() { return this.role === 'restaurant-staff'; }
     },
 });
+
 
 // Hash password before saving
 UserSchema.pre("save", async function (next) {
