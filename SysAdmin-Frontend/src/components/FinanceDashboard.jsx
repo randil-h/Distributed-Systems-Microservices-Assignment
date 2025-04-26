@@ -1,8 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const ShimmerRow = () => (
+    <tr className="animate-pulse">
+        <td className="py-3 px-4">
+            <div className="h-4 bg-gray-700 rounded w-3/4"></div>
+        </td>
+        <td className="py-3 px-4">
+            <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+        </td>
+        <td className="py-3 px-4">
+            <div className="h-4 bg-gray-700 rounded w-1/3"></div>
+        </td>
+        <td className="py-3 px-4">
+            <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+        </td>
+    </tr>
+);
+
 const FinanceDashboard = () => {
     const [payments, setPayments] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchPayments = async () => {
@@ -11,6 +29,8 @@ const FinanceDashboard = () => {
                 setPayments(response.data.data);
             } catch (err) {
                 console.error('Error fetching payments:', err);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -32,18 +52,26 @@ const FinanceDashboard = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {payments.map((payment, index) => (
-                            <tr
-                                key={payment.id}
-                                className={`border-t border-gray-700 ${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-900'}`}
-                            >
-                                <td className="py-3 px-4 truncate max-w-[200px]">{payment.id}</td>
-                                <td className="py-3 px-4">${(payment.amount / 100).toFixed(2)}</td>
-                                <td className="py-3 px-4">{payment.currency.toUpperCase()}</td>
-                                <td className="py-3 px-4 capitalize">{payment.status}</td>
-                            </tr>
-                        ))}
-                        {payments.length === 0 && (
+                        {loading ? (
+                            <>
+                                <ShimmerRow />
+                                <ShimmerRow />
+                                <ShimmerRow />
+                                <ShimmerRow />
+                            </>
+                        ) : payments.length > 0 ? (
+                            payments.map((payment, index) => (
+                                <tr
+                                    key={payment.id}
+                                    className={`border-t border-gray-700 ${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-900'}`}
+                                >
+                                    <td className="py-3 px-4 truncate max-w-[200px]">{payment.id}</td>
+                                    <td className="py-3 px-4">${(payment.amount / 100).toFixed(2)}</td>
+                                    <td className="py-3 px-4">{payment.currency.toUpperCase()}</td>
+                                    <td className="py-3 px-4 capitalize">{payment.status}</td>
+                                </tr>
+                            ))
+                        ) : (
                             <tr>
                                 <td colSpan="4" className="text-center py-6 text-gray-400">
                                     No payments found.
