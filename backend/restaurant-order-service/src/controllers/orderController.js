@@ -1,54 +1,127 @@
+// controllers/orderController.js
 const orderService = require("../services/orderService");
-const { publishOrder } = require("../services/rabbitmq");
 
-// Create orders in bulk (handle multiple restaurants in one request)
+/**
+ * Create orders
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ */
 const createOrder = async (req, res) => {
   try {
-    const { orders } = req.body; // This should be an array of orders
+    const { orders } = req.body;
+    const userId = req.user.id; // Get user ID from auth middleware
 
-    if (!orders || orders.length === 0) {
+    if (!orders || !Array.isArray(orders) || orders.length === 0) {
       return res.status(400).json({ error: "Orders must be a non-empty array" });
     }
 
-    // Validate each order
-    for (let orderData of orders) {
-      const { restaurantId, menuItems } = orderData;
+    // Add userId to each order
+    const processedOrders = orders.map(order => ({
+      ...order,
+      userId
+    }));
 
-      if (!restaurantId || !menuItems || menuItems.length === 0) {
-        return res.status(400).json({ error: "Missing required fields for an order" });
+    // Validate orders
+    for (let order of processedOrders) {
+      const { restaurantId, menuItems, totalAmount } = order;
+
+      if (!restaurantId) {
+        return res.status(400).json({ error: "Restaurant ID is required" });
+      }
+
+      if (!menuItems || !Array.isArray(menuItems) || menuItems.length === 0) {
+        return res.status(400).json({ error: "Menu items must be a non-empty array" });
+      }
+
+      if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
+        return res.status(400).json({ error: "Valid total amount is required" });
       }
 
       // Validate each menu item
       for (let item of menuItems) {
-        const { id: menuItemId, quantity } = item;
+        const { id, quantity } = item;
 
-        if (!menuItemId || !quantity) {
-          return res.status(400).json({ error: "Missing menu item ID or quantity" });
+        if (!id) {
+          return res.status(400).json({ error: "Menu item ID is required" });
+        }
+
+        if (!quantity || isNaN(quantity) || quantity < 1) {
+          return res.status(400).json({ error: "Valid quantity is required" });
         }
       }
     }
 
-    // Pass the orders to the service
-    const createdOrders = await orderService.createOrder({ orders });
-
-    res.status(201).json(createdOrders); // Return all created orders
+    const createdOrders = await orderService.createOrder(processedOrders);
+    res.status(201).json(createdOrders);
   } catch (error) {
     console.error("Error creating orders:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: error.message || "Internal Server Error" });
   }
 };
 
-// Get all orders for a restaurant
+/**
+ * Process checkout from the frontend cart
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ */
+const checkout = async (req, res) => {
+  try {
+    const { orders } = req.body;
+    const userId = req.user.id;
+
+    if (!orders || !Array.isArray(orders) || orders.length === 0) {
+      return res.status(400).json({ error: "Orders must be a non-empty array" });
+    }
+
+    const processedOrders = [];
+
+    // Process each order from the frontend format
+    for (const order of orders) {
+      const { restaurantId, menuItems, totalAmount, tax, shipping } = order;
+
+      if (!restaurantId || !menuItems || menuItems.length === 0 || !totalAmount) {
+        return res.status(400).json({ error: "Missing required fields in one of the orders" });
+      }
+
+      // Convert the frontend menu items format to the format expected by our service
+      processedOrders.push({
+        restaurantId,
+        menuItems,
+        userId,
+        totalAmount,
+        // Store tax and shipping in metadata if needed
+        metadata: {
+          tax,
+          shipping
+        }
+      });
+    }
+
+    const createdOrders = await orderService.createOrder(processedOrders);
+    res.status(201).json({
+      message: "Orders placed successfully",
+      orders: createdOrders
+    });
+  } catch (error) {
+    console.error("Error processing checkout:", error);
+    res.status(500).json({ error: error.message || "Internal Server Error" });
+  }
+};
+
+/**
+ * Get orders for a restaurant
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ */
 const getOrders = async (req, res) => {
   try {
-    const restaurantId = req.params.restaurantId;
+    const { restaurantId } = req.params;
 
     if (!restaurantId) {
       return res.status(400).json({ error: "Restaurant ID is required" });
     }
 
     const orders = await orderService.getOrdersByRestaurant(restaurantId);
-
     res.status(200).json(orders);
   } catch (error) {
     console.error("Error fetching orders:", error);
@@ -56,14 +129,23 @@ const getOrders = async (req, res) => {
   }
 };
 
-// Update order status (e.g., from "pending" to "completed")
+/**
+ * Update order status
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ */
 const updateOrder = async (req, res) => {
   try {
-    const orderId = req.params.orderId;
+    const { orderId } = req.params;
     const { status } = req.body;
 
     if (!status) {
       return res.status(400).json({ error: "Order status is required" });
+    }
+
+    const validStatuses = ["pending", "confirmed", "preparing", "delivered", "cancelled"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: "Invalid status value" });
     }
 
     const updatedOrder = await orderService.updateOrderStatus(orderId, status);
@@ -81,6 +163,7 @@ const updateOrder = async (req, res) => {
 
 module.exports = {
   createOrder,
+  checkout,
   getOrders,
   updateOrder
 };

@@ -1,18 +1,27 @@
+// services/orderService.js
 const Order = require("../models/Order");
-const { publishOrder } = require("../services/rabbitmq"); // Import RabbitMQ service
+const { publishOrder } = require("./rabbitmq");
 
-const createOrder = async (orderData) => {
+/**
+ * Create new orders
+ * @param {Array} orders - Array of order data
+ * @returns {Array} Created orders
+ */
+const createOrder = async (orders) => {
   const createdOrders = [];
 
-  // Iterate through the orders
-  for (let order of orderData) {
+  for (let order of orders) {
     const { restaurantId, userId, menuItems, totalAmount } = order;
 
     if (!menuItems || menuItems.length === 0) {
       throw new Error('Menu items are required');
     }
 
-    // Ensure that each menu item has valid id and quantity
+    if (!totalAmount) {
+      throw new Error('Total amount is required');
+    }
+
+    // Format items for saving
     const items = menuItems.map(item => {
       const { id: menuItemId, quantity } = item;
 
@@ -20,50 +29,50 @@ const createOrder = async (orderData) => {
         throw new Error('Menu item ID and quantity are required');
       }
 
-      return {
-        menuItemId,
-        quantity,
-      };
+      return { menuItemId, quantity };
     });
 
-    // Ensure totalAmount is provided
-    if (!totalAmount) {
-      throw new Error('Total amount is required');
-    }
-
-    // Build the order model with the correctly structured items
+    // Create and save order
     const newOrder = new Order({
       restaurantId,
       userId,
-      items, // Ensure the items array is properly populated with valid data
+      items,
       status: 'pending',
-      totalAmount,  // Store the totalAmount in the order
+      totalAmount,
     });
 
     const savedOrder = await newOrder.save();
 
-    // Publish the order to RabbitMQ, including totalAmount
+    // Publish order to all three queues via RabbitMQ
     await publishOrder({
       orderId: savedOrder._id,
       restaurantId,
       userId,
-      menuItems: items, // Send as-is, since it already has { menuItemId, quantity }
-      totalAmount,  // Include totalAmount in the RabbitMQ message
+      menuItems: items,
+      totalAmount,
     });
 
-    createdOrders.push(savedOrder); // Add saved order to the created orders array
+    createdOrders.push(savedOrder);
   }
 
-  return createdOrders; // Return all created orders
+  return createdOrders;
 };
 
-
-
-
+/**
+ * Get orders for a specific restaurant
+ * @param {String} restaurantId - Restaurant ID
+ * @returns {Array} Restaurant orders
+ */
 const getOrdersByRestaurant = async (restaurantId) => {
-  return await Order.find({ restaurantId }).populate("menuItemId");
+  return await Order.find({ restaurantId }).populate("items.menuItemId");
 };
 
+/**
+ * Update order status
+ * @param {String} orderId - Order ID
+ * @param {String} status - New status
+ * @returns {Object} Updated order
+ */
 const updateOrderStatus = async (orderId, status) => {
   return await Order.findByIdAndUpdate(orderId, { status }, { new: true });
 };
