@@ -1,6 +1,5 @@
-// services/orderService.js
 const Order = require("../models/Order");
-const { publishOrder } = require("./rabbitmq");
+const { publishOrder, publishPaymentDetails } = require("./rabbitmq");
 
 /**
  * Create new orders
@@ -83,8 +82,59 @@ const updateOrderStatus = async (orderId, status) => {
   return await Order.findByIdAndUpdate(orderId, { status }, { new: true });
 };
 
+/**
+ * Get order price by order ID
+ * @param {String} orderId - Order ID
+ * @returns {Number} Order total amount in cents
+ */
+const getOrderPriceById = async (orderId) => {
+  try {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      throw new Error(`Order with ID ${orderId} not found`);
+    }
+
+    // Return the total amount in cents (for Stripe)
+    return Math.round(order.totalAmount * 100);
+  } catch (error) {
+    console.error(`Error fetching order price: ${error.message}`);
+    throw error;
+  }
+};
+
+/**
+ * Send order price details to payment service via RabbitMQ
+ * @param {String} orderId - Order ID
+ */
+const sendOrderPriceToPaymentService = async (orderId) => {
+  try {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      throw new Error(`Order with ID ${orderId} not found`);
+    }
+
+    // Send order details to payment service via RabbitMQ
+    await publishPaymentDetails({
+      orderId: order._id.toString(),
+      amount: Math.round(order.totalAmount * 100), // Convert to cents for Stripe
+      currency: "usd", // Default currency
+      timestamp: new Date()
+    });
+
+    console.log(`Order ${orderId} price details sent to payment service`);
+    return true;
+  } catch (error) {
+    console.error(`Error sending order price to payment service: ${error.message}`);
+    throw error;
+  }
+};
+
 module.exports = {
   createOrder,
   getOrdersByRestaurant,
-  updateOrderStatus
+  updateOrderStatus,
+  getOrderPriceById,
+  sendOrderPriceToPaymentService
 };

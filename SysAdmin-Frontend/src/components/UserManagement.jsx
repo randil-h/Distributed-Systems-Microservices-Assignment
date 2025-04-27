@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Truck, Building2, Shield, Trash2, Ban, Plus, Coffee } from 'lucide-react';
+import { Users, Truck, Building2, Shield, Trash2, Ban, Plus, Coffee, RefreshCw } from 'lucide-react';
 import axios from 'axios';
 
 const ROLE_CONFIG = {
@@ -93,7 +93,7 @@ const UserManagement = () => {
 
     const handleDeleteUser = async () => {
         try {
-            await axios.delete(`http://localhost:6969/users/${selectedUser._id}`);
+            await axios.delete(`http://localhost:6969/api/user/${selectedUser._id}`);
             setUsers(users.filter(u => u._id !== selectedUser._id));
             setIsDetailsModalOpen(false);
         } catch (err) {
@@ -104,47 +104,75 @@ const UserManagement = () => {
 
     const handleBlockUser = async () => {
         try {
-            const now = new Date();
-            let blockExpiry;
+            // Convert blockDuration string to number and unit
+            let blockDurationNumber;
+            let durationUnit;
 
-            // Calculate block expiry based on selected duration
             switch (blockDuration) {
                 case '24h':
-                    blockExpiry = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+                    blockDurationNumber = 24;
+                    durationUnit = 'hours';
                     break;
                 case '72h':
-                    blockExpiry = new Date(now.getTime() + 72 * 60 * 60 * 1000);
+                    blockDurationNumber = 72;
+                    durationUnit = 'hours';
                     break;
                 case '1w':
-                    blockExpiry = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+                    blockDurationNumber = 7;
+                    durationUnit = 'days';
                     break;
                 case '1m':
-                    blockExpiry = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+                    blockDurationNumber = 30;
+                    durationUnit = 'days';
                     break;
                 case '1y':
-                    blockExpiry = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+                    blockDurationNumber = 365;
+                    durationUnit = 'days';
                     break;
                 default:
-                    blockExpiry = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+                    blockDurationNumber = 24;
+                    durationUnit = 'hours';
             }
 
-            await axios.put(`http://localhost:6969/users/${selectedUser._id}`, {
-                ...selectedUser,
+            await axios.put(`http://localhost:6969/api/user/suspend/${selectedUser._id}`, {
                 isBlocked: true,
-                blockExpiry: blockExpiry.toISOString()
+                blockDuration: blockDurationNumber,
+                durationUnit: durationUnit
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
 
             fetchUsers(); // Refresh user list
             setIsDetailsModalOpen(false);
         } catch (err) {
             console.error('Error blocking user:', err);
-            alert('Failed to block user');
+            alert('Failed to block user: ' + (err.response?.data?.message || err.message));
+        }
+    };
+
+    const handleReactivateUser = async () => {
+        try {
+            await axios.put(`http://localhost:6969/api/user/suspend/${selectedUser._id}`, {
+                isBlocked: false
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            fetchUsers(); // Refresh user list
+            setIsDetailsModalOpen(false);
+        } catch (err) {
+            console.error('Error reactivating user:', err);
+            alert('Failed to reactivate user: ' + (err.response?.data?.message || err.message));
         }
     };
 
     const handleAddAdmin = async () => {
         try {
-            const response = await axios.post('http://localhost:6969/users', newAdminUser);
+            const response = await axios.post('http://localhost:6969/api/auth/register', newAdminUser);
             setUsers([...users, response.data]);
             setIsAddAdminModalOpen(false);
             // Reset form
@@ -164,6 +192,10 @@ const UserManagement = () => {
     const filteredUsers = users.filter((user) =>
         selectedRoles.includes(user.role)
     );
+
+    const isUserBlocked = (user) => {
+        return user.isBlocked && (user.blockExpiry ? new Date(user.blockExpiry) > new Date() : true);
+    };
 
     if (loading) {
         return (
@@ -244,7 +276,7 @@ const UserManagement = () => {
                             {filteredUsers.map((user) => {
                                 const roleConfig = ROLE_CONFIG[user.role];
                                 const Icon = roleConfig ? roleConfig.icon : Users;
-                                const isBlocked = user.isBlocked && new Date(user.blockExpiry) > new Date();
+                                const blocked = isUserBlocked(user);
 
                                 return (
                                     <tr
@@ -262,9 +294,9 @@ const UserManagement = () => {
                                         </td>
                                         <td className="py-4 px-4">
                                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                isBlocked ? 'bg-red-900 text-red-200' : 'bg-green-900 text-green-200'
+                                                blocked ? 'bg-red-900 text-red-200' : 'bg-green-900 text-green-200'
                                             }`}>
-                                                {isBlocked ? 'Blocked' : 'Active'}
+                                                {blocked ? 'Blocked' : 'Active'}
                                             </span>
                                         </td>
                                         <td className="py-4 px-4">
@@ -310,33 +342,46 @@ const UserManagement = () => {
                                     <p className="text-sm text-gray-300">Restaurant ID: {selectedUser.restaurantId}</p>
                                 )}
                                 <p className="text-sm text-gray-300 mt-2">
-                                    Status: {selectedUser.isBlocked ? 'Blocked' : 'Active'}
-                                    {selectedUser.isBlocked && selectedUser.blockExpiry && (
+                                    Status: {isUserBlocked(selectedUser) ? 'Blocked' : 'Active'}
+                                    {isUserBlocked(selectedUser) && selectedUser.blockExpiry && (
                                         <span> until {new Date(selectedUser.blockExpiry).toLocaleString()}</span>
                                     )}
                                 </p>
                             </div>
                             <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-300">Block User</label>
-                                <div className="flex space-x-2 items-center">
-                                    <select
-                                        value={blockDuration}
-                                        onChange={(e) => setBlockDuration(e.target.value)}
-                                        className="w-full px-2 py-1 border border-gray-600 rounded-lg bg-gray-700 text-gray-200"
-                                    >
-                                        <option value="24h">24 Hours</option>
-                                        <option value="72h">72 Hours</option>
-                                        <option value="1w">1 Week</option>
-                                        <option value="1m">1 Month</option>
-                                        <option value="1y">1 Year</option>
-                                    </select>
-                                    <button
-                                        onClick={handleBlockUser}
-                                        className="bg-red-600 text-white px-3 py-1 rounded-lg flex items-center"
-                                    >
-                                        <Ban className="mr-2" size={16} /> Block
-                                    </button>
-                                </div>
+                                {isUserBlocked(selectedUser) ? (
+                                    <div>
+                                        <button
+                                            onClick={handleReactivateUser}
+                                            className="w-full bg-green-600 text-white px-3 py-2 rounded-lg flex items-center justify-center"
+                                        >
+                                            <RefreshCw className="mr-2" size={16} /> Reactivate Account
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-300">Block User</label>
+                                        <div className="flex space-x-2 items-center">
+                                            <select
+                                                value={blockDuration}
+                                                onChange={(e) => setBlockDuration(e.target.value)}
+                                                className="w-full px-2 py-1 border border-gray-600 rounded-lg bg-gray-700 text-gray-200"
+                                            >
+                                                <option value="24h">24 Hours</option>
+                                                <option value="72h">72 Hours</option>
+                                                <option value="1w">1 Week</option>
+                                                <option value="1m">1 Month</option>
+                                                <option value="1y">1 Year</option>
+                                            </select>
+                                            <button
+                                                onClick={handleBlockUser}
+                                                className="bg-red-600 text-white px-3 py-1 rounded-lg flex items-center"
+                                            >
+                                                <Ban className="mr-2" size={16} /> Block
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                             <div className="flex justify-between mt-4">
                                 <button
