@@ -23,7 +23,7 @@ const createOrder = async (req, res) => {
 
     // Validate orders
     for (let order of processedOrders) {
-      const { restaurantId, menuItems, totalAmount } = order;
+      const { restaurantId, menuItems, totalAmount, deliveryLocation } = order;
 
       if (!restaurantId) {
         return res.status(400).json({ error: "Restaurant ID is required" });
@@ -35,6 +35,11 @@ const createOrder = async (req, res) => {
 
       if (!totalAmount || isNaN(totalAmount) || totalAmount <= 0) {
         return res.status(400).json({ error: "Valid total amount is required" });
+      }
+
+      // Validate delivery location
+      if (!deliveryLocation || !deliveryLocation.lat || !deliveryLocation.lng) {
+        return res.status(400).json({ error: "Valid delivery location is required" });
       }
 
       // Validate each menu item
@@ -77,10 +82,15 @@ const checkout = async (req, res) => {
 
     // Process each order from the frontend format
     for (const order of orders) {
-      const { restaurantId, menuItems, totalAmount, tax, shipping } = order;
+      const { restaurantId, menuItems, totalAmount, tax, shipping, deliveryLocation } = order;
 
       if (!restaurantId || !menuItems || menuItems.length === 0 || !totalAmount) {
         return res.status(400).json({ error: "Missing required fields in one of the orders" });
+      }
+
+      // Validate delivery location
+      if (!deliveryLocation || !deliveryLocation.lat || !deliveryLocation.lng) {
+        return res.status(400).json({ error: "Delivery location is required" });
       }
 
       // Convert the frontend menu items format to the format expected by our service
@@ -89,6 +99,7 @@ const checkout = async (req, res) => {
         menuItems,
         userId,
         totalAmount,
+        deliveryLocation,
         // Store tax and shipping in metadata if needed
         metadata: {
           tax,

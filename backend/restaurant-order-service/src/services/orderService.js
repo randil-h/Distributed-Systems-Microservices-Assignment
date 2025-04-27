@@ -11,7 +11,7 @@ const createOrder = async (orders) => {
   const createdOrders = [];
 
   for (let order of orders) {
-    const { restaurantId, userId, menuItems, totalAmount } = order;
+    const { restaurantId, userId, menuItems, totalAmount, deliveryLocation } = order;
 
     if (!menuItems || menuItems.length === 0) {
       throw new Error('Menu items are required');
@@ -19,6 +19,10 @@ const createOrder = async (orders) => {
 
     if (!totalAmount) {
       throw new Error('Total amount is required');
+    }
+
+    if (!deliveryLocation || !deliveryLocation.lat || !deliveryLocation.lng) {
+      throw new Error('Delivery location is required');
     }
 
     // Format items for saving
@@ -39,6 +43,7 @@ const createOrder = async (orders) => {
       items,
       status: 'pending',
       totalAmount,
+      deliveryLocation
     });
 
     const savedOrder = await newOrder.save();
@@ -50,6 +55,7 @@ const createOrder = async (orders) => {
       userId,
       menuItems: items,
       totalAmount,
+      deliveryLocation // Include delivery location in the message
     });
 
     createdOrders.push(savedOrder);
