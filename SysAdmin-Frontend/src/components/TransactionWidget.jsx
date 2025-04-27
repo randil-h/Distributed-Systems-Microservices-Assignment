@@ -28,11 +28,11 @@ const TotalTransactionsWidget = () => {
                 <span className="text-sm uppercase text-gray-400 tracking-wide">Total Revenue</span>
                 {loading ? (
                     <span className="text-3xl font-bold mt-2 relative overflow-hidden">
-                        <span className="invisible">$0.00</span>
+                        <span className="invisible">Rs. 0.00</span>
                         <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></span>
                     </span>
                 ) : (
-                    <span className="text-3xl font-bold mt-2">${(totalAmount / 100).toFixed(2)}</span>
+                    <span className="text-3xl font-bold mt-2">Rs. {(totalAmount / 100).toFixed(2)}</span>
                 )}
             </div>
         </div>
