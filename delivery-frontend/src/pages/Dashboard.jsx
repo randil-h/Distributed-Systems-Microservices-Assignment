@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import mapboxgl from 'mapbox-gl';
-import axios from "axios";  // Import mapboxgl
+import axios from "axios";
+import Sidebar from "../components/Sidebar.jsx";  // Import Sidebar component
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiYmltaWR1IiwiYSI6ImNtOGlmejI3ZzBjbmgyanBtMHZwdWlzZWcifQ.oR1p3_F9f9mqEaIxpklDOg';
 
@@ -73,82 +74,63 @@ const Dashboard = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 flex">
-            <Navbar />
+            {/* Sidebar */}
+            <Sidebar className="fixed top-0 left-0 h-full w-64" /> {/* Sidebar is fixed */}
 
-            <div className="dashboard-container flex">
-                {/* Sidebar */}
-                <div className="w-64 h-full bg-white border-r shadow-md p-6 flex flex-col space-y-6">
-                    <h2 className="text-2xl font-semibold text-indigo-600">Menu</h2>
-                    <nav className="flex flex-col space-y-4">
-                        <Link
-                            to="/dashboard"
-                            className={`${
-                                location.pathname === '/dashboard' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-600'
-                            } hover:bg-indigo-100 hover:text-indigo-600 p-3 rounded-lg transition-all`}
-                        >
-                            Dashboard
-                        </Link>
-                        <Link
-                            to="/order-history"
-                            className={`${
-                                location.pathname === '/order-history' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-600'
-                            } hover:bg-indigo-100 hover:text-indigo-600 p-3 rounded-lg transition-all`}
-                        >
-                            Order History
-                        </Link>
-                        <Link
-                            to="/profile"
-                            className={`${
-                                location.pathname === '/profile' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-600'
-                            } hover:bg-indigo-100 hover:text-indigo-600 p-3 rounded-lg transition-all`}
-                        >
-                            Profile
-                        </Link>
-                    </nav>
+            {/* Main Content */}
+            <div className="content flex-1 flex flex-col items-center p-8 ml-64"> {/* Added ml-64 to create space for the fixed sidebar */}
+                <Navbar />
+
+                <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl text-center">
+                    <h1 className="text-4xl font-extrabold text-gray-800 mb-4">
+                        {userName ? `Welcome, ${userName}!` : "Welcome!"}
+                    </h1>
+                    <p className="text-gray-500 text-lg">
+                        Manage your profile, view orders, and more from the sidebar.
+                    </p>
                 </div>
 
-                {/* Main Content */}
-                <div className="content flex-1 flex flex-col items-center p-8">
-                    <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl text-center">
-                        <h1 className="text-4xl font-extrabold text-gray-800 mb-4">
-                            {userName ? `Welcome, ${userName}!` : "Welcome!"}
-                        </h1>
-                        <p className="text-gray-500 text-lg">
-                            Manage your profile, view orders, and more from the sidebar.
-                        </p>
-                    </div>
+                {/* Delivery Details Card */}
 
-                    {/* Delivery Details Card */}
-                    {deliveryDetails ? (
-                        <div className="bg-white rounded-2xl shadow-lg p-4 mt-8 w-full max-w-4xl">
-                            <h2 className="text-2xl font-semibold mb-4 text-center text-indigo-600">Delivery Details</h2>
-                            <div className="space-y-4">
-                                <p><strong>Order ID:</strong> {deliveryDetails.orderId}</p>
-                                <p><strong>Status:</strong> {deliveryDetails.status}</p>
-                                <p><strong>Customer Address:</strong> {deliveryDetails.customerAddress}</p>
-                            </div>
+                {deliveryDetails ? (
+                    <div className="bg-white rounded-2xl shadow-2xl border-2 border-indigo-300 p-6 mt-8 w-full max-w-4xl mx-auto transition hover:shadow-3xl">
+                        <h2 className="text-3xl font-bold mb-6 text-center text-indigo-700">Delivery Details</h2>
+                        <div className="space-y-4 text-lg text-gray-700">
+                            <p><strong>Order ID:</strong> {deliveryDetails.orderId}</p>
+                            <p><strong>Status:</strong> {deliveryDetails.status}</p>
+                            <p><strong>Customer Address:</strong> {deliveryDetails.customerAddress}</p>
                         </div>
-                    ) : (
-                        <div className="bg-white rounded-2xl shadow-lg p-4 mt-8 w-full max-w-4xl text-center">
-                            <h2 className="text-2xl font-semibold mb-4 text-indigo-600">No Available Deliveries</h2>
-                            <p className="text-gray-500">Currently, there are no deliveries assigned to you. Please check back later.</p>
+
+                        {/* Buttons Section */}
+                        <div className="mt-8 flex justify-center space-x-4">
+                            <button className="bg-green-500 text-white py-2 px-6 rounded-xl shadow-md hover:bg-green-600 transition duration-300">
+                                Accept
+                            </button>
+                            <button className="bg-red-500 text-white py-2 px-6 rounded-xl shadow-md hover:bg-red-600 transition duration-300">
+                                Decline
+                            </button>
                         </div>
-                    )}
-
-                    {/* Map Section */}
-                    <div className="bg-white rounded-2xl shadow-lg p-4 mt-8 w-full max-w-4xl">
-                        <h2 className="text-2xl font-semibold mb-4 text-center text-indigo-600">Your Current Location</h2>
-                        <div
-                            ref={mapContainerRef}
-                            className="w-full rounded-lg"
-                            style={{ height: '500px' }} // 🔥 Added style here
-                        />
                     </div>
+                ) : (
+                    <div className="bg-white rounded-2xl shadow-2xl border-2 border-gray-200 p-6 mt-8 w-full max-w-4xl mx-auto text-center">
+                        <h2 className="text-3xl font-bold mb-6 text-indigo-600">No Available Deliveries</h2>
+                        <p className="text-gray-500 text-lg">Currently, there are no deliveries assigned to you. Please check back later.</p>
+                    </div>
+                )}
 
+
+
+                {/* Map Section */}
+                <div className="bg-white rounded-2xl shadow-lg p-4 mt-8 w-full max-w-4xl">
+                    <h2 className="text-2xl font-semibold mb-4 text-center text-indigo-600">Your Current Location</h2>
+                    <div
+                        ref={mapContainerRef}
+                        className="w-full rounded-lg"
+                        style={{ height: '500px' }}
+                    />
                 </div>
 
             </div>
-
         </div>
     );
 };

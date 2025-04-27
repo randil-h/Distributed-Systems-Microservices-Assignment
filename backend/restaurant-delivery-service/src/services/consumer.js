@@ -18,7 +18,10 @@ async function listenForDriverAssignment() {
         // Update delivery with assigned driver
         await Delivery.findOneAndUpdate(
             { orderId },
-            { assignedDriver: driver },
+            {
+                assignedDriver: driver,
+                status: "assigned"
+            },
             { new: true }
         );
 
