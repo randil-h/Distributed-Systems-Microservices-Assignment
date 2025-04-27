@@ -98,7 +98,7 @@ services:
   utility-notifications-service:
     build: ./utility-notifications-service
     environment:
-      - PORT=5556
+      - PORT=5554
       - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
       - rabbitmq
