@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllUsers, updateBlockStatus } = require('../controllers/userController');
+const { getAllUsers, updateBlockStatus, updateDriverLocation} = require('../controllers/userController');
 const { authenticate, authorizeRole } = require('../middleware/authMiddleware');
 
 // Protected route to get all users (requires admin role)
@@ -15,5 +15,7 @@ router.put('/suspend/:id',
     authorizeRole(['system-admin']),
     updateBlockStatus
 );
+
+router.put('/update-location/:id', updateDriverLocation);
 
 module.exports = router;

@@ -19,7 +19,24 @@ const Dashboard = () => {
     const location = useLocation(); // To track the current route for active state
 
     useEffect(() => {
+        const fetchDeliveryDetails = async () => {
+            try {
+                const userId = localStorage.getItem('id');  // Assuming userId is saved in localStorage
+                console.log(userId);
+                const response = await axios.get(`http://localhost:5003/api/delivery/driver/${userId}`);
+                setDeliveryDetails(response.data);  // Store the response in state
+            } catch (error) {
+                console.error("Error fetching delivery details:", error);
+            }
+        };
+
+        fetchDeliveryDetails();
+    }, []);
+
+    useEffect(() => {
         if (!mapContainerRef.current) return;
+
+        let map;
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -33,7 +50,7 @@ const Dashboard = () => {
                     setLat(newLat);
 
                     // Create the map only after getting location
-                    const map = new mapboxgl.Map({
+                     map = new mapboxgl.Map({
                         container: mapContainerRef.current,
                         style: 'mapbox://styles/mapbox/streets-v11',
                         center: [newLng, newLat], // Start centered at user's location
@@ -55,22 +72,44 @@ const Dashboard = () => {
                     console.error('Error getting location:', error);
                 }
             );
+
+            // Call update location every 2 minutes
+            const intervalId = setInterval(() => {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const updatedLat = position.coords.latitude;
+                        const updatedLng = position.coords.longitude;
+                        updateDriverLocation(updatedLat, updatedLng); // your function
+                    },
+                    (error) => {
+                        console.error('Error getting location for update:', error);
+                    }
+                );
+            }, 20000); // 120,000 milliseconds = 2 minutes
+
+            // Clean up interval on unmount
+            return () => {
+                clearInterval(intervalId);
+                if (map) map.remove();
+            };
         }
 
-        const fetchDeliveryDetails = async () => {
-            try {
-                const userId = localStorage.getItem('id');  // Assuming userId is saved in localStorage
-                console.log(userId);
-                const response = await axios.get(`http://localhost:5003/api/delivery/driver/${userId}`);
-                setDeliveryDetails(response.data);  // Store the response in state
-            } catch (error) {
-                console.error("Error fetching delivery details:", error);
-            }
-        };
 
-        fetchDeliveryDetails();
 
     }, []);
+
+    const updateDriverLocation = async (lat, lng) => {
+        try {
+            const userId = localStorage.getItem('id');
+            await axios.put(`http://localhost:6969/api/user/update-location/${userId}`, {
+                lat,
+                lng
+            });
+            console.log("Updated driver location successfully");
+        } catch (error) {
+            console.error("Error updating driver location:", error);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-100 flex">
@@ -98,7 +137,7 @@ const Dashboard = () => {
                         <div className="space-y-4 text-lg text-gray-700">
                             <p><strong>Order ID:</strong> {deliveryDetails.orderId}</p>
                             <p><strong>Status:</strong> {deliveryDetails.status}</p>
-                            <p><strong>Customer Address:</strong> {deliveryDetails.customerAddress}</p>
+                            {/*<p><strong>Customer Address:</strong> {deliveryDetails.customerAddress}</p>*/}
                         </div>
 
                         {/* Buttons Section */}

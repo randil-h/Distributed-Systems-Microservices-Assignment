@@ -1,15 +1,13 @@
 const Delivery = require("../models/Delivery");
 const sendDriverAssignmentRequest = require("../services/publisher");
 
+const { createDeliveryService } = require("../services/deliveryService");
+
 exports.createDelivery = async (req, res) => {
     const { orderId, customerAddress } = req.body;
 
     try {
-        const delivery = new Delivery({ orderId, customerAddress });
-        await delivery.save();
-
-        // Publish driver assignment request
-        await sendDriverAssignmentRequest(orderId, customerAddress);
+        const delivery = await createDeliveryService(orderId, customerAddress);
 
         res.status(201).json({
             message: "Delivery created. Driver assignment in progress.",
