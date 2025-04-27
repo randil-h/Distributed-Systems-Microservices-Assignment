@@ -14,7 +14,7 @@ export default function OrderBanner() {
       className="text-black  top-28   flex flex-col content-center justify-center align-middle pt-48 pb-24 w-full  items-center">
       <img src={Icon} className="size-20 mb-8" alt={'rf'}/>
       <div className=" text-7xl">
-        What are you looking for ?
+        What are you looking for <span className="text-lime-400">?</span>
       </div>
       <div className=" text-2xl text-neutral-400 pt-6">
         Search for your favourite restaurants, dishes and even groceries. Get exclusive discounts for selected
