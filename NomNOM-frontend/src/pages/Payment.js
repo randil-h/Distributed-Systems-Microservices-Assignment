@@ -26,6 +26,10 @@ const CheckoutForm = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
+    const [paymentDetails, setPaymentDetails] = useState({
+        amount: 100000,  // Default value (in cents/minor units)
+        currency: "lkr", // Default value
+    });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -44,8 +48,8 @@ const CheckoutForm = () => {
 
         try {
             const { data } = await axios.post("http://localhost:2703/create-payment-intent", {
-                amount: 100000,
-                currency: "lkr",
+                amount: paymentDetails.amount,
+                currency: paymentDetails.currency,
             });
 
             const result = await stripe.confirmCardPayment(data.clientSecret, {
@@ -70,6 +74,12 @@ const CheckoutForm = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const formatAmount = (amount, currency) => {
+        // Stripe usually uses "cents", so divide by 100
+        const formatted = (amount / 100).toFixed(2);
+        return `${currency.toUpperCase()} ${formatted}`;
     };
 
     return (
@@ -112,7 +122,7 @@ const CheckoutForm = () => {
                                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                                disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
                 >
-                    {loading ? "Processing..." : "Pay $ 69.00"}
+                    {loading ? "Processing..." : `Pay ${formatAmount(paymentDetails.amount, paymentDetails.currency)}`}
                 </button>
 
                 {message && (

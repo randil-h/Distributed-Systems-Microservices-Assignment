@@ -66,7 +66,7 @@ const FinanceDashboard = () => {
                                     className={`border-t border-gray-700 ${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-900'}`}
                                 >
                                     <td className="py-3 px-4 truncate max-w-[200px]">{payment.id}</td>
-                                    <td className="py-3 px-4">${(payment.amount / 100).toFixed(2)}</td>
+                                    <td className="py-3 px-4">{(payment.amount / 100).toFixed(2)}</td>
                                     <td className="py-3 px-4">{payment.currency.toUpperCase()}</td>
                                     <td className="py-3 px-4 capitalize">{payment.status}</td>
                                 </tr>
