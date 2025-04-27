@@ -1,0 +1,178 @@
+version: '3.8'
+
+networks:
+  restaurant-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  rabbitmq_data:
+
+services:
+  # Database and message broker
+  mongodb:
+    image: mongo:6
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - restaurant-network
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - restaurant-network
+    restart: always
+
+  # Microservices
+  restaurant-order-service:
+    build: ./restaurant-order-service
+    ports:
+      - "6967:6967"
+    environment:
+      - PORT=6967
+      - MONGOURI=mongodb://mongodb:27017/restaurant
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    networks:
+      - restaurant-network
+    depends_on:
+      - mongodb
+      - rabbitmq
+    restart: always
+
+  restaurant-admin-service:
+    build: ./restaurant-admin-service
+    ports:
+      - "6961:6961"
+    environment:
+      - PORT=6961
+      - MONGOURI=mongodb://mongodb:27017/restaurant
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    networks:
+      - restaurant-network
+    depends_on:
+      - mongodb
+      - rabbitmq
+    restart: always
+
+  restaurant-ops-service:
+    build: ./restaurant-ops-service
+    ports:
+      - "6962:6962"
+    environment:
+      - PORT=6962
+      - MONGOURI=mongodb://mongodb:27017/restaurant
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    networks:
+      - restaurant-network
+    depends_on:
+      - mongodb
+      - rabbitmq
+    restart: always
+
+  restaurant-delivery-service:
+    build: ./restaurant-delivery-service
+    ports:
+      - "6963:6963"
+    environment:
+      - PORT=6963
+      - MONGOURI=mongodb://mongodb:27017/restaurant
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    networks:
+      - restaurant-network
+    depends_on:
+      - mongodb
+      - rabbitmq
+    restart: always
+
+  system-admin-service:
+    build: ./system-admin-service
+    ports:
+      - "6964:6964"
+    environment:
+      - PORT=6964
+      - MONGOURI=mongodb://mongodb:27017/restaurant
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    networks:
+      - restaurant-network
+    depends_on:
+      - mongodb
+      - rabbitmq
+    restart: always
+
+  utility-auth-service:
+    build: ./utility-auth-service
+    ports:
+      - "6965:6965"
+    environment:
+      - PORT=6965
+      - MONGOURI=mongodb://mongodb:27017/restaurant
+      - JWT_SECRET=your_jwt_secret_here
+    networks:
+      - restaurant-network
+    depends_on:
+      - mongodb
+    restart: always
+
+  utility-notifications-service:
+    build: ./utility-notifications-service
+    ports:
+      - "6966:6966"
+    environment:
+      - PORT=6966
+      - MONGOURI=mongodb://mongodb:27017/restaurant
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    networks:
+      - restaurant-network
+    depends_on:
+      - mongodb
+      - rabbitmq
+    restart: always
+
+  utility-payment-service:
+    build: ./utility-payment-service
+    ports:
+      - "6968:6968"
+    environment:
+      - PORT=6968
+      - MONGOURI=mongodb://mongodb:27017/restaurant
+    networks:
+      - restaurant-network
+    depends_on:
+      - mongodb
+    restart: always
+
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "80:8080"
+    environment:
+      - PORT=8080
+      - ORDER_SERVICE_URL=http://restaurant-order-service:6967
+      - ADMIN_SERVICE_URL=http://restaurant-admin-service:6961
+      - OPS_SERVICE_URL=http://restaurant-ops-service:6962
+      - DELIVERY_SERVICE_URL=http://restaurant-delivery-service:6963
+      - SYSTEM_ADMIN_URL=http://system-admin-service:6964
+      - AUTH_SERVICE_URL=http://utility-auth-service:6965
+      - NOTIFICATIONS_SERVICE_URL=http://utility-notifications-service:6966
+      - PAYMENT_SERVICE_URL=http://utility-payment-service:6968
+    networks:
+      - restaurant-network
+    depends_on:
+      - restaurant-order-service
+      - restaurant-admin-service
+      - restaurant-ops-service
+      - restaurant-delivery-service
+      - system-admin-service
+      - utility-auth-service
+      - utility-notifications-service
+      - utility-payment-service
+    restart: always
