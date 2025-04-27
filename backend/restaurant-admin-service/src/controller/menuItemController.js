@@ -100,10 +100,30 @@ const deleteMenuItem = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+const updateMenuItemAvailability = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isAvailable } = req.body;
 
+        const menuItem = await MenuItem.findByIdAndUpdate(
+            id,
+            { isAvailable },
+            { new: true }
+        );
+
+        if (!menuItem) {
+            return res.status(404).json({ message: 'Menu item not found' });
+        }
+
+        res.json(menuItem);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 module.exports = {
     createMenuItem,
     getMenuItemsByRestaurant,
     updateMenuItem,
-    deleteMenuItem
+    deleteMenuItem,
+    updateMenuItemAvailability
 };
