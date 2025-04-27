@@ -38,7 +38,7 @@ services:
       - "6967:6967"
     environment:
       - PORT=6967
-      - MONGOURI=mongodb://mongodb:27017/restaurant
+      - MONGOURI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/OrderDB?retryWrites=true&w=majority&appName=Cluster0
       - RABBITMQ_URL=amqp://rabbitmq:5672
     networks:
       - restaurant-network
