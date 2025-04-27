@@ -1,15 +1,14 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import axios from "axios";
+
 const initStripe = () => {
     const stripeKey = process.env.REACT_APP_STRIPE_SANDBOX_FRONTEND_API_KEY;
-
     if (!stripeKey) {
         console.error("Stripe publishable key is not defined. Please check your environment variables.");
         return null;
     }
-
     try {
         return loadStripe(stripeKey);
     } catch (error) {
@@ -27,14 +26,22 @@ const CheckoutForm = () => {
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
     const [paymentDetails, setPaymentDetails] = useState({
-        amount: 100000,  // Default value (in cents/minor units)
-        currency: "lkr", // Default value
+        amount: 100000,  // in cents
+        currency: "lkr",
     });
+
+    useEffect(() => {
+        if (messageType === "success") {
+            const timer = setTimeout(() => {
+                console.log("Redirecting to success page with status: success");
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [messageType]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Additional stripe check
         if (!stripe || !elements) {
             console.error("Stripe or Elements not initialized");
             setMessage("Payment processing is not available. Please try again later.");
@@ -80,16 +87,21 @@ const CheckoutForm = () => {
     };
 
     const formatAmount = (amount, currency) => {
-        // Stripe usually uses "cents", so divide by 100
         const formatted = (amount / 100).toFixed(2);
         return `${currency.toUpperCase()} ${formatted}`;
     };
 
     return (
         <div className="w-full max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+            <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
                 Complete Your Payment
             </h2>
+
+            <div className="text-center text-gray-600 mb-6 text-sm">
+                You will be charged <span className="font-semibold">{formatAmount(paymentDetails.amount, paymentDetails.currency)}</span> by <span className="font-semibold">NOMNOM PRIVATE LIMITED</span>. <br />
+                Secure payment powered by Stripe.
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                     <label
