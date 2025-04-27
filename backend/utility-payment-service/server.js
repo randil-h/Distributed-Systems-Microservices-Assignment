@@ -71,6 +71,13 @@ app.post("/process-order-payment/:orderId", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 2703;
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', service: 'utility-payment-service' });
+});
+
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

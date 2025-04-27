@@ -24,6 +24,11 @@ app.use(express.json());
 // Routes
 app.use("/api/orders", orderRoutes);
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', service: 'restaurant-order-service' });
+});
+
 // Define port
 const PORT = process.env.PORT || 6967;
 
