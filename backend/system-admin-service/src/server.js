@@ -18,6 +18,11 @@ app.use(cors());
 app.use(express.json());
 app.use('/stripe', stripeRoutes );
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', service: 'system-admin-service' });
+});
+
 module.exports = { app};
 
 app.listen(PORT, () => {
