@@ -44,8 +44,8 @@ const CheckoutForm = () => {
 
         try {
             const { data } = await axios.post("http://localhost:2703/create-payment-intent", {
-                amount: 690000,
-                currency: "usd",
+                amount: 100000,
+                currency: "lkr",
             });
 
             const result = await stripe.confirmCardPayment(data.clientSecret, {
@@ -73,7 +73,7 @@ const CheckoutForm = () => {
     };
 
     return (
-        <div className="min-w-full max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
+        <div className="w-full max-w-md mx-auto bg-white shadow-md rounded-lg p-6">
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
                 Complete Your Payment
             </h2>
@@ -142,9 +142,11 @@ const Payment = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-            <Elements stripe={stripePromise}>
-                <CheckoutForm />
-            </Elements>
+            <div className="w-full max-w-lg mx-auto">
+                <Elements stripe={stripePromise}>
+                    <CheckoutForm />
+                </Elements>
+            </div>
         </div>
     );
 };
