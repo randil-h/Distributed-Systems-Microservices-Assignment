@@ -34,6 +34,22 @@ const updateBlockStatus = async (req, res) => {
             return res.status(400).json({ message: 'Invalid id format.' });
         }
 
+        // If we're unblocking a user, we don't need duration or unit
+        if (isBlocked === false) {
+            const updatedUser = await User.findByIdAndUpdate(
+                id,
+                { isBlocked: false, blockExpiry: null },
+                { new: true }
+            );
+
+            if (!updatedUser) {
+                return res.status(404).json({ message: 'User not found.' });
+            }
+
+            return res.status(200).json({ message: 'User reactivated successfully.', user: updatedUser });
+        }
+
+        // For blocking users, validate blockDuration and durationUnit
         if (typeof isBlocked !== 'boolean' || !blockDuration || !['hours', 'days'].includes(durationUnit)) {
             return res.status(400).json({ message: 'Invalid input.' });
         }
