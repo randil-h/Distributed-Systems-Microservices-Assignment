@@ -32,11 +32,23 @@ exports.updateStatus = async (req, res) => {
 };
 
 exports.getAssignedDeliveries = async (req, res) => {
-    const { driverId } = req.params;
     try {
-        const deliveries = await Delivery.find({ "assignedDriver.driverId": driverId });
-        res.json(deliveries);
+        const driverId = req.params.userId;  // Assuming driverId is passed in URL params
+
+        console.log(driverId);
+
+        const delivery = await Delivery.findOne({
+            "assignedDriver.driverId": driverId,
+            status: 'Assigned'
+        });
+
+        if (!delivery) {
+            return res.status(404).json({ message: 'No assigned delivery found for this driver.' });
+        }
+
+        res.status(200).json(delivery);
     } catch (error) {
-        res.status(400).json({ error: error.message});
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
     }
 };

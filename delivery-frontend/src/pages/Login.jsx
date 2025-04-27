@@ -46,104 +46,114 @@ const Login = () => {
         disabledButton: "w-full py-3 px-4 rounded-lg text-white font-medium bg-indigo-400 cursor-not-allowed",
         footer: "px-8 py-4 bg-gray-50 border-t border-gray-100 flex justify-center",
         footerText: "text-sm text-gray-600",
-        createAccountLink: "text-indigo-600 font-medium hover:text-indigo-800"
+        createAccountLink: "text-indigo-600 font-medium hover:text-indigo-800",
+        imageContainer: "w-1/2 bg-cover bg-center", // For the image container
+        image: "w-full h-full object-cover" // To ensure the image covers the entire right side
     };
 
     return (
         <div className={styles.container} style={{background: 'linear-gradient(to bottom right, #EBF4FF, #EBE7FF)'}}>
-            <div className="w-full max-w-md px-6 py-8">
-                <div className={styles.formCard} style={{boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'}}>
-                    <div className={styles.header} style={{background: '#4F46E5', color: 'white'}}>
-                        <h2 className={styles.heading} style={{fontSize: '1.875rem', fontWeight: 'bold', textAlign: 'center'}}>Welcome Back</h2>
-                        <p className={styles.subheading} style={{color: '#C7D2FE', textAlign: 'center', marginTop: '0.5rem', fontSize: '0.875rem'}}>Sign in to your rider account</p>
-                    </div>
-
-                    <form onSubmit={handleSubmit} className={styles.formBody} style={{padding: '1.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem'}}>
-                        {error && (
-                            <div className={styles.errorMessage} style={{background: '#FEF2F2', color: '#DC2626', padding: '0.75rem', borderRadius: '0.375rem', fontSize: '0.875rem'}}>
-                                {error}
-                            </div>
-                        )}
-
-                        <div className={styles.formGroup} style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
-                            <label htmlFor="email" className={styles.formLabel} style={{fontSize: '0.875rem', fontWeight: '500', color: '#374151'}}>
-                                Email Address
-                            </label>
-                            <input
-                                id="email"
-                                type="email"
-                                placeholder="you@example.com"
-                                className={styles.formInput}
-                                style={{
-                                    width: '100%',
-                                    padding: '0.75rem 1rem',
-                                    borderRadius: '0.375rem',
-                                    border: '1px solid #D1D5DB',
-                                    transition: 'all 0.2s'
-                                }}
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
+            <div className="flex w-full h-full">
+                {/* Left half - Form */}
+                <div className="w-1/2 flex justify-center items-center">
+                    <div className={styles.formCard} style={{boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'}}>
+                        <div className={styles.header} style={{background: '#4F46E5', color: 'white'}}>
+                            <h2 className={styles.heading} style={{fontSize: '1.875rem', fontWeight: 'bold', textAlign: 'center'}}>Welcome Back</h2>
+                            <p className={styles.subheading} style={{color: '#C7D2FE', textAlign: 'center', marginTop: '0.5rem', fontSize: '0.875rem'}}>Sign in to your rider account</p>
                         </div>
 
-                        <div className={styles.formGroup} style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
-                            <div className={styles.linkRow} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                <label htmlFor="password" className={styles.formLabel} style={{fontSize: '0.875rem', fontWeight: '500', color: '#374151'}}>
-                                    Password
+                        <form onSubmit={handleSubmit} className={styles.formBody} style={{padding: '1.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem'}}>
+                            {error && (
+                                <div className={styles.errorMessage} style={{background: '#FEF2F2', color: '#DC2626', padding: '0.75rem', borderRadius: '0.375rem', fontSize: '0.875rem'}}>
+                                    {error}
+                                </div>
+                            )}
+
+                            <div className={styles.formGroup} style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
+                                <label htmlFor="email" className={styles.formLabel} style={{fontSize: '0.875rem', fontWeight: '500', color: '#374151'}}>
+                                    Email Address
                                 </label>
-                                <a href="#" className={styles.link} style={{fontSize: '0.875rem', color: '#4F46E5'}}>
-                                    Forgot password?
-                                </a>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    placeholder="you@example.com"
+                                    className={styles.formInput}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem 1rem',
+                                        borderRadius: '0.375rem',
+                                        border: '1px solid #D1D5DB',
+                                        transition: 'all 0.2s'
+                                    }}
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
                             </div>
-                            <input
-                                id="password"
-                                type="password"
-                                placeholder="••••••••"
-                                className={styles.formInput}
-                                style={{
-                                    width: '100%',
-                                    padding: '0.75rem 1rem',
-                                    borderRadius: '0.375rem',
-                                    border: '1px solid #D1D5DB',
-                                    transition: 'all 0.2s'
-                                }}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
 
-                        <div>
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className={isLoading ? styles.disabledButton : styles.submitButton}
-                                style={{
-                                    width: '100%',
-                                    padding: '0.75rem 1rem',
-                                    borderRadius: '0.375rem',
-                                    fontWeight: '500',
-                                    color: 'white',
-                                    background: isLoading ? '#818CF8' : '#4F46E5',
-                                    cursor: isLoading ? 'not-allowed' : 'pointer',
-                                    transition: 'all 0.2s',
-                                    marginTop: '0.5rem'
-                                }}
-                            >
-                                {isLoading ? 'Signing in...' : 'Sign In'}
-                            </button>
-                        </div>
-                    </form>
+                            <div className={styles.formGroup} style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
+                                <div className={styles.linkRow} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                                    <label htmlFor="password" className={styles.formLabel} style={{fontSize: '0.875rem', fontWeight: '500', color: '#374151'}}>
+                                        Password
+                                    </label>
+                                    <a href="#" className={styles.link} style={{fontSize: '0.875rem', color: '#4F46E5'}}>
+                                        Forgot password?
+                                    </a>
+                                </div>
+                                <input
+                                    id="password"
+                                    type="password"
+                                    placeholder="••••••••"
+                                    className={styles.formInput}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem 1rem',
+                                        borderRadius: '0.375rem',
+                                        border: '1px solid #D1D5DB',
+                                        transition: 'all 0.2s'
+                                    }}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                            </div>
 
-                    <div className={styles.footer} style={{padding: '1rem 2rem', background: '#F9FAFB', borderTop: '1px solid #F3F4F6', display: 'flex', justifyContent: 'center'}}>
-                        <p className={styles.footerText} style={{fontSize: '0.875rem', color: '#4B5563'}}>
-                            Don't have an account?{' '}
-                            <Link to="/signup" className="text-blue-600 hover:underline">
-                                Sign up here
-                            </Link>
-                        </p>
+                            <div>
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className={isLoading ? styles.disabledButton : styles.submitButton}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem 1rem',
+                                        borderRadius: '0.375rem',
+                                        fontWeight: '500',
+                                        color: 'white',
+                                        background: isLoading ? '#818CF8' : '#4F46E5',
+                                        cursor: isLoading ? 'not-allowed' : 'pointer',
+                                        transition: 'all 0.2s',
+                                        marginTop: '0.5rem'
+                                    }}
+                                >
+                                    {isLoading ? 'Signing in...' : 'Sign In'}
+                                </button>
+                            </div>
+                        </form>
+
+                        <div className={styles.footer} style={{padding: '1rem 2rem', background: '#F9FAFB', borderTop: '1px solid #F3F4F6', display: 'flex', justifyContent: 'center'}}>
+                            <p className={styles.footerText} style={{fontSize: '0.875rem', color: '#4B5563'}}>
+                                Don't have an account?{' '}
+                                <Link to="/signup" className="text-blue-600 hover:underline">
+                                    Sign up here
+                                </Link>
+                            </p>
+                        </div>
                     </div>
+                </div>
+
+                {/* Right half - Image */}
+                <div className={`w-1/2 ${styles.imageContainer}`} style={{ backgroundImage: 'url(cookie.png)' }} >
+                    <div className={styles.image}></div>
                 </div>
             </div>
         </div>

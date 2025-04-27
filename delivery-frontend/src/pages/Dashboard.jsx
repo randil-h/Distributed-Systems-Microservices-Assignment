@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import mapboxgl from 'mapbox-gl';  // Import mapboxgl
+import mapboxgl from 'mapbox-gl';
+import axios from "axios";  // Import mapboxgl
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiYmltaWR1IiwiYSI6ImNtOGlmejI3ZzBjbmgyanBtMHZwdWlzZWcifQ.oR1p3_F9f9mqEaIxpklDOg';
 
@@ -12,6 +13,7 @@ const Dashboard = () => {
     const [lng, setLng] = useState(0);
     const [lat, setLat] = useState(0);
     const [zoom, setZoom] = useState(14);
+    const [deliveryDetails, setDeliveryDetails] = useState(null);
 
     const location = useLocation(); // To track the current route for active state
 
@@ -33,7 +35,7 @@ const Dashboard = () => {
                     const map = new mapboxgl.Map({
                         container: mapContainerRef.current,
                         style: 'mapbox://styles/mapbox/streets-v11',
-                        center: [newLng, newLat], // ✅ Start centered at user's location
+                        center: [newLng, newLat], // Start centered at user's location
                         zoom: zoom, // Already set to 14
                     });
 
@@ -53,6 +55,20 @@ const Dashboard = () => {
                 }
             );
         }
+
+        const fetchDeliveryDetails = async () => {
+            try {
+                const userId = localStorage.getItem('id');  // Assuming userId is saved in localStorage
+                console.log(userId);
+                const response = await axios.get(`http://localhost:5003/api/delivery/driver/${userId}`);
+                setDeliveryDetails(response.data);  // Store the response in state
+            } catch (error) {
+                console.error("Error fetching delivery details:", error);
+            }
+        };
+
+        fetchDeliveryDetails();
+
     }, []);
 
     return (
@@ -91,7 +107,6 @@ const Dashboard = () => {
                     </nav>
                 </div>
 
-
                 {/* Main Content */}
                 <div className="content flex-1 flex flex-col items-center p-8">
                     <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl text-center">
@@ -102,6 +117,23 @@ const Dashboard = () => {
                             Manage your profile, view orders, and more from the sidebar.
                         </p>
                     </div>
+
+                    {/* Delivery Details Card */}
+                    {deliveryDetails ? (
+                        <div className="bg-white rounded-2xl shadow-lg p-4 mt-8 w-full max-w-4xl">
+                            <h2 className="text-2xl font-semibold mb-4 text-center text-indigo-600">Delivery Details</h2>
+                            <div className="space-y-4">
+                                <p><strong>Order ID:</strong> {deliveryDetails.orderId}</p>
+                                <p><strong>Status:</strong> {deliveryDetails.status}</p>
+                                <p><strong>Customer Address:</strong> {deliveryDetails.customerAddress}</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="bg-white rounded-2xl shadow-lg p-4 mt-8 w-full max-w-4xl text-center">
+                            <h2 className="text-2xl font-semibold mb-4 text-indigo-600">No Available Deliveries</h2>
+                            <p className="text-gray-500">Currently, there are no deliveries assigned to you. Please check back later.</p>
+                        </div>
+                    )}
 
                     {/* Map Section */}
                     <div className="bg-white rounded-2xl shadow-lg p-4 mt-8 w-full max-w-4xl">

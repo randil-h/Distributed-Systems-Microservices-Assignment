@@ -6,6 +6,7 @@ export const login = async (email, password) => {
         const res = await axios.post(`http://localhost:6969/api/auth/login`, { email, password });
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('userName', res.data.name);
+        localStorage.setItem('id', res.data.id);
         return true;
     } catch (error) {
         console.error(error);
