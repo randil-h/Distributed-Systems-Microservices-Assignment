@@ -65,7 +65,8 @@ exports.login = async (req, res) => {
             token,
             role: user.role,
             id: user._id,
-            restaurantId: user.restaurantId
+            restaurantId: user.restaurantId,
+            name: user.name
         });
     } catch (error) {
         console.error("Login error:", error); // This will show the actual error
