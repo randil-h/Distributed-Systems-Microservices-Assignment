@@ -104,41 +104,51 @@ const UserManagement = () => {
 
     const handleBlockUser = async () => {
         try {
-            const now = new Date();
-            let blockExpiry;
+            // Convert blockDuration string to number and unit
+            let blockDurationNumber;
+            let durationUnit;
 
-            // Calculate block expiry based on selected duration
             switch (blockDuration) {
                 case '24h':
-                    blockExpiry = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+                    blockDurationNumber = 24;
+                    durationUnit = 'hours';
                     break;
                 case '72h':
-                    blockExpiry = new Date(now.getTime() + 72 * 60 * 60 * 1000);
+                    blockDurationNumber = 72;
+                    durationUnit = 'hours';
                     break;
                 case '1w':
-                    blockExpiry = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+                    blockDurationNumber = 7;
+                    durationUnit = 'days';
                     break;
                 case '1m':
-                    blockExpiry = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+                    blockDurationNumber = 30;
+                    durationUnit = 'days';
                     break;
                 case '1y':
-                    blockExpiry = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+                    blockDurationNumber = 365;
+                    durationUnit = 'days';
                     break;
                 default:
-                    blockExpiry = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+                    blockDurationNumber = 24;
+                    durationUnit = 'hours';
             }
 
-            await axios.put(`http://localhost:6969/users/${selectedUser._id}`, {
-                ...selectedUser,
+            await axios.put(`http://localhost:6969/api/user/suspend/${selectedUser._id}`, {
                 isBlocked: true,
-                blockExpiry: blockExpiry.toISOString()
+                blockDuration: blockDurationNumber,
+                durationUnit: durationUnit
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
 
             fetchUsers(); // Refresh user list
             setIsDetailsModalOpen(false);
         } catch (err) {
             console.error('Error blocking user:', err);
-            alert('Failed to block user');
+            alert('Failed to block user: ' + (err.response?.data?.message || err.message));
         }
     };
 

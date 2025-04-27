@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const { checkAndUnblockUser } = require("../controllers/userController");
 
 const generateToken = (user) => {
     return jwt.sign({
@@ -54,10 +55,16 @@ exports.login = async (req, res) => {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
+        await checkAndUnblockUser(user._id);
+
         const isMatch = await user.matchPassword(password);
         if (!isMatch) {
             console.log("Password mismatch for user:", email);
             return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        if (user.isBlocked) {
+            return res.status(403).json({ message: "Your account is blocked. Please try again later." });
         }
 
         const token = generateToken(user);
@@ -76,14 +83,17 @@ exports.login = async (req, res) => {
         });
     }
 };
-exports.verifyToken = (req, res) => {
+exports.verifyToken = async (req, res) => {
     const token = req.header("Authorization");
-    if (!token) return res.status(401).json({ message: "Unauthorized" });
+    if (!token) return res.status(401).json({message: "Unauthorized"});
 
     try {
         const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET); // Remove 'Bearer '
-        res.json({ user: decoded }); // Send the user data
+
+        await checkAndUnblockUser(decoded.userId);
+
+        res.json({user: decoded}); // Send the user data
     } catch (error) {
-        res.status(401).json({ message: "Invalid token" });
+        res.status(401).json({message: "Invalid token"});
     }
 };
