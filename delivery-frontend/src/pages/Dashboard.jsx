@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import mapboxgl from 'mapbox-gl';
 import axios from "axios";
-import Sidebar from "../components/Sidebar.jsx";  // Import Sidebar component
+import {Sidebar} from "lucide-react";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiYmltaWR1IiwiYSI6ImNtOGlmejI3ZzBjbmgyanBtMHZwdWlzZWcifQ.oR1p3_F9f9mqEaIxpklDOg';
 
@@ -15,6 +15,7 @@ const Dashboard = () => {
     const [lat, setLat] = useState(0);
     const [zoom, setZoom] = useState(14);
     const [deliveryDetails, setDeliveryDetails] = useState(null);
+    const [buttonStage, setButtonStage] = useState('accept');
 
     const location = useLocation(); // To track the current route for active state
 
@@ -50,7 +51,7 @@ const Dashboard = () => {
                     setLat(newLat);
 
                     // Create the map only after getting location
-                     map = new mapboxgl.Map({
+                    map = new mapboxgl.Map({
                         container: mapContainerRef.current,
                         style: 'mapbox://styles/mapbox/streets-v11',
                         center: [newLng, newLat], // Start centered at user's location
@@ -111,6 +112,25 @@ const Dashboard = () => {
         }
     };
 
+    const handlePickup = async () => {
+        try {
+            await axios.put(`http://localhost:6967/api/orders/${deliveryDetails.orderId}`, {
+                status: "In Transit"
+            });
+            console.log("Order status updated to In Transit");
+
+            // Update local deliveryDetails state if needed
+            setDeliveryDetails(prev => ({
+                ...prev,
+                status: "In Transit"
+            }));
+
+            // Optionally reset buttonStage or move to another button (e.g., "Delivered" later)
+        } catch (error) {
+            console.error("Error updating order status:", error);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-100 flex">
             {/* Sidebar */}
@@ -142,9 +162,21 @@ const Dashboard = () => {
 
                         {/* Buttons Section */}
                         <div className="mt-8 flex justify-center space-x-4">
-                            <button className="bg-green-500 text-white py-2 px-6 rounded-xl shadow-md hover:bg-green-600 transition duration-300">
-                                Accept
-                            </button>
+                            {buttonStage === 'accept' ? (
+                                <button
+                                    className="bg-green-500 text-white py-2 px-6 rounded-xl shadow-md hover:bg-green-600 transition duration-300"
+                                    onClick={() => setButtonStage('pickup')}
+                                >
+                                    Accept
+                                </button>
+                            ) : (
+                                <button
+                                    className="bg-blue-500 text-white py-2 px-6 rounded-xl shadow-md hover:bg-blue-600 transition duration-300"
+                                    onClick={handlePickup}
+                                >
+                                    Pick Up
+                                </button>
+                            )}
                             <button className="bg-red-500 text-white py-2 px-6 rounded-xl shadow-md hover:bg-red-600 transition duration-300">
                                 Decline
                             </button>

@@ -1,10 +1,8 @@
-const amqp = require("amqplib");
-const sendEmail = require("../sendEmail");
-const sendSMS = require("../sendSMS");
+import amqp from 'amqplib';
+import sendSMS from "../sendSMS.js";
 
-require('dotenv').config(); // Load environment variables
 
-async function listenForNotifications() {
+export async function listenForNotifications() {
     const connection = await amqp.connect("amqp://localhost");
     const channel = await connection.createChannel();
 
@@ -16,7 +14,7 @@ async function listenForNotifications() {
         const { toEmail, toPhone, subject, text } = JSON.parse(msg.content.toString());
         console.log("Received notification task:", { toEmail, toPhone, subject, text });
 
-        await sendEmail(toEmail, subject, text);
+        // await sendEmail(toEmail, subject, text);
         await sendSMS(toPhone, text);
 
         channel.ack(msg);

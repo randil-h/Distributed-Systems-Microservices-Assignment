@@ -40,6 +40,7 @@ const UserSchema = new mongoose.Schema({
         ref: 'Restaurant',
         required: function() { return this.role === 'restaurant-staff'; }
     },
+    mobile: { type: String, required: false, unique: false },
 });
 
 // Hash password before saving

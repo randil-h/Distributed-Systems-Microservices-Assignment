@@ -1,40 +1,78 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+"use client"
+import {Link} from "react-router-dom"
+import { usePathname } from "next/navigation"
+import {Bike, ClipboardList, LayoutDashboard, LogOut, Settings, Sidebar, User} from "lucide-react"
+import {
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem
+} from "./ui/sidebar.jsx";
+import {Separator} from "./ui/separator.jsx";
 
-const Sidebar = () => {
-    const location = useLocation(); // To track the current route for active state
+
+export function DashboardSidebar() {
+    const pathname = usePathname()
 
     return (
-        <div className="fixed left-0 top-0 w-64 h-full bg-white border-r shadow-md flex flex-col p-6 space-y-6">
-            <h2 className="text-2xl font-semibold text-indigo-600">Menu</h2>
-            <nav className="flex flex-col space-y-4">
-                <Link
-                    to="/dashboard"
-                    className={`${
-                        location.pathname === '/dashboard' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-600'
-                    } hover:bg-indigo-100 hover:text-indigo-600 p-3 rounded-lg transition-all`}
-                >
-                    Dashboard
-                </Link>
-                <Link
-                    to="/order-history"
-                    className={`${
-                        location.pathname === '/order-history' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-600'
-                    } hover:bg-indigo-100 hover:text-indigo-600 p-3 rounded-lg transition-all`}
-                >
-                    Order History
-                </Link>
-                <Link
-                    to="/profile"
-                    className={`${
-                        location.pathname === '/profile' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-600'
-                    } hover:bg-indigo-100 hover:text-indigo-600 p-3 rounded-lg transition-all`}
-                >
-                    Profile
-                </Link>
-            </nav>
-        </div>
-    );
-};
-
-export default Sidebar;
+        <Sidebar>
+            <SidebarHeader>
+                <div className="flex items-center gap-2 px-4 py-2">
+                    <Bike className="h-6 w-6" />
+                    <span className="font-semibold">Delivery Rider</span>
+                </div>
+                <Separator />
+            </SidebarHeader>
+            <SidebarContent>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={pathname === "/dashboard"}>
+                            <Link href="/dashboard">
+                                <LayoutDashboard className="h-4 w-4" />
+                                <span>Dashboard</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={pathname === "/order-history"}>
+                            <Link href="/order-history">
+                                <ClipboardList className="h-4 w-4" />
+                                <span>Order History</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={pathname === "/profile"}>
+                            <Link href="/profile">
+                                <User className="h-4 w-4" />
+                                <span>Profile</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={pathname === "/settings"}>
+                            <Link href="/settings">
+                                <Settings className="h-4 w-4" />
+                                <span>Settings</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarContent>
+            <SidebarFooter>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                            <Link href="/login">
+                                <LogOut className="h-4 w-4" />
+                                <span>Logout</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarFooter>
+        </Sidebar>
+    )
+}
