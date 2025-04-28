@@ -16,6 +16,7 @@ import Payment from "./pages/Payment";
 import Restaurant from "./pages/Restaurant";
 import {CartProvider} from "./context/CartContext";
 import CartPage from "./pages/CartPage";
+import MyOrders from "./pages/MyOrders";
 
 // Simple fade transition
 const fadeTransition = {
@@ -53,6 +54,14 @@ function App() {
           element={
             <motion.div {...fadeTransition}>
               <Signup />
+            </motion.div>
+          }
+        />
+        <Route
+          path="/myorders"
+          element={
+            <motion.div {...fadeTransition}>
+              <MyOrders />
             </motion.div>
           }
         />
