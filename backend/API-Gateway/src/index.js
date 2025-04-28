@@ -6,6 +6,7 @@ const winston = require('winston');
 const expressWinston = require('express-winston');
 const rateLimit = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
+const http = require('http');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -38,6 +39,28 @@ app.use(expressWinston.logger({
   colorize: true,
 }));
 
+const http = require('http');
+const checkServiceAvailability = (host, port, path) => {
+  return new Promise((resolve, reject) => {
+    const req = http.request(
+      { host, port, path, method: 'GET', timeout: 3000 },
+      (res) => {
+        let data = '';
+        res.on('data', (chunk) => { data += chunk; });
+        res.on('end', () => {
+          console.log(`Service check for ${host}:${port}${path} returned ${res.statusCode}`);
+          resolve({ status: res.statusCode, data });
+        });
+      }
+    );
+    req.on('error', (e) => {
+      console.error(`Service check error for ${host}:${port}${path}: ${e.message}`);
+      reject(e);
+    });
+    req.end();
+  });
+};
+
 // Authentication middleware
 const authenticate = (req, res, next) => {
   try {
@@ -66,12 +89,15 @@ app.use('/api/auth', createProxyMiddleware({
 
 // Protected routes
 // Restaurant admin routes
-app.use('/api/admin', authenticate, createProxyMiddleware({
+// Update your API Gateway code with this
+app.use('/api/restaurants', createProxyMiddleware({
   target: process.env.RESTAURANT_ADMIN_SERVICE_URL,
   changeOrigin: true,
-  pathRewrite: {
-    '^/api/admin': '',
-  },
+  // No pathRewrite needed since the paths align
+  onError: (err, req, res) => {
+    console.error('Proxy error:', err);
+    res.status(500).json({ message: 'Service unavailable' });
+  }
 }));
 
 // Restaurant delivery routes
@@ -84,7 +110,7 @@ app.use('/api/delivery', authenticate, createProxyMiddleware({
 }));
 
 // Restaurant operations routes
-app.use('/api/ops', authenticate, createProxyMiddleware({
+app.use('/api/ops', createProxyMiddleware({
   target: process.env.RESTAURANT_OPS_SERVICE_URL,
   changeOrigin: true,
   pathRewrite: {
@@ -93,7 +119,7 @@ app.use('/api/ops', authenticate, createProxyMiddleware({
 }));
 
 // Restaurant order routes
-app.use('/api/orders', authenticate, createProxyMiddleware({
+app.use('/api/orders',  createProxyMiddleware({
   target: process.env.RESTAURANT_ORDER_SERVICE_URL,
   changeOrigin: true,
   pathRewrite: {
@@ -102,7 +128,7 @@ app.use('/api/orders', authenticate, createProxyMiddleware({
 }));
 
 // System admin routes
-app.use('/api/system', authenticate, createProxyMiddleware({
+app.use('/api/system', createProxyMiddleware({
   target: process.env.SYSTEM_ADMIN_SERVICE_URL,
   changeOrigin: true,
   pathRewrite: {
@@ -140,6 +166,18 @@ app.use((err, req, res, next) => {
     error: 'Internal Server Error',
     message: err.message
   });
+});
+
+app.listen(PORT, async () => {
+  console.log(`API Gateway running on port ${PORT}`);
+
+  // Check restaurant admin service
+  try {
+    await checkServiceAvailability('restaurant-admin-service', 5556, '/health');
+    console.log('Restaurant admin service is reachable');
+  } catch (error) {
+    console.error('Restaurant admin service is NOT reachable');
+  }
 });
 
 app.listen(PORT, () => {
