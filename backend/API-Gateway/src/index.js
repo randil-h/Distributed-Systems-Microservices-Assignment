@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 const http = require('http');
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8080;
 
 // Middleware
 app.use(cors());
@@ -39,7 +39,6 @@ app.use(expressWinston.logger({
   colorize: true,
 }));
 
-const http = require('http');
 const checkServiceAvailability = (host, port, path) => {
   return new Promise((resolve, reject) => {
     const req = http.request(
@@ -180,6 +179,6 @@ app.listen(PORT, async () => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`API Gateway running on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`API Gateway running on port ${PORT}`);
+// });

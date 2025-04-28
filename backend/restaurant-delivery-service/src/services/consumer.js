@@ -3,7 +3,7 @@ const amqp = require("amqplib");
 const Delivery = require("../models/Delivery");
 
 async function listenForDriverAssignment() {
-    const connection = await amqp.connect("amqp://localhost");
+    const connection = await amqp.connect(process.env.RABBITMQ_URL || "amqp://localhost");
     const channel = await connection.createChannel();
 
     const responseQueue = "driver-assigned-response";
