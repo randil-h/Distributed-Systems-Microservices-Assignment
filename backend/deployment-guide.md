@@ -213,3 +213,17 @@ For production deployment:
 5. Implement proper network policies
 6. Set resource limits and requests appropriately
 7. Use node affinity and anti-affinity rules for better pod distribution
+
+```
+# After making changes
+
+docker compose up --build
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+# Rebuild and push the image
+docker build -t bimidugunathilake/service-name:latest ./service-name
+docker push bimidugunathilake/service-name:latest
+
+# Update the deployment
+kubectl rollout restart deployment/service-name -n food-delivery
+```

@@ -60,23 +60,6 @@ const checkServiceAvailability = (host, port, path) => {
   });
 };
 
-// Authentication middleware
-const authenticate = (req, res, next) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-
-    if (!token) {
-      return res.status(401).json({ message: 'Authentication token is required' });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    return res.status(401).json({ message: 'Invalid token' });
-  }
-};
-
 // Public routes
 app.use('/api/auth', createProxyMiddleware({
   target: process.env.UTILITY_AUTH_SERVICE_URL,
@@ -111,7 +94,7 @@ app.use('/api/menu-items', createProxyMiddleware({
 }));
 
 // Restaurant delivery routes
-app.use('/api/delivery', authenticate, createProxyMiddleware({
+app.use('/api/delivery', createProxyMiddleware({
   target: process.env.RESTAURANT_DELIVERY_SERVICE_URL,
   changeOrigin: true,
   onError: (err, req, res) => {
@@ -121,7 +104,7 @@ app.use('/api/delivery', authenticate, createProxyMiddleware({
 }));
 
 // Restaurant operations routes
-app.use('/api/ops', createProxyMiddleware({
+app.use('/api/orders', createProxyMiddleware({
   target: process.env.RESTAURANT_OPS_SERVICE_URL,
   changeOrigin: true,
   onError: (err, req, res) => {
@@ -141,7 +124,7 @@ app.use('/api/orders',  createProxyMiddleware({
 }));
 
 // System admin routes
-app.use('/api/system', createProxyMiddleware({
+app.use('/api/stripe', createProxyMiddleware({
   target: process.env.SYSTEM_ADMIN_SERVICE_URL,
   changeOrigin: true,
   onError: (err, req, res) => {
@@ -151,7 +134,7 @@ app.use('/api/system', createProxyMiddleware({
 }));
 
 // Notifications routes
-app.use('/api/notifications', authenticate, createProxyMiddleware({
+app.use('/api/notifications', createProxyMiddleware({
   target: process.env.UTILITY_NOTIFICATION_SERVICE_URL,
   changeOrigin: true,
   onError: (err, req, res) => {
@@ -161,7 +144,7 @@ app.use('/api/notifications', authenticate, createProxyMiddleware({
 }));
 
 // Payment routes
-app.use('/api/payments', authenticate, createProxyMiddleware({
+app.use('/api/payments', createProxyMiddleware({
   target: process.env.UTILITY_PAYMENT_SERVICE_URL,
   changeOrigin: true,
   onError: (err, req, res) => {

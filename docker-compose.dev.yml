@@ -1,14 +1,21 @@
 version: '3.8'
 
 services:
-  frontend:
-    build: ./NomNOM-frontend
+  frontend-dev:
+    build:
+      context: ./NomNOM-frontend
+      dockerfile: Dockerfile.dev
     ports:
-      - "80:80"  # Access frontend at localhost:3000
+      - "3000:3000"  # Access frontend at localhost:3000
+    volumes:
+      # This is the key for hot-reloading - mount your code as a volume
+      - ./NomNOM-frontend:/app
+      # Prevent overwriting node_modules with a volume
+      - /app/node_modules
     environment:
       - REACT_APP_MAPBOX_ACCESS_TOKEN=pk.eyJ1IjoiYmltaWR1IiwiYSI6ImNtOGlmejI3ZzBjbmgyanBtMHZwdWlzZWcifQ.oR1p3_F9f9mqEaIxpklDOg
       - REACT_APP_GOOGLE_MAPS_API_KEY=AIzaSyDAafsxTWu44e0AxfoOwvtxl9TKUN-bLNE
-      - REACT_APP_API_URL=http://localhost:8080/api
+      - REACT_APP_API_URL=http://localhost:8080/api/auth
       - REACT_APP_RESTAURANT_API_URL=http://localhost:8080/api
       - REACT_APP_RESTAURANT_ORDER_API_URL=http://localhost:8080/api
       - REACT_APP_RESTAURANT_OPS_API_URL=http://localhost:8080/api
