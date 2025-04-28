@@ -24,6 +24,11 @@ const paymentSchema = new Schema({
     value: {
         type: Number,
         required: true
+    },
+    status: {
+        type: String,
+        enum: ['succeeded', 'failed', 'refunded', 'declined'],
+        default: 'succeeded'
     }
 }, { timestamps: true });
 

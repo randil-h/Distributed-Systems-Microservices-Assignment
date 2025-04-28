@@ -1,21 +1,50 @@
 const Stripe = require("stripe");
+const Payment = require("../models/Payment");
 require("dotenv").config();
 
 const stripe = new Stripe(process.env.STRIPE_SANDBOX_BACKEND_API_KEY);
 
+const savePayment = async ({ paymentIntentId, amount, userId, restaurantId, orderId, status = "succeeded" }) => {
+    try {
+        const payment = new Payment({
+            paymentIntent: paymentIntentId,
+            orderId,
+            userId,
+            restaurantId,
+            value: amount,
+            status,
+        });
+
+        await payment.save();
+        console.log("Payment saved successfully.");
+    } catch (error) {
+        console.error("Error saving payment:", error);
+        throw error;
+    }
+};
+
 const createPaymentIntent = async (req, res) => {
     try {
-        const { amount, currency, userID, restaurantID, orderID } = req.body;
+        const { amount, currency, userId, restaurantId, orderId } = req.body;
 
         const paymentIntent = await stripe.paymentIntents.create({
-            amount, // Amount in cents
+            amount,
             currency,
             payment_method_types: ["card"],
             metadata: {
-                userID,
-                restaurantID,
-                orderID,
+                userId,
+                restaurantId,
+                orderId,
             },
+        });
+
+        await savePayment({
+            paymentIntentId: paymentIntent.id,
+            amount,
+            userId,
+            restaurantId,
+            orderId,
+            status: "succeeded"
         });
 
         res.json({ clientSecret: paymentIntent.client_secret });
@@ -25,5 +54,4 @@ const createPaymentIntent = async (req, res) => {
     }
 };
 
-
-module.exports = { createPaymentIntent };
+module.exports = { createPaymentIntent, savePayment };

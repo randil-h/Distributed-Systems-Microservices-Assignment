@@ -57,9 +57,9 @@ const CheckoutForm = () => {
             const { data } = await axios.post("http://localhost:2703/api/payments/create-payment-intent", {
                 amount: paymentDetails.amount,
                 currency: paymentDetails.currency,
-                userID: 'bimidu',
-                restaurantID: 'luck_chinese',
-                orderID: '0327'
+                userId: "6604f25d234e7c9f31e65a01",
+                restaurantId: "6604f300234e7c9f31e65a02",
+                orderId: "6604f311234e7c9f31e65a03"
             });
 
             const result = await stripe.confirmCardPayment(data.clientSecret, {
