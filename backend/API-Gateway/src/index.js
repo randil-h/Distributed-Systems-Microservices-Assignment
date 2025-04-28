@@ -81,9 +81,10 @@ const authenticate = (req, res, next) => {
 app.use('/api/auth', createProxyMiddleware({
   target: process.env.UTILITY_AUTH_SERVICE_URL,
   changeOrigin: true,
-  pathRewrite: {
-    '^/api/auth': '',
-  },
+  onError: (err, req, res) => {
+    console.error('Proxy error:', err);
+    res.status(500).json({ message: 'Service unavailable' });
+  }
 }));
 
 // Protected routes
@@ -99,58 +100,74 @@ app.use('/api/restaurants', createProxyMiddleware({
   }
 }));
 
+app.use('/api/menu-items', createProxyMiddleware({
+  target: process.env.RESTAURANT_ADMIN_SERVICE_URL,
+  changeOrigin: true,
+  // No pathRewrite needed since the paths align
+  onError: (err, req, res) => {
+    console.error('Proxy error:', err);
+    res.status(500).json({ message: 'Service unavailable' });
+  }
+}));
+
 // Restaurant delivery routes
 app.use('/api/delivery', authenticate, createProxyMiddleware({
   target: process.env.RESTAURANT_DELIVERY_SERVICE_URL,
   changeOrigin: true,
-  pathRewrite: {
-    '^/api/delivery': '',
-  },
+  onError: (err, req, res) => {
+    console.error('Proxy error:', err);
+    res.status(500).json({ message: 'Service unavailable' });
+  }
 }));
 
 // Restaurant operations routes
 app.use('/api/ops', createProxyMiddleware({
   target: process.env.RESTAURANT_OPS_SERVICE_URL,
   changeOrigin: true,
-  pathRewrite: {
-    '^/api/ops': '',
-  },
+  onError: (err, req, res) => {
+    console.error('Proxy error:', err);
+    res.status(500).json({ message: 'Service unavailable' });
+  }
 }));
 
 // Restaurant order routes
 app.use('/api/orders',  createProxyMiddleware({
   target: process.env.RESTAURANT_ORDER_SERVICE_URL,
   changeOrigin: true,
-  pathRewrite: {
-    '^/api/orders': '',
-  },
+  onError: (err, req, res) => {
+    console.error('Proxy error:', err);
+    res.status(500).json({ message: 'Service unavailable' });
+  }
 }));
 
 // System admin routes
 app.use('/api/system', createProxyMiddleware({
   target: process.env.SYSTEM_ADMIN_SERVICE_URL,
   changeOrigin: true,
-  pathRewrite: {
-    '^/api/system': '',
-  },
+  onError: (err, req, res) => {
+    console.error('Proxy error:', err);
+    res.status(500).json({ message: 'Service unavailable' });
+  }
 }));
 
 // Notifications routes
 app.use('/api/notifications', authenticate, createProxyMiddleware({
   target: process.env.UTILITY_NOTIFICATION_SERVICE_URL,
   changeOrigin: true,
-  pathRewrite: {
-    '^/api/notifications': '',
-  },
+  onError: (err, req, res) => {
+    console.error('Proxy error:', err);
+    res.status(500).json({ message: 'Service unavailable' });
+  }
 }));
 
 // Payment routes
 app.use('/api/payments', authenticate, createProxyMiddleware({
   target: process.env.UTILITY_PAYMENT_SERVICE_URL,
   changeOrigin: true,
-  pathRewrite: {
-    '^/api/payments': '',
-  },
+  onError: (err, req, res) => {
+    console.error('Proxy error:', err);
+    res.status(500).json({ message: 'Service unavailable' });
+  }
 }));
 
 // Health check endpoint
