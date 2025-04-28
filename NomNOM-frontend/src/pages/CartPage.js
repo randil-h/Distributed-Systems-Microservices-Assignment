@@ -1,15 +1,113 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useCart } from '../context/CartContext';
-import { Trash2, MinusCircle, PlusCircle, ShoppingBag, CheckCircle } from 'lucide-react';
+import { Trash2, MinusCircle, PlusCircle, ShoppingBag, CheckCircle, MapPin } from 'lucide-react';
 import Navbar from '../components/utility_components/Navbar';
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { getToken } from "../api/auth";
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+
+// Set mapbox token
+mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
 const CartPage = () => {
   const { cartState, dispatch } = useCart();
   const navigate = useNavigate();
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [deliveryLocation, setDeliveryLocation] = useState(null);
+  const [mapCenter, setMapCenter] = useState({ lng: -74.0060, lat: 40.7128 }); // Default to NYC
+
+  const mapContainerRef = useRef(null);
+  const mapRef = useRef(null);
+  const markerRef = useRef(null);
+
+  // Use user's current location if available
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setMapCenter({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        }
+      );
+    }
+  }, []);
+
+  // Initialize map when the modal is shown
+  useEffect(() => {
+    if (showLocationModal && mapContainerRef.current) {
+      // Initialize map only if it doesn't exist
+      if (!mapRef.current) {
+        mapRef.current = new mapboxgl.Map({
+          container: mapContainerRef.current,
+          style: 'mapbox://styles/mapbox/streets-v12',
+          center: [mapCenter.lng, mapCenter.lat],
+          zoom: 13
+        });
+
+        // Add navigation controls
+        mapRef.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+        // Add click handler to the map
+        mapRef.current.on('click', (e) => {
+          const { lng, lat } = e.lngLat;
+
+          // Update delivery location
+          setDeliveryLocation({ lng, lat });
+
+          // Remove existing marker if it exists
+          if (markerRef.current) {
+            markerRef.current.remove();
+          }
+
+          // Create new marker
+          markerRef.current = new mapboxgl.Marker({ color: '#FF385C' })
+            .setLngLat([lng, lat])
+            .addTo(mapRef.current);
+        });
+      } else {
+        // If map already exists, just update the center
+        mapRef.current.setCenter([mapCenter.lng, mapCenter.lat]);
+
+        // If there's a delivery location, add a marker
+        if (deliveryLocation && !markerRef.current) {
+          markerRef.current = new mapboxgl.Marker({ color: '#FF385C' })
+            .setLngLat([deliveryLocation.lng, deliveryLocation.lat])
+            .addTo(mapRef.current);
+        }
+      }
+    }
+
+    // Cleanup
+    return () => {
+      if (mapRef.current && !showLocationModal) {
+        // We don't remove the map here to prevent re-initialization when modal reopens
+        // Just keep the reference
+      }
+    };
+  }, [showLocationModal, mapCenter]);
+
+  // Update map if delivery location changes
+  useEffect(() => {
+    if (mapRef.current && deliveryLocation) {
+      // Remove existing marker if it exists
+      if (markerRef.current) {
+        markerRef.current.remove();
+      }
+
+      // Create new marker
+      markerRef.current = new mapboxgl.Marker({ color: '#FF385C' })
+        .setLngLat([deliveryLocation.lng, deliveryLocation.lat])
+        .addTo(mapRef.current);
+    }
+  }, [deliveryLocation]);
 
   const handleRemove = (id, restaurantId) => {
     dispatch({ type: 'REMOVE_ITEM', payload: { _id: id, restaurantId } });
@@ -26,6 +124,14 @@ const CartPage = () => {
     });
   };
 
+  const handleLocationSelection = () => {
+    setShowLocationModal(true);
+  };
+
+  const confirmLocation = () => {
+    setShowLocationModal(false);
+  };
+
   const subtotal = cartState.items.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
@@ -35,27 +141,18 @@ const CartPage = () => {
   const shipping = subtotal > 100 ? 0 : 10;
   const total = subtotal + tax + shipping;
 
-  // Effect to redirect to payment page after successful order
-  useEffect(() => {
-    let redirectTimer;
-    if (orderSuccess) {
-      redirectTimer = setTimeout(() => {
-        navigate("/payment");
-      }, 3000); // Redirect after 3 seconds
-    }
-    return () => clearTimeout(redirectTimer);
-  }, [orderSuccess, navigate]);
-
   const handleCheckout = async () => {
     try {
+      // Check if delivery location is set
+      if (!deliveryLocation) {
+        return alert("Please select a delivery location first.");
+      }
+
       const token = getToken();
       if (!token) {
         alert("Please log in before checking out.");
         return navigate("/login");
       }
-
-      console.log("Token: ", token);
-      console.log("API URL for checkout:", `${process.env.REACT_APP_RESTAURANT_ORDER_API_URL}/orders/checkout`);
 
       // Group items by restaurantId
       const groupedItems = cartState.items.reduce((acc, item) => {
@@ -64,13 +161,13 @@ const CartPage = () => {
         }
         acc[item.restaurantId].push({
           id: item._id,
-          price: item.price, // Assuming price is available in the item object
+          price: item.price,
           quantity: item.quantity
         });
         return acc;
       }, {});
 
-      // Prepare the order payload with calculated totalAmount, VAT, and shipping fee for each restaurant
+      // Prepare the order payload with calculated totalAmount, VAT, shipping fee, and location for each restaurant
       const orders = Object.keys(groupedItems).map(restaurantId => {
         const menuItems = groupedItems[restaurantId];
         let totalAmount = 0;
@@ -89,26 +186,37 @@ const CartPage = () => {
         return {
           restaurantId,
           menuItems,
-          totalAmount, // Include totalAmount in the payload
-          tax: taxAmount, // Add VAT to the payload
-          shipping: shippingFee // Add shipping fee to the payload
+          totalAmount,
+          tax: taxAmount,
+          shipping: shippingFee,
+          deliveryLocation // Add the location coordinates
         };
       });
 
-      console.log("Final order payload with total amount:", { orders });
+      console.log("Final order payload with location:", { orders });
 
-      // Send the orders to the backend
-      await axios.post(
-        `${process.env.REACT_APP_RESTAURANT_ORDER_API_URL}/orders/checkout`,
-        { orders },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+      const response = await axios.post(
+          `${process.env.REACT_APP_RESTAURANT_ORDER_API_URL}/orders/checkout`,
+          { orders },
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
       );
+
+      const createdOrders = response.data.orders;
+
+      const paymentAmount = createdOrders.reduce((sum, order) => sum + order.totalAmount, 0);
 
       console.log("All orders placed successfully!");
       dispatch({ type: "CLEAR_CART" });
-      setOrderSuccess(true); // Trigger success notification instead of alert
+      setOrderSuccess(true);
+
+      navigate("/payment", {
+        state: {
+          orders: createdOrders,
+          amount: paymentAmount * 303, //convert to LKR
+        }
+      });
     } catch (error) {
       console.error("Checkout failed:", error);
       alert("Checkout failed. Try again.");
@@ -127,6 +235,41 @@ const CartPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
+
+      {/* Location Selection Modal with Mapbox */}
+      {showLocationModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+            <h3 className="text-xl font-semibold mb-4">Select Delivery Location</h3>
+            <div className="mb-4">
+              <div
+                ref={mapContainerRef}
+                className="w-full h-96 rounded-lg overflow-hidden"
+              />
+            </div>
+            <p className="text-gray-600 mb-4">
+              {deliveryLocation ?
+                `Selected location: ${deliveryLocation.lat.toFixed(6)}, ${deliveryLocation.lng.toFixed(6)}` :
+                "Click on the map to select a delivery location"}
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowLocationModal(false)}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLocation}
+                disabled={!deliveryLocation}
+                className={`px-6 py-2 rounded-full ${deliveryLocation ? 'bg-nomnom text-white' : 'bg-gray-300 text-gray-500'}`}
+              >
+                Confirm Location
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Success notification overlay */}
       {orderSuccess && (
@@ -158,7 +301,6 @@ const CartPage = () => {
                 Continue Shopping
               </Link>
             </div>
-
           </div>
         ) : (
           <div className="flex flex-col xl:flex-row gap-8">
@@ -250,9 +392,9 @@ const CartPage = () => {
                     Clear Cart
                   </button>
 
-                  <button className="text-base text-blue-600 hover:text-blue-800 transition-colors">
+                  <Link to="/" className="text-base text-blue-600 hover:text-blue-800 transition-colors">
                     Continue Shopping
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -284,9 +426,45 @@ const CartPage = () => {
                   </div>
                 </div>
 
+                {/* Delivery Location Section */}
+                <div className="mt-6 border-t pt-4">
+                  <h3 className="font-medium text-gray-700 mb-2">Delivery Location</h3>
+
+                  {deliveryLocation ? (
+                    <div className="bg-gray-50 p-3 rounded-lg flex items-start gap-3">
+                      <MapPin size={20} className="text-nomnom mt-1" />
+                      <div>
+                        <p className="text-sm">Location selected</p>
+                        <p className="text-xs text-gray-500">
+                          Lat: {deliveryLocation.lat.toFixed(6)}, Lng: {deliveryLocation.lng.toFixed(6)}
+                        </p>
+                        <button
+                          onClick={handleLocationSelection}
+                          className="text-xs text-blue-500 mt-1"
+                        >
+                          Change location
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleLocationSelection}
+                      className="w-full py-2 border border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-600 flex items-center justify-center gap-2"
+                    >
+                      <MapPin size={18} />
+                      Select location
+                    </button>
+                  )}
+                </div>
+
                 <button
                   onClick={handleCheckout}
-                  className="mt-8 w-full py-3 bg-nomnom text-white rounded-full hover:bg-nomnom/90 transition-colors"
+                  disabled={!deliveryLocation}
+                  className={`mt-8 w-full py-3 rounded-full ${
+                    deliveryLocation
+                      ? 'bg-nomnom text-white hover:bg-nomnom/90'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  } transition-colors`}
                 >
                   Checkout
                 </button>

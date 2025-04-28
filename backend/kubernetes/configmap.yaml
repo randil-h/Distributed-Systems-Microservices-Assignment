@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: food-delivery-config
+  namespace: food-delivery
+data:
+  RABBITMQ_URL: "amqp://rabbitmq.food-delivery.svc.cluster.local:5672"
+  JWT_SECRET: "7ec2b0ce678471c4da70bb2d7471fdd39eed8cede3ad3fec2bae6c25e5c49d8a8fa50c87297146c3faf95c04636ccd8a27b17cf45cb087d9b7733e45406aea75"
+  TOKEN_EXPIRY: "1h"
+  # Service URLs for API Gateway
+  RESTAURANT_ADMIN_SERVICE_URL: "http://restaurant-admin-service.food-delivery.svc.cluster.local:5556"
+  RESTAURANT_DELIVERY_SERVICE_URL: "http://restaurant-delivery-service.food-delivery.svc.cluster.local:5003"
+  RESTAURANT_OPS_SERVICE_URL: "http://restaurant-ops-service.food-delivery.svc.cluster.local:6966"
+  RESTAURANT_ORDER_SERVICE_URL: "http://restaurant-order-service.food-delivery.svc.cluster.local:6967"
+  SYSTEM_ADMIN_SERVICE_URL: "http://system-admin-service.food-delivery.svc.cluster.local:5555"
+  UTILITY_AUTH_SERVICE_URL: "http://utility-auth-service.food-delivery.svc.cluster.local:6969"
+  UTILITY_NOTIFICATION_SERVICE_URL: "http://utility-notification-service.food-delivery.svc.cluster.local:5554"
+  UTILITY_PAYMENT_SERVICE_URL: "http://utility-payment-service.food-delivery.svc.cluster.local:2703"

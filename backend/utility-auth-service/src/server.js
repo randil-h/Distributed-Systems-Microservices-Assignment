@@ -40,12 +40,9 @@ const limiter = rateLimit({
 });
 
 // Routes
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'UP',
-        timestamp: new Date().toISOString(),
-        service: 'Authentication Service'
-    });
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', service: 'utility-auth-service' });
 });
 
 app.use("/api/auth", limiter, authRoutes);

@@ -18,6 +18,11 @@ dotenv.config();
 // Routes
 app.use('/api/orders', orderRoutes);
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', service: 'restaurant-ops-service' });
+});
+
 // MongoDB connection
 mongoose
 .connect(process.env.MONGO_URI || 'mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/OrderDB?retryWrites=true&w=majority&appName=Cluster0', {

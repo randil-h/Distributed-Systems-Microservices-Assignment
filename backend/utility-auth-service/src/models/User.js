@@ -11,8 +11,14 @@ const UserSchema = new mongoose.Schema({
         required: true
     },
     location: {
-        type: String,
-        required: false,
+        lat: {
+            type: Number,
+            required: false
+        },
+        lng: {
+            type: Number,
+            required: false
+        }
     },
     status: {
         type: String,
@@ -34,8 +40,8 @@ const UserSchema = new mongoose.Schema({
         ref: 'Restaurant',
         required: function() { return this.role === 'restaurant-staff'; }
     },
+    mobile: { type: String, required: false, unique: false },
 });
-
 
 // Hash password before saving
 UserSchema.pre("save", async function (next) {

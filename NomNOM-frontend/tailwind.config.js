@@ -8,7 +8,7 @@ module.exports = {
       colors: {
         light_hover: '#e2eacb',
         light: '#e8e4cd',
-        dark: '#0d0f05', 
+        dark: '#0d0f05',
         dark_hover: '#4c4c4c',
         accent2: '#cfdbdf',
         nomnom: '#12250a'
@@ -16,4 +16,4 @@ module.exports = {
     },
   },
   plugins: [],
-};
+}

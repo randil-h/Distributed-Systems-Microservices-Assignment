@@ -26,6 +26,7 @@ export const register = async (name, email, password, role, restaurantId) => {
 export const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
+  localStorage.removeItem("restaurantId");
 };
 
 export const getToken = () => localStorage.getItem("token");

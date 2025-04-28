@@ -1,3 +1,4 @@
+// models/Order.js
 const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema({
@@ -11,7 +12,7 @@ const orderSchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
-  items: [ // Changed from single menuItemId to an array of items
+  items: [
     {
       menuItemId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -27,12 +28,23 @@ const orderSchema = new mongoose.Schema({
   ],
   status: {
     type: String,
-    enum: ["pending", "confirmed", "preparing", "delivered", "cancelled"],
+    enum: ["pending", "confirmed", "preparing", "completed", "In Transit", "delivered", "cancelled"],
     default: "pending"
   },
-  totalAmount: {  // New field to store the total order amount
+  totalAmount: {
     type: Number,
     required: true,
+  },
+  // Add delivery location
+  deliveryLocation: {
+    lat: {
+      type: Number,
+      required: true
+    },
+    lng: {
+      type: Number,
+      required: true
+    }
   },
   createdAt: {
     type: Date,

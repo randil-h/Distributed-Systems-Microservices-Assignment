@@ -35,6 +35,11 @@ mongoose.connect(process.env.MONGODB_URI, {
 // Routes
 app.use('/api/restaurants', restaurantAdminRoutes);
 app.use('/api/menu-items', menuItemRoutes);
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', service: 'restaurant-admin-service' });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);

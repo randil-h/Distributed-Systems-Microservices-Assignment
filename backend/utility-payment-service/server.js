@@ -1,34 +1,28 @@
 const express = require("express");
-const Stripe = require("stripe");
 const cors = require("cors");
+const connectDB = require("./config/db");
+const paymentRoutes = require("./routes/paymentRoutes");
 require("dotenv").config();
 
 const app = express();
-const stripe = new Stripe(process.env.STRIPE_SANDBOX_BACKEND_API_KEY);
 
-// Enable CORS for all origins
+// Middleware
 app.use(cors());
-
 app.use(express.json());
 
-app.post("/create-payment-intent", async (req, res) => {
-    try {
-        const { amount, currency } = req.body;
+// Connect to database
+connectDB();
 
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount, // Amount in cents (e.g., $10 = 1000)
-            currency,
-            payment_method_types: ["card"],
-        });
+// Routes
+app.use("/api/payments", paymentRoutes);
 
-        res.json({ clientSecret: paymentIntent.client_secret });
-    } catch (error) {
-        console.error("Error creating payment intent:", error);
-        res.status(500).json({ error: error.message });
-    }
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', service: 'utility-payment-service' });
 });
 
-const PORT = process.env.PORT || 5000;
+// Start server
+const PORT = process.env.PORT || 2703;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

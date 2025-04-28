@@ -3,11 +3,12 @@ const router = express.Router();
 const {
     createDelivery,
     updateStatus,
-    getAssignedDeliveries,
+    getAssignedDeliveries, updateDriverLocation,
 } = require("../controllers/deliveryController");
 
 router.post("/assign", createDelivery);
 router.put("/status/:id", updateStatus);
-router.get("/driver/:driverId", getAssignedDeliveries);
+router.get("/driver/:userId", getAssignedDeliveries);
+
 
 module.exports = router;

@@ -1,18 +1,30 @@
 const Order = require("../models/Order");
-const { publishOrder } = require("../services/rabbitmq"); // Import RabbitMQ service
+const { publishOrder, publishPaymentDetails } = require("./rabbitmq");
 
-const createOrder = async (orderData) => {
+/**
+ * Create new orders
+ * @param {Array} orders - Array of order data
+ * @returns {Array} Created orders
+ */
+const createOrder = async (orders) => {
   const createdOrders = [];
 
-  // Iterate through the orders
-  for (let order of orderData) {
-    const { restaurantId, userId, menuItems, totalAmount } = order;
+  for (let order of orders) {
+    const { restaurantId, userId, menuItems, totalAmount, deliveryLocation } = order;
 
     if (!menuItems || menuItems.length === 0) {
       throw new Error('Menu items are required');
     }
 
-    // Ensure that each menu item has valid id and quantity
+    if (!totalAmount) {
+      throw new Error('Total amount is required');
+    }
+
+    if (!deliveryLocation || !deliveryLocation.lat || !deliveryLocation.lng) {
+      throw new Error('Delivery location is required');
+    }
+
+    // Format items for saving
     const items = menuItems.map(item => {
       const { id: menuItemId, quantity } = item;
 
@@ -20,56 +32,109 @@ const createOrder = async (orderData) => {
         throw new Error('Menu item ID and quantity are required');
       }
 
-      return {
-        menuItemId,
-        quantity,
-      };
+      return { menuItemId, quantity };
     });
 
-    // Ensure totalAmount is provided
-    if (!totalAmount) {
-      throw new Error('Total amount is required');
-    }
-
-    // Build the order model with the correctly structured items
+    // Create and save order
     const newOrder = new Order({
       restaurantId,
       userId,
-      items, // Ensure the items array is properly populated with valid data
+      items,
       status: 'pending',
-      totalAmount,  // Store the totalAmount in the order
+      totalAmount,
+      deliveryLocation
     });
 
     const savedOrder = await newOrder.save();
 
-    // Publish the order to RabbitMQ, including totalAmount
+    // Publish order to all three queues via RabbitMQ
     await publishOrder({
       orderId: savedOrder._id,
       restaurantId,
       userId,
-      menuItems: items, // Send as-is, since it already has { menuItemId, quantity }
-      totalAmount,  // Include totalAmount in the RabbitMQ message
+      menuItems: items,
+      totalAmount,
+      deliveryLocation // Include delivery location in the message
     });
 
-    createdOrders.push(savedOrder); // Add saved order to the created orders array
+    createdOrders.push(savedOrder);
   }
 
-  return createdOrders; // Return all created orders
+  return createdOrders;
 };
 
-
-
-
+/**
+ * Get orders for a specific restaurant
+ * @param {String} restaurantId - Restaurant ID
+ * @returns {Array} Restaurant orders
+ */
 const getOrdersByRestaurant = async (restaurantId) => {
-  return await Order.find({ restaurantId }).populate("menuItemId");
+  return await Order.find({ restaurantId }).populate("items.menuItemId");
 };
 
+/**
+ * Update order status
+ * @param {String} orderId - Order ID
+ * @param {String} status - New status
+ * @returns {Object} Updated order
+ */
 const updateOrderStatus = async (orderId, status) => {
   return await Order.findByIdAndUpdate(orderId, { status }, { new: true });
+};
+
+/**
+ * Get order price by order ID
+ * @param {String} orderId - Order ID
+ * @returns {Number} Order total amount in cents
+ */
+const getOrderPriceById = async (orderId) => {
+  try {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      throw new Error(`Order with ID ${orderId} not found`);
+    }
+
+    // Return the total amount in cents (for Stripe)
+    return Math.round(order.totalAmount * 100);
+  } catch (error) {
+    console.error(`Error fetching order price: ${error.message}`);
+    throw error;
+  }
+};
+
+/**
+ * Send order price details to payment service via RabbitMQ
+ * @param {String} orderId - Order ID
+ */
+const sendOrderPriceToPaymentService = async (orderId) => {
+  try {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      throw new Error(`Order with ID ${orderId} not found`);
+    }
+
+    // Send order details to payment service via RabbitMQ
+    await publishPaymentDetails({
+      orderId: order._id.toString(),
+      amount: Math.round(order.totalAmount * 100), // Convert to cents for Stripe
+      currency: "usd", // Default currency
+      timestamp: new Date()
+    });
+
+    console.log(`Order ${orderId} price details sent to payment service`);
+    return true;
+  } catch (error) {
+    console.error(`Error sending order price to payment service: ${error.message}`);
+    throw error;
+  }
 };
 
 module.exports = {
   createOrder,
   getOrdersByRestaurant,
-  updateOrderStatus
+  updateOrderStatus,
+  getOrderPriceById,
+  sendOrderPriceToPaymentService
 };

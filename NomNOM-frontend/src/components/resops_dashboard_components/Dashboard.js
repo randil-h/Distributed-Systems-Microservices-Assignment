@@ -279,13 +279,13 @@ const OrderCard = ({ order, status, users, menuItems, onStatusChange }) => {
           <div className="flex justify-end gap-2 mt-3">
             <button
               onClick={() => onStatusChange(order._id, 'completed')}
-              className="px-3 py-1.5 text-xs font-medium rounded-md bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
+              className="px-3 py-1.5 text-xs font-medium rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
             >
               Complete
             </button>
             <button
               onClick={() => onStatusChange(order._id, 'cancelled')}
-              className="px-3 py-1.5 text-xs font-medium rounded-md bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors"
+              className="px-3 py-1.5 text-xs font-medium rounded-full bg-rose-50 text-rose-700 hover:bg-rose-100 transition-colors"
             >
               Cancel
             </button>
@@ -296,7 +296,7 @@ const OrderCard = ({ order, status, users, menuItems, onStatusChange }) => {
           <div className="flex justify-end gap-2 mt-3">
             <button
               onClick={() => onStatusChange(order._id, 'pending')}
-              className="px-3 py-1.5 text-xs font-medium rounded-md bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
+              className="px-3 py-1.5 text-xs font-medium rounded-full bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
             >
               Mark as Pending
             </button>
@@ -323,7 +323,7 @@ const OrderCard = ({ order, status, users, menuItems, onStatusChange }) => {
       <div className="flex justify-between items-start">
         <div>
           <div className="flex items-center gap-1.5">
-            <h3 className="font-medium text-gray-900">Order #{order._id.substring(order._id.length - 6)}</h3>
+            <h3 className="font-medium text-gray-800">#{order._id.substring(order._id.length - 6)}</h3>
             <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${config.badge} flex items-center gap-1`}>
               {config.icon}
               {status}
