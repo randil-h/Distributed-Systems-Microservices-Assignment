@@ -17,3 +17,8 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 });
 
 app.use("/api/delivery", deliveryRoutes);
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', service: 'restaurant-delivery-service' });
+});

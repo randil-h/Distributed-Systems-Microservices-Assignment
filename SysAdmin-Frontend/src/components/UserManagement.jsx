@@ -93,7 +93,7 @@ const UserManagement = () => {
 
     const handleDeleteUser = async () => {
         try {
-            await axios.delete(`http://localhost:6969/users/${selectedUser._id}`);
+            await axios.delete(`http://localhost:6969/api/user/${selectedUser._id}`);
             setUsers(users.filter(u => u._id !== selectedUser._id));
             setIsDetailsModalOpen(false);
         } catch (err) {
@@ -172,7 +172,7 @@ const UserManagement = () => {
 
     const handleAddAdmin = async () => {
         try {
-            const response = await axios.post('http://localhost:6969/users', newAdminUser);
+            const response = await axios.post('http://localhost:6969/api/auth/register', newAdminUser);
             setUsers([...users, response.data]);
             setIsAddAdminModalOpen(false);
             // Reset form

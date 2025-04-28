@@ -5,7 +5,7 @@ const router = express.Router();
 const { filterByRestaurant } = require('../middleware/restaurantStaffMiddleware');
 const {authenticate, authorizeRole} = require("../middleware/authMiddleware");
 
-console.log('Imported controller:', typeof orderController.getOrders);
+console.log('Imported controllers:', typeof orderController.getOrders);
 
 // Route to get all orders with proper access control
 router.get('/',

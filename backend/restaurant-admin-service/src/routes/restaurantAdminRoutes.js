@@ -25,7 +25,7 @@ router.get('/pending',
 
 router.get('/:id',
     // authenticate,
-    authorizeRole(['restaurant-admin']),
+    // authorizeRole(['restaurant-admin']),
     getRestaurant
 );
 
@@ -35,8 +35,7 @@ router.delete('/:id',
     deleteRestaurant
 );
 router.get("/",
-    // authenticate,
-    // authorizeRole(['restaurant-admin', 'system-admin']),
+
     getAllRestaurants);
 
 module.exports = router;

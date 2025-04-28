@@ -5,7 +5,7 @@ const {
     createMenuItem,
     getMenuItemsByRestaurant,
     updateMenuItem,
-    deleteMenuItem
+    deleteMenuItem, updateMenuItemAvailability
 } = require('../controller/menuItemController');
 const { authenticate, authorizeRole } = require('../middleware/restaurantAuthMiddleware');
 
@@ -32,5 +32,9 @@ router.delete('/:id',
     authorizeRole(['restaurant-admin', 'system-admin']),
     deleteMenuItem
 );
-
+router.patch('/:id/availability',
+    authenticate,
+    authorizeRole(['restaurant-admin', 'system-admin']),
+    updateMenuItemAvailability
+);
 module.exports = router;

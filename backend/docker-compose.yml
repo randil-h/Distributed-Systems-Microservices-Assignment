@@ -1,0 +1,128 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - RESTAURANT_ADMIN_SERVICE_URL=http://restaurant-admin-service:5556
+      - RESTAURANT_DELIVERY_SERVICE_URL=http://restaurant-delivery-service:5003
+      - RESTAURANT_OPS_SERVICE_URL=http://restaurant-ops-service:6966
+      - RESTAURANT_ORDER_SERVICE_URL=http://restaurant-order-service:6967
+      - SYSTEM_ADMIN_SERVICE_URL=http://system-admin-service:5555
+      - UTILITY_AUTH_SERVICE_URL=http://utility-auth-service:6969
+      - UTILITY_NOTIFICATION_SERVICE_URL=http://utility-notifications-service:5556
+      - UTILITY_PAYMENT_SERVICE_URL=http://utility-payment-service:2703
+      - JWT_SECRET=7ec2b0ce678471c4da70bb2d7471fdd39eed8cede3ad3fec2bae6c25e5c49d8a8fa50c87297146c3faf95c04636ccd8a27b17cf45cb087d9b7733e45406aea75
+    depends_on:
+      - restaurant-admin-service
+      - restaurant-delivery-service
+      - restaurant-ops-service
+      - restaurant-order-service
+      - system-admin-service
+      - utility-auth-service
+      - utility-notifications-service
+      - utility-payment-service
+    networks:
+      - app-network
+
+  restaurant-admin-service:
+    build: ./restaurant-admin-service
+    environment:
+      - PORT=5556
+      - MONGODB_URI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/RestaurantDB?retryWrites=true&w=majority&appName=Cluster0
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    networks:
+      - app-network
+
+  restaurant-delivery-service:
+    build: ./restaurant-delivery-service
+    environment:
+      - PORT=5003
+      - MONGO_URI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/DeliveryDB?retryWrites=true&w=majority&appName=Cluster0
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    networks:
+      - app-network
+
+  restaurant-ops-service:
+    build: ./restaurant-ops-service
+    environment:
+      - PORT=6966
+      - MONGOURI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/ResOpsDB?retryWrites=true&w=majority&appName=Cluster0
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    networks:
+      - app-network
+
+  restaurant-order-service:
+    build: ./restaurant-order-service
+    environment:
+      - PORT=6967
+      - MONGOURI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/OrderDB?retryWrites=true&w=majority&appName=Cluster0
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    networks:
+      - app-network
+
+  system-admin-service:
+    build: ./system-admin-service
+    environment:
+      - PORT=5555
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    networks:
+      - app-network
+
+  utility-auth-service:
+    build: ./utility-auth-service
+    environment:
+      - PORT=6969
+      - MONGO_URI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/AuthDB?retryWrites=true&w=majority&appName=Cluster0
+      - JWT_SECRET=7ec2b0ce678471c4da70bb2d7471fdd39eed8cede3ad3fec2bae6c25e5c49d8a8fa50c87297146c3faf95c04636ccd8a27b17cf45cb087d9b7733e45406aea75
+      - TOKEN_EXPIRY=1h
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    networks:
+      - app-network
+
+  utility-notifications-service:
+    build: ./utility-notifications-service
+    environment:
+      - PORT=5554
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    networks:
+      - app-network
+
+  utility-payment-service:
+    build: ./utility-payment-service
+    environment:
+      - PORT=2703
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
