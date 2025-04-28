@@ -61,12 +61,18 @@ async function listenForAssignmentRequests() {
                 driver: {
                     driverId: nearestDriver._id, // Use nearestDriver here
                     name: nearestDriver.name, // Use nearestDriver here
-                    location: nearestDriver.location || "Unknown", // Use nearestDriver here
+                    location: nearestDriver.location || "Unknown", // Use nearestDriver here\\
+                    phone: nearestDriver.mobile,
                 },
             };
 
             channel.sendToQueue(responseQueue, Buffer.from(JSON.stringify(response)));
             console.log("Sent assigned driver back to delivery service", response);
+
+            const notificationQueue = "send-driver-notification";
+            channel.sendToQueue(notificationQueue, Buffer.from(JSON.stringify(response)));
+            console.log("Sent assigned driver notification to notification service", response);
+
         } else {
             console.warn("No available driver for location:", customerAddress);
         }

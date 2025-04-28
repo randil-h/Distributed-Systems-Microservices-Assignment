@@ -32,3 +32,4 @@ process.on('SIGINT', async () => {
     if (connection) await connection.close();
     process.exit(0);
 });
+
