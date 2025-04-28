@@ -154,7 +154,7 @@ const updateOrder = async (req, res) => {
       return res.status(400).json({ error: "Order status is required" });
     }
 
-    const validStatuses = ["pending", "confirmed", "preparing", "delivered", "cancelled"];
+    const validStatuses = ["pending", "confirmed", "preparing", "delivered", "cancelled", "In Transit"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ error: "Invalid status value" });
     }
