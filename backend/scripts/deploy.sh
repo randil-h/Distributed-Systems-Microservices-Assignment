@@ -2,7 +2,8 @@
 
 # Set variables
 DOCKER_REGISTRY="bimidugunathilake"
-KUBE_CONTEXT="minikube"
+#KUBE_CONTEXT="minikube"
+KUBE_CONTEXT="docker-desktop"
 VERSION=$(date +%Y%m%d%H%M%S)
 
 # Array of services
