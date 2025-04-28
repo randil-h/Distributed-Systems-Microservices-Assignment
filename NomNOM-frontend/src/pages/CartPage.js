@@ -141,17 +141,6 @@ const CartPage = () => {
   const shipping = subtotal > 100 ? 0 : 10;
   const total = subtotal + tax + shipping;
 
-  // Effect to redirect to payment page after successful order
-  useEffect(() => {
-    let redirectTimer;
-    if (orderSuccess) {
-      redirectTimer = setTimeout(() => {
-        navigate("/payment");
-      }, 3000); // Redirect after 3 seconds
-    }
-    return () => clearTimeout(redirectTimer);
-  }, [orderSuccess, navigate]);
-
   const handleCheckout = async () => {
     try {
       // Check if delivery location is set
@@ -206,18 +195,28 @@ const CartPage = () => {
 
       console.log("Final order payload with location:", { orders });
 
-      // Send the orders to the backend
-      await axios.post(
-        `${process.env.REACT_APP_RESTAURANT_ORDER_API_URL}/orders/checkout`,
-        { orders },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+      const response = await axios.post(
+          `${process.env.REACT_APP_RESTAURANT_ORDER_API_URL}/orders/checkout`,
+          { orders },
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
       );
+
+      const createdOrders = response.data.orders;
+
+      const paymentAmount = createdOrders.reduce((sum, order) => sum + order.totalAmount, 0);
 
       console.log("All orders placed successfully!");
       dispatch({ type: "CLEAR_CART" });
       setOrderSuccess(true);
+
+      navigate("/payment", {
+        state: {
+          orders: createdOrders,
+          amount: paymentAmount * 303, //convert to LKR
+        }
+      });
     } catch (error) {
       console.error("Checkout failed:", error);
       alert("Checkout failed. Try again.");

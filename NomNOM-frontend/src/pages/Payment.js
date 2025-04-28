@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const initStripe = () => {
     const stripeKey = process.env.REACT_APP_STRIPE_SANDBOX_FRONTEND_API_KEY;
@@ -19,16 +20,12 @@ const initStripe = () => {
 
 const stripePromise = initStripe();
 
-const CheckoutForm = () => {
+const CheckoutForm = ({ orderDetails }) => {
     const stripe = useStripe();
     const elements = useElements();
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
-    const [paymentDetails, setPaymentDetails] = useState({
-        amount: 100000,  // in cents
-        currency: "lkr",
-    });
 
     useEffect(() => {
         if (messageType === "success") {
@@ -54,12 +51,15 @@ const CheckoutForm = () => {
         setMessageType("");
 
         try {
+            // Use the first order's details for payment (or you can modify to handle multiple)
+            const firstOrder = orderDetails.orders[0];
+
             const { data } = await axios.post("http://localhost:2703/api/payments/create-payment-intent", {
-                amount: paymentDetails.amount,
-                currency: paymentDetails.currency,
-                userId: "6604f25d234e7c9f31e65a01",
-                restaurantId: "6604f300234e7c9f31e65a02",
-                orderId: "6604f311234e7c9f31e65a03"
+                amount: orderDetails.amount * 100,
+                currency: "lkr",
+                userId: orderDetails.orders[0].userId,
+                restaurantId: firstOrder.restaurantId,
+                orderId: firstOrder._id
             });
 
             const result = await stripe.confirmCardPayment(data.clientSecret, {
@@ -75,6 +75,9 @@ const CheckoutForm = () => {
                 if (result.paymentIntent.status === "succeeded") {
                     setMessage("Payment Successful!");
                     setMessageType("success");
+
+                    // Here you might want to update all orders' status to "paid"
+                    // You can make an API call to your backend to confirm payment
                 }
             }
         } catch (error) {
@@ -87,7 +90,7 @@ const CheckoutForm = () => {
     };
 
     const formatAmount = (amount, currency) => {
-        const formatted = (amount / 100).toFixed(2);
+        const formatted = (amount).toFixed(2);
         return `${currency.toUpperCase()} ${formatted}`;
     };
 
@@ -98,7 +101,9 @@ const CheckoutForm = () => {
             </h2>
 
             <div className="text-center text-gray-600 mb-6 text-sm">
-                You will be charged <span className="font-semibold">{formatAmount(paymentDetails.amount, paymentDetails.currency)}</span> by <span className="font-semibold">NOMNOM PRIVATE LIMITED</span>. <br />
+                You will be charged <span className="font-semibold">
+                    {formatAmount(orderDetails.amount, "lkr")}
+                </span> by <span className="font-semibold">NOMNOM PRIVATE LIMITED</span>. <br />
                 Secure payment powered by Stripe.
             </div>
 
@@ -137,7 +142,7 @@ const CheckoutForm = () => {
                                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                                disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
                 >
-                    {loading ? "Processing..." : `Pay ${formatAmount(paymentDetails.amount, paymentDetails.currency)}`}
+                    {loading ? "Processing..." : `Pay ${formatAmount(orderDetails.amount, "lkr")}`}
                 </button>
 
                 {message && (
@@ -155,6 +160,9 @@ const CheckoutForm = () => {
 };
 
 const Payment = () => {
+    const location = useLocation();
+    const orderDetails = location.state;
+
     if (!stripePromise) {
         return (
             <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -165,11 +173,21 @@ const Payment = () => {
         );
     }
 
+    if (!orderDetails) {
+        return (
+            <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+                <div className="text-red-600 text-center">
+                    No order details found. Please start from the cart page.
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
             <div className="w-full max-w-lg mx-auto">
                 <Elements stripe={stripePromise}>
-                    <CheckoutForm />
+                    <CheckoutForm orderDetails={orderDetails} />
                 </Elements>
             </div>
         </div>

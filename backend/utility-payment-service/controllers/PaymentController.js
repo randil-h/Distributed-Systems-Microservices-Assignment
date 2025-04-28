@@ -34,18 +34,23 @@ const createPaymentIntent = async (req, res) => {
             metadata: {
                 userId,
                 restaurantId,
-                orderId,
+                orderId: Array.isArray(orderId) ? orderId.join(',') : orderId,
             },
         });
 
-        await savePayment({
-            paymentIntentId: paymentIntent.id,
-            amount,
-            userId,
-            restaurantId,
-            orderId,
-            status: "succeeded"
-        });
+
+        const orderIds = Array.isArray(orderId) ? orderId : [orderId];
+
+        await Promise.all(orderIds.map(async (oid) => {
+            await savePayment({
+                paymentIntentId: paymentIntent.id,
+                amount: Math.floor(amount / orderIds.length),
+                userId,
+                restaurantId,
+                orderId: oid,
+                status: "succeeded"
+            });
+        }));
 
         res.json({ clientSecret: paymentIntent.client_secret });
     } catch (error) {
