@@ -24,8 +24,8 @@ router.get('/pending',
 );
 
 router.get('/:id',
-    authenticate,
-    authorizeRole(['restaurant-admin']),
+    // authenticate,
+    // authorizeRole(['restaurant-admin']),
     getRestaurant
 );
 
