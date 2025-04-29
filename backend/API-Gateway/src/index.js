@@ -102,33 +102,62 @@ const checkServiceAvailability = (serviceUrl, path) => {
   });
 };
 
-// Public routes
+// ==============================================
+// ROUTES WITH CORRECT PATH REWRITING
+// ==============================================
+
+// Auth Service routes - IMPORTANT: Notice the pathRewrite
 app.use('/api/auth', createProxyMiddleware({
   target: serviceUrls.auth,
   changeOrigin: true,
+  pathRewrite: function (path, req) {
+    // Rewrite /api/auth/* to /api/auth/* (no change needed)
+    return path;
+  },
   onError: (err, req, res) => {
-    console.error('Proxy error:', err);
-    res.status(500).json({ message: 'Service unavailable' });
+    console.error('Auth Proxy error:', err);
+    res.status(500).json({ message: 'Auth Service unavailable' });
   }
 }));
 
-// Protected routes
+// User routes
+app.use('/api/user', createProxyMiddleware({
+  target: serviceUrls.auth,
+  changeOrigin: true,
+  pathRewrite: function (path, req) {
+    // No change needed
+    return path;
+  },
+  onError: (err, req, res) => {
+    console.error('User Proxy error:', err);
+    res.status(500).json({ message: 'User Service unavailable' });
+  }
+}));
+
 // Restaurant admin routes
 app.use('/api/restaurants', createProxyMiddleware({
   target: serviceUrls.restaurantAdmin,
   changeOrigin: true,
+  pathRewrite: function (path, req) {
+    // No change needed
+    return path;
+  },
   onError: (err, req, res) => {
-    console.error('Proxy error:', err);
-    res.status(500).json({ message: 'Service unavailable' });
+    console.error('Restaurant Admin Proxy error:', err);
+    res.status(500).json({ message: 'Restaurant Admin Service unavailable' });
   }
 }));
 
 app.use('/api/menu-items', createProxyMiddleware({
   target: serviceUrls.restaurantAdmin,
   changeOrigin: true,
+  pathRewrite: function (path, req) {
+    // No change needed
+    return path;
+  },
   onError: (err, req, res) => {
-    console.error('Proxy error:', err);
-    res.status(500).json({ message: 'Service unavailable' });
+    console.error('Menu Items Proxy error:', err);
+    res.status(500).json({ message: 'Menu Items Service unavailable' });
   }
 }));
 
@@ -136,9 +165,13 @@ app.use('/api/menu-items', createProxyMiddleware({
 app.use('/api/delivery', createProxyMiddleware({
   target: serviceUrls.restaurantDelivery,
   changeOrigin: true,
+  pathRewrite: function (path, req) {
+    // No change needed
+    return path;
+  },
   onError: (err, req, res) => {
-    console.error('Proxy error:', err);
-    res.status(500).json({ message: 'Service unavailable' });
+    console.error('Delivery Proxy error:', err);
+    res.status(500).json({ message: 'Delivery Service unavailable' });
   }
 }));
 
@@ -146,19 +179,32 @@ app.use('/api/delivery', createProxyMiddleware({
 app.use('/api/orders', createProxyMiddleware({
   target: serviceUrls.restaurantOps,
   changeOrigin: true,
+  pathRewrite: function (path, req) {
+    // No change needed
+    return path;
+  },
   onError: (err, req, res) => {
-    console.error('Proxy error:', err);
-    res.status(500).json({ message: 'Service unavailable' });
+    console.error('Operations Proxy error:', err);
+    res.status(500).json({ message: 'Operations Service unavailable' });
   }
 }));
 
-// Restaurant order routes
-app.use('/api/orders', createProxyMiddleware({
+// Handle the path collision between restaurantOps and restaurantOrder
+// This will require additional logic based on your specific API design
+// You might need to differentiate based on the HTTP method or specific URL patterns
+
+// Restaurant order routes - this might need to be refined based on your API structure
+app.use('/api/order', createProxyMiddleware({  // Changed from /api/orders to /api/order to avoid collision
   target: serviceUrls.restaurantOrder,
   changeOrigin: true,
+  pathRewrite: function (path, req) {
+    // If you need to rewrite /api/order to /api/orders, uncomment the next line
+    // return path.replace(/^\/api\/order/, '/api/orders');
+    return path;
+  },
   onError: (err, req, res) => {
-    console.error('Proxy error:', err);
-    res.status(500).json({ message: 'Service unavailable' });
+    console.error('Order Proxy error:', err);
+    res.status(500).json({ message: 'Order Service unavailable' });
   }
 }));
 
@@ -166,9 +212,13 @@ app.use('/api/orders', createProxyMiddleware({
 app.use('/api/stripe', createProxyMiddleware({
   target: serviceUrls.systemAdmin,
   changeOrigin: true,
+  pathRewrite: function (path, req) {
+    // No change needed
+    return path;
+  },
   onError: (err, req, res) => {
-    console.error('Proxy error:', err);
-    res.status(500).json({ message: 'Service unavailable' });
+    console.error('System Admin Proxy error:', err);
+    res.status(500).json({ message: 'System Admin Service unavailable' });
   }
 }));
 
@@ -176,9 +226,13 @@ app.use('/api/stripe', createProxyMiddleware({
 app.use('/api/notifications', createProxyMiddleware({
   target: serviceUrls.notification,
   changeOrigin: true,
+  pathRewrite: function (path, req) {
+    // No change needed
+    return path;
+  },
   onError: (err, req, res) => {
-    console.error('Proxy error:', err);
-    res.status(500).json({ message: 'Service unavailable' });
+    console.error('Notifications Proxy error:', err);
+    res.status(500).json({ message: 'Notifications Service unavailable' });
   }
 }));
 
@@ -186,15 +240,38 @@ app.use('/api/notifications', createProxyMiddleware({
 app.use('/api/payments', createProxyMiddleware({
   target: serviceUrls.payment,
   changeOrigin: true,
+  pathRewrite: function (path, req) {
+    // No change needed
+    return path;
+  },
   onError: (err, req, res) => {
-    console.error('Proxy error:', err);
-    res.status(500).json({ message: 'Service unavailable' });
+    console.error('Payment Proxy error:', err);
+    res.status(500).json({ message: 'Payment Service unavailable' });
   }
 }));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'API Gateway is operational' });
+});
+
+// Check all service health endpoints
+app.get('/services-health', async (req, res) => {
+  const serviceHealth = {};
+
+  try {
+    for (const [serviceName, serviceUrl] of Object.entries(serviceUrls)) {
+      try {
+        await checkServiceAvailability(serviceUrl, '/health');
+        serviceHealth[serviceName] = 'UP';
+      } catch (error) {
+        serviceHealth[serviceName] = 'DOWN';
+      }
+    }
+    res.status(200).json({ status: 'OK', services: serviceHealth });
+  } catch (error) {
+    res.status(500).json({ status: 'ERROR', message: error.message });
+  }
 });
 
 // Error handler
@@ -208,21 +285,24 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, async () => {
   console.log(`API Gateway running on port ${PORT} in ${IS_LOCAL ? 'LOCAL' : 'DOCKER'} mode`);
+  console.log('Service URLs:');
+  for (const [service, url] of Object.entries(serviceUrls)) {
+    console.log(`- ${service}: ${url}`);
+  }
 
   // Check restaurant admin service
   try {
-    await checkServiceAvailability(serviceUrls.auth, '/health');
     await checkServiceAvailability(serviceUrls.restaurantAdmin, '/health');
-    await checkServiceAvailability(serviceUrls.restaurantOps, '/health');
-    await checkServiceAvailability(serviceUrls.restaurantOrder, '/health');
-    await checkServiceAvailability(serviceUrls.restaurantDelivery, '/health');
-    await checkServiceAvailability(serviceUrls.systemAdmin, '/health');
-    await checkServiceAvailability(serviceUrls.notification, '/health');
-    await checkServiceAvailability(serviceUrls.payment, '/health');
-
-
     console.log('Restaurant admin service is reachable');
   } catch (error) {
     console.error('Restaurant admin service is NOT reachable:', error.message);
+  }
+
+  // Check auth service
+  try {
+    await checkServiceAvailability(serviceUrls.auth, '/health');
+    console.log('Auth service is reachable');
+  } catch (error) {
+    console.error('Auth service is NOT reachable:', error.message);
   }
 });
