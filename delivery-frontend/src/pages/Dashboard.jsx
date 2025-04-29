@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import Navbar from '../components/Navbar';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import mapboxgl from 'mapbox-gl';
 import axios from "axios";
-import {Sidebar} from "lucide-react";
+import Navbar from "../components/Navbar.jsx";
+import {Sidebar} from "../components/Sidebar.jsx";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiYmltaWR1IiwiYSI6ImNtOGlmejI3ZzBjbmgyanBtMHZwdWlzZWcifQ.oR1p3_F9f9mqEaIxpklDOg';
 
@@ -16,6 +16,11 @@ const Dashboard = () => {
     const [zoom, setZoom] = useState(14);
     const [deliveryDetails, setDeliveryDetails] = useState(null);
     const [buttonStage, setButtonStage] = useState('accept');
+    const pickupLocation = { lat: 6.9271, lng: 79.8612, name: "Burger House" }; // Example: Colombo
+    const customerLocation = { lat: 7.2906, lng: 80.6337, name: "303, Geethani, Panadura" }; // Example: Kandy
+    const mapRef = useRef(null); // store map instance
+    const [currentStage, setCurrentStage] = useState('start'); // start → accepted → pickedUp
+
 
     const location = useLocation(); // To track the current route for active state
 
@@ -55,7 +60,7 @@ const Dashboard = () => {
                         container: mapContainerRef.current,
                         style: 'mapbox://styles/mapbox/streets-v11',
                         center: [newLng, newLat], // Start centered at user's location
-                        zoom: zoom, // Already set to 14
+                        zoom: zoom,
                     });
 
                     // Add marker at the user's location
@@ -66,37 +71,36 @@ const Dashboard = () => {
                     // Add controls
                     map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
+                    mapRef.current = map;
+
+                    // Call drawRoute AFTER map is set and user location is known
+                    drawRoute({ lat: newLat, lng: newLng }, pickupLocation);
+
+                    // Save interval for updating driver location
+                    const intervalId = setInterval(() => {
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                const updatedLat = position.coords.latitude;
+                                const updatedLng = position.coords.longitude;
+                                updateDriverLocation(updatedLat, updatedLng);
+                            },
+                            (error) => {
+                                console.error('Error getting location for update:', error);
+                            }
+                        );
+                    }, 20000); // 20 seconds
+
                     // Cleanup
-                    return () => map.remove();
+                    return () => {
+                        clearInterval(intervalId);
+                        if (map) map.remove();
+                    };
                 },
                 (error) => {
                     console.error('Error getting location:', error);
                 }
             );
-
-            // Call update location every 2 minutes
-            const intervalId = setInterval(() => {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const updatedLat = position.coords.latitude;
-                        const updatedLng = position.coords.longitude;
-                        updateDriverLocation(updatedLat, updatedLng); // your function
-                    },
-                    (error) => {
-                        console.error('Error getting location for update:', error);
-                    }
-                );
-            }, 20000); // 120,000 milliseconds = 2 minutes
-
-            // Clean up interval on unmount
-            return () => {
-                clearInterval(intervalId);
-                if (map) map.remove();
-            };
         }
-
-
-
     }, []);
 
     const updateDriverLocation = async (lat, lng) => {
@@ -114,14 +118,14 @@ const Dashboard = () => {
 
     const handlePickup = async () => {
         try {
-            const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
+            const token = localStorage.getItem('token');
 
             await axios.patch(
                 `http://localhost:6967/api/orders/${deliveryDetails.orderId}`,
                 { status: "In Transit" },
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`, // <-- Pass token here
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
@@ -133,20 +137,88 @@ const Dashboard = () => {
                 status: "In Transit"
             }));
 
+            // Get current location and draw route to customer
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const currentLat = position.coords.latitude;
+                    const currentLng = position.coords.longitude;
+
+                    // Draw new route
+                    drawRoute({ lat: currentLat, lng: currentLng }, customerLocation);
+
+                    // Add red marker at customer destination
+                    new mapboxgl.Marker({ color: 'red' })
+                        .setLngLat([customerLocation.lng, customerLocation.lat])
+                        .setPopup(new mapboxgl.Popup().setText(customerLocation.name))
+                        .addTo(mapRef.current);
+                },
+                (error) => {
+                    console.error("Error getting current position for route:", error);
+                }
+            );
         } catch (error) {
             console.error("Error updating order status:", error);
         }
     };
 
 
+
+    const drawRoute = async (start, end) => {
+        const query = await fetch(
+            `https://api.mapbox.com/directions/v5/mapbox/driving/${start.lng},${start.lat};${end.lng},${end.lat}?geometries=geojson&access_token=${mapboxgl.accessToken}`
+        );
+        const data = await query.json();
+        const route = data.routes[0].geometry.coordinates;
+
+        const geojson = {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+                type: 'LineString',
+                coordinates: route,
+            },
+        };
+
+        if (mapRef.current.getSource('route')) {
+            mapRef.current.getSource('route').setData(geojson);
+        } else {
+            mapRef.current.addSource('route', {
+                type: 'geojson',
+                data: geojson,
+            });
+
+            mapRef.current.addLayer({
+                id: 'route',
+                type: 'line',
+                source: 'route',
+                layout: {
+                    'line-join': 'round',
+                    'line-cap': 'round',
+                },
+                paint: {
+                    'line-color': '#3b82f6',
+                    'line-width': 6,
+                },
+            });
+        }
+    };
+
+
     return (
         <div className="min-h-screen bg-gray-100 flex">
-            {/* Sidebar */}
-            <Sidebar className="fixed top-0 left-0 h-full w-64" /> {/* Sidebar is fixed */}
+            <div className="fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-40">
+                <Sidebar />
+            </div>
 
             {/* Main Content */}
             <div className="content flex-1 flex flex-col items-center p-8 ml-64"> {/* Added ml-64 to create space for the fixed sidebar */}
-                <Navbar />
+
+                {/* Top Navbar */}
+                <div className="fixed top-0 left-64 right-0 h-16 bg-white shadow z-30">
+                    <Navbar />
+                </div>
+
+
 
                 <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-2xl text-center">
                     <h1 className="text-4xl font-extrabold text-gray-800 mb-4">
@@ -165,30 +237,35 @@ const Dashboard = () => {
                         <div className="space-y-4 text-lg text-gray-700">
                             <p><strong>Order ID:</strong> {deliveryDetails.orderId}</p>
                             <p><strong>Status:</strong> {deliveryDetails.status}</p>
+                            <p><strong>Pickup Location:</strong> {pickupLocation.name}</p>
+                            <p><strong>Customer Address:</strong> {customerLocation.name}</p>
+
                             {/*<p><strong>Customer Address:</strong> {deliveryDetails.customerAddress}</p>*/}
                         </div>
 
                         {/* Buttons Section */}
-                        <div className="mt-8 flex justify-center space-x-4">
-                            {buttonStage === 'accept' ? (
-                                <button
-                                    className="bg-green-500 text-white py-2 px-6 rounded-xl shadow-md hover:bg-green-600 transition duration-300"
-                                    onClick={() => setButtonStage('pickup')}
-                                >
-                                    Accept
-                                </button>
-                            ) : (
-                                <button
-                                    className="bg-blue-500 text-white py-2 px-6 rounded-xl shadow-md hover:bg-blue-600 transition duration-300"
-                                    onClick={handlePickup}
-                                >
-                                    Pick Up
-                                </button>
-                            )}
-                            <button className="bg-red-500 text-white py-2 px-6 rounded-xl shadow-md hover:bg-red-600 transition duration-300">
-                                Decline
+                        {buttonStage === 'accept' ? (
+                            <button
+                                className="bg-green-500 text-white py-2 px-6 rounded-xl shadow-md hover:bg-green-600 transition duration-300"
+                                onClick={() => {
+                                    setButtonStage('pickup');
+                                    drawRoute({ lat, lng }, pickupLocation); // show route to pickup location
+                                }}
+                            >
+                                Accept
                             </button>
-                        </div>
+                        ) : (
+                            <button
+                                className="bg-blue-500 text-white py-2 px-6 rounded-xl shadow-md hover:bg-blue-600 transition duration-300"
+                                onClick={() => {
+                                    handlePickup();
+                                    drawRoute(pickupLocation, customerLocation); // show route to customer address
+                                }}
+                            >
+                                Pick Up
+                            </button>
+                        )}
+
                     </div>
                 ) : (
                     <div className="bg-white rounded-2xl shadow-2xl border-2 border-gray-200 p-6 mt-8 w-full max-w-4xl mx-auto text-center">
