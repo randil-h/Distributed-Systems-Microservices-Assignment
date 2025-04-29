@@ -3,7 +3,7 @@ import sendSMS from "../sendSMS.js";
 
 
 export async function listenForNotifications() {
-    const connection = await amqp.connect("amqp://localhost");
+    const connection = await amqp.connect(process.env.RABBITMQ_URL || "amqp://localhost");
     const channel = await connection.createChannel();
 
     const notificationQueue = "send-driver-notification";

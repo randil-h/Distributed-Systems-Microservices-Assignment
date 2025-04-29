@@ -4,7 +4,7 @@ const Delivery = require("../models/Delivery");
 const sendDriverAssignmentRequest = require("./publisher");
 
 async function startDeliveryServiceConsumers() {
-    const connection = await amqp.connect("amqp://localhost");
+    const connection = await amqp.connect(process.env.RABBITMQ_URL || "amqp://localhost");
     const channel = await connection.createChannel();
 
     // Existing consumer for driver assignment response
