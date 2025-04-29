@@ -1,5 +1,7 @@
 import {SidebarInset, SidebarProvider} from "../components/ui/sidebar.jsx";
-import {DashboardSidebar} from "../components/Navbar.jsx";
+
+import {DashboardNavbar} from "../components/DashboardNavbar.jsx";
+import {DashboardSidebar} from "../components/Sidebar.jsx";
 
 
 export default function DashboardLayout({ children }) {

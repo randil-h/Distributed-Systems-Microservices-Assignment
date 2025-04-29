@@ -4,6 +4,7 @@ import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
 import ProtectedRoute from '../components/ProtectedRoute';
+import OrderHistoryPage from "../pages/OrderHistory.jsx";
 
 const AppRoutes = () => {
     return (
@@ -19,6 +20,7 @@ const AppRoutes = () => {
                     </ProtectedRoute>
                 }
             />
+            <Route path="/order-history" element={<OrderHistoryPage/>}/>
         </Routes>
     );
 };
