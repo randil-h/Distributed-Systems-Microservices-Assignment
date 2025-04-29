@@ -35,8 +35,7 @@ router.delete('/:id',
     deleteRestaurant
 );
 router.get("/",
-    // authenticate,
-    // authorizeRole(['restaurant-admin', 'system-admin']),
+
     getAllRestaurants);
 
 module.exports = router;

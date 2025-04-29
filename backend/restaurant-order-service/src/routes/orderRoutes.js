@@ -16,4 +16,6 @@ router.patch("/:orderId", authenticate, orderController.updateOrder);
 // Checkout endpoint (compatible with frontend)
 router.post("/checkout", authenticate, orderController.checkout);
 
+router.get("/", orderController.getAllOrders);
+
 module.exports = router;

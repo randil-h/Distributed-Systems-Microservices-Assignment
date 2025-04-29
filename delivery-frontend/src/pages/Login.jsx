@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { login } from '../services/authService';
+"use client"
 
-const Login = () => {
+import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom";
+import { Bike, Eye, EyeOff, Lock, Mail } from "lucide-react"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card.jsx";
+import { Button } from "../components/ui/button.jsx";
+import { Label } from "../components/ui/label.jsx";
+import { Input } from "../components/ui/input.jsx";
+import { login } from "../services/authService"; // <-- import your API function
+
+export default function Login() {
+    const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -17,7 +25,7 @@ const Login = () => {
         try {
             const success = await login(email, password);
             if (success) {
-                navigate('/');
+                navigate("/dashboard");
             } else {
                 setError('Invalid email or password');
             }
@@ -26,138 +34,82 @@ const Login = () => {
         } finally {
             setIsLoading(false);
         }
-    };
-
-    // These inline styles will ensure the component looks good even if Tailwind isn't properly loaded
-    const styles = {
-        container: "flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-100",
-        formCard: "w-full max-w-md bg-white rounded-lg shadow-xl overflow-hidden mx-4",
-        header: "px-8 pt-6 pb-6 bg-indigo-600 text-white",
-        heading: "text-3xl font-bold text-center",
-        subheading: "text-indigo-100 text-center mt-2 text-sm",
-        formBody: "px-8 py-6 space-y-6",
-        errorMessage: "bg-red-50 text-red-600 p-3 rounded-lg text-sm",
-        formGroup: "space-y-2",
-        formLabel: "block text-sm font-medium text-gray-700",
-        formInput: "w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200",
-        linkRow: "flex justify-between items-center",
-        link: "text-sm text-indigo-600 hover:text-indigo-800",
-        submitButton: "w-full py-3 px-4 rounded-lg text-white font-medium bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition duration-200",
-        disabledButton: "w-full py-3 px-4 rounded-lg text-white font-medium bg-indigo-400 cursor-not-allowed",
-        footer: "px-8 py-4 bg-gray-50 border-t border-gray-100 flex justify-center",
-        footerText: "text-sm text-gray-600",
-        createAccountLink: "text-indigo-600 font-medium hover:text-indigo-800",
-        imageContainer: "w-1/2 bg-cover bg-center", // For the image container
-        image: "w-full h-full object-cover" // To ensure the image covers the entire right side
-    };
+    }
 
     return (
-        <div className={styles.container} style={{background: 'linear-gradient(to bottom right, #EBF4FF, #EBE7FF)'}}>
-            <div className="flex w-full h-full">
-                {/* Left half - Form */}
-                <div className="w-1/2 flex justify-center items-center">
-                    <div className={styles.formCard} style={{boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'}}>
-                        <div className={styles.header} style={{background: '#4F46E5', color: 'white'}}>
-                            <h2 className={styles.heading} style={{fontSize: '1.875rem', fontWeight: 'bold', textAlign: 'center'}}>Welcome Back</h2>
-                            <p className={styles.subheading} style={{color: '#C7D2FE', textAlign: 'center', marginTop: '0.5rem', fontSize: '0.875rem'}}>Sign in to your rider account</p>
+        <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+            <Card className="w-full max-w-md">
+                <CardHeader className="space-y-1">
+                    <div className="flex justify-center mb-4">
+                        <div className="rounded-full bg-gray-100 p-3">
+                            <Bike className="h-8 w-8 text-gray-600" />
                         </div>
-
-                        <form onSubmit={handleSubmit} className={styles.formBody} style={{padding: '1.5rem 2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem'}}>
-                            {error && (
-                                <div className={styles.errorMessage} style={{background: '#FEF2F2', color: '#DC2626', padding: '0.75rem', borderRadius: '0.375rem', fontSize: '0.875rem'}}>
-                                    {error}
-                                </div>
-                            )}
-
-                            <div className={styles.formGroup} style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
-                                <label htmlFor="email" className={styles.formLabel} style={{fontSize: '0.875rem', fontWeight: '500', color: '#374151'}}>
-                                    Email Address
-                                </label>
-                                <input
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-center">Rider Login</CardTitle>
+                    <CardDescription className="text-center">Enter your credentials to access your account</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {error && (
+                            <div className="text-red-600 bg-red-100 p-2 rounded text-sm text-center">
+                                {error}
+                            </div>
+                        )}
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <div className="relative">
+                                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <Input
                                     id="email"
+                                    placeholder="name@example.com"
                                     type="email"
-                                    placeholder="you@example.com"
-                                    className={styles.formInput}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem 1rem',
-                                        borderRadius: '0.375rem',
-                                        border: '1px solid #D1D5DB',
-                                        transition: 'all 0.2s'
-                                    }}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
+                                    className="pl-10"
                                 />
                             </div>
-
-                            <div className={styles.formGroup} style={{display: 'flex', flexDirection: 'column', gap: '0.5rem'}}>
-                                <div className={styles.linkRow} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                                    <label htmlFor="password" className={styles.formLabel} style={{fontSize: '0.875rem', fontWeight: '500', color: '#374151'}}>
-                                        Password
-                                    </label>
-                                    <a href="#" className={styles.link} style={{fontSize: '0.875rem', color: '#4F46E5'}}>
-                                        Forgot password?
-                                    </a>
-                                </div>
-                                <input
+                        </div>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="password">Password</Label>
+                                <Link to="/forgot-password" className="text-sm text-gray-500 hover:text-gray-900">
+                                    Forgot password?
+                                </Link>
+                            </div>
+                            <div className="relative">
+                                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <Input
                                     id="password"
-                                    type="password"
-                                    placeholder="••••••••"
-                                    className={styles.formInput}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem 1rem',
-                                        borderRadius: '0.375rem',
-                                        border: '1px solid #D1D5DB',
-                                        transition: 'all 0.2s'
-                                    }}
+                                    type={showPassword ? "text" : "password"}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
+                                    className="pl-10 pr-10"
                                 />
-                            </div>
-
-                            <div>
                                 <button
-                                    type="submit"
-                                    disabled={isLoading}
-                                    className={isLoading ? styles.disabledButton : styles.submitButton}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem 1rem',
-                                        borderRadius: '0.375rem',
-                                        fontWeight: '500',
-                                        color: 'white',
-                                        background: isLoading ? '#818CF8' : '#4F46E5',
-                                        cursor: isLoading ? 'not-allowed' : 'pointer',
-                                        transition: 'all 0.2s',
-                                        marginTop: '0.5rem'
-                                    }}
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
                                 >
-                                    {isLoading ? 'Signing in...' : 'Sign In'}
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                 </button>
                             </div>
-                        </form>
-
-                        <div className={styles.footer} style={{padding: '1rem 2rem', background: '#F9FAFB', borderTop: '1px solid #F3F4F6', display: 'flex', justifyContent: 'center'}}>
-                            <p className={styles.footerText} style={{fontSize: '0.875rem', color: '#4B5563'}}>
-                                Don't have an account?{' '}
-                                <Link to="/signup" className="text-blue-600 hover:underline">
-                                    Sign up here
-                                </Link>
-                            </p>
                         </div>
+                        <Button type="submit" className="w-full" disabled={isLoading}>
+                            {isLoading ? "Signing in..." : "Sign in"}
+                        </Button>
+                    </form>
+                </CardContent>
+                <CardFooter className="flex flex-col space-y-4">
+                    <div className="text-center text-sm">
+                        Don&apos;t have an account?{" "}
+                        <Link to="/signup" className="font-medium text-gray-900 hover:underline">
+                            Sign up
+                        </Link>
                     </div>
-                </div>
-
-                {/* Right half - Image */}
-                <div className={`w-1/2 ${styles.imageContainer}`} style={{ backgroundImage: 'url(cookie.png)' }} >
-                    <div className={styles.image}></div>
-                </div>
-            </div>
+                </CardFooter>
+            </Card>
         </div>
-    );
-};
-
-export default Login;
+    )
+}

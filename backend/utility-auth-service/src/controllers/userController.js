@@ -103,4 +103,25 @@ const updateBlockStatus = async (req, res) => {
     }
 };
 
-module.exports = { getAllUsers, checkAndUnblockUser, updateBlockStatus, deleteUser };
+const updateDriverLocation = async (req, res) => {
+    const { lat, lng } = req.body;
+    const userId = req.params.id;
+    console.log(req.body);
+
+    try {
+        const user = await User.findByIdAndUpdate(userId, {
+            location: { lat, lng }
+        }, { new: true });
+
+        console.log(lat);
+
+        res.status(200).json({
+            message: "Location updated successfully",
+            user,
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports = { getAllUsers, checkAndUnblockUser, updateBlockStatus, updateDriverLocation, deleteUser };
