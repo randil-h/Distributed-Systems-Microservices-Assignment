@@ -114,22 +114,30 @@ const Dashboard = () => {
 
     const handlePickup = async () => {
         try {
-            await axios.put(`http://localhost:6967/api/orders/${deliveryDetails.orderId}`, {
-                status: "In Transit"
-            });
+            const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
+
+            await axios.patch(
+                `http://localhost:6967/api/orders/${deliveryDetails.orderId}`,
+                { status: "In Transit" },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // <-- Pass token here
+                    },
+                }
+            );
+
             console.log("Order status updated to In Transit");
 
-            // Update local deliveryDetails state if needed
             setDeliveryDetails(prev => ({
                 ...prev,
                 status: "In Transit"
             }));
 
-            // Optionally reset buttonStage or move to another button (e.g., "Delivered" later)
         } catch (error) {
             console.error("Error updating order status:", error);
         }
     };
+
 
     return (
         <div className="min-h-screen bg-gray-100 flex">
