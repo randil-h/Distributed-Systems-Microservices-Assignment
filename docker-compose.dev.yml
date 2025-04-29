@@ -1,0 +1,167 @@
+version: '3.8'
+
+services:
+  frontend-dev:
+    build:
+      context: ./NomNOM-frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"  # Access frontend at localhost:3000
+    volumes:
+      # This is the key for hot-reloading - mount your code as a volume
+      - ./NomNOM-frontend:/app
+      # Prevent overwriting node_modules with a volume
+      - /app/node_modules
+    environment:
+      - REACT_APP_MAPBOX_ACCESS_TOKEN=pk.eyJ1IjoiYmltaWR1IiwiYSI6ImNtOGlmejI3ZzBjbmgyanBtMHZwdWlzZWcifQ.oR1p3_F9f9mqEaIxpklDOg
+      - REACT_APP_GOOGLE_MAPS_API_KEY=AIzaSyDAafsxTWu44e0AxfoOwvtxl9TKUN-bLNE
+      - REACT_APP_API_URL=http://localhost:8080/api
+      - REACT_APP_RESTAURANT_API_URL=http://localhost:8080/api
+      - REACT_APP_RESTAURANT_ORDER_API_URL=http://localhost:8080/api
+      - REACT_APP_RESTAURANT_OPS_API_URL=http://localhost:8080/api
+      - REACT_APP_STRIPE_SANDBOX_FRONTEND_API_KEY=pk_test_51R7VyNR93v4JXVfEJM0SZma0agX27NyAQzTcVlMLJtuUasqlC3dZkcXILpaGgfh5SL5S9saDZ42hv3bp8e64Escj00288uGayR
+    restart: always
+    depends_on:
+      - api-gateway
+
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-gateway:
+    build: backend/api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - RESTAURANT_ADMIN_SERVICE_URL=http://restaurant-admin-service:5556
+      - RESTAURANT_DELIVERY_SERVICE_URL=http://restaurant-delivery-service:5003
+      - RESTAURANT_OPS_SERVICE_URL=http://restaurant-ops-service:6966
+      - RESTAURANT_ORDER_SERVICE_URL=http://restaurant-order-service:6967
+      - SYSTEM_ADMIN_SERVICE_URL=http://system-admin-service:5555
+      - UTILITY_AUTH_SERVICE_URL=http://utility-auth-service:6969
+      - UTILITY_NOTIFICATION_SERVICE_URL=http://utility-notifications-service:5556
+      - UTILITY_PAYMENT_SERVICE_URL=http://utility-payment-service:2703
+      - JWT_SECRET=7ec2b0ce678471c4da70bb2d7471fdd39eed8cede3ad3fec2bae6c25e5c49d8a8fa50c87297146c3faf95c04636ccd8a27b17cf45cb087d9b7733e45406aea75
+    depends_on:
+      - restaurant-admin-service
+      - restaurant-delivery-service
+      - restaurant-ops-service
+      - restaurant-order-service
+      - system-admin-service
+      - utility-auth-service
+      - utility-notifications-service
+      - utility-payment-service
+      - rabbitmq
+    networks:
+      - app-network
+
+  restaurant-admin-service:
+    build: backend/restaurant-admin-service
+    environment:
+      - PORT=5556
+      - MONGODB_URI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/RestaurantDB?retryWrites=true&w=majority&appName=Cluster0
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  restaurant-delivery-service:
+    build: backend/restaurant-delivery-service
+    environment:
+      - PORT=5003
+      - MONGO_URI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/DeliveryDB?retryWrites=true&w=majority&appName=Cluster0
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  restaurant-ops-service:
+    build: backend/restaurant-ops-service
+    environment:
+      - PORT=6966
+      - MONGOURI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/ResOpsDB?retryWrites=true&w=majority&appName=Cluster0
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  restaurant-order-service:
+    build: backend/restaurant-order-service
+    environment:
+      - PORT=6967
+      - MONGOURI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/OrderDB?retryWrites=true&w=majority&appName=Cluster0
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  system-admin-service:
+    build: backend/system-admin-service
+    environment:
+      - PORT=5555
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  utility-auth-service:
+    build: backend/utility-auth-service
+    environment:
+      - PORT=6969
+      - MONGO_URI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/AuthDB?retryWrites=true&w=majority&appName=Cluster0
+      - JWT_SECRET=7ec2b0ce678471c4da70bb2d7471fdd39eed8cede3ad3fec2bae6c25e5c49d8a8fa50c87297146c3faf95c04636ccd8a27b17cf45cb087d9b7733e45406aea75
+      - TOKEN_EXPIRY=1h
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  utility-notifications-service:
+    build: backend/utility-notifications-service
+    environment:
+      - PORT=5554
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  utility-payment-service:
+    build: backend/utility-payment-service
+    environment:
+      - PORT=2703
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge

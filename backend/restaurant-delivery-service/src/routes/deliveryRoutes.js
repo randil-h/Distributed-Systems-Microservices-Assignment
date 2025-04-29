@@ -3,7 +3,7 @@ const router = express.Router();
 const {
     createDelivery,
     updateStatus,
-    getAssignedDeliveries,
+    getAssignedDeliveries, updateDriverLocation,
 } = require("../controllers/deliveryController");
 
 router.post("/assign", createDelivery);

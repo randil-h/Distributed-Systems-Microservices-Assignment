@@ -3,15 +3,23 @@ import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/solid';
 import {GiCookie} from "react-icons/gi";
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, User, LogOut } from 'lucide-react';
+import {logout} from "../../api/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function NavBar() {
     const [showPopover, setShowPopover] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
     return (
         <header className="text-black fixed top-0 w-screen flex justify-center z-50">
-            <div className="h-14 w-full lg:w-1/2 bg-neutral-300/60 backdrop-blur-lg rounded-full my-2 lg:my-3">
+            <div className="h-14 w-full lg:w-2/3 bg-neutral-300/60 backdrop-blur-lg rounded-full my-2 lg:my-3">
                 <nav className="h-full mx-auto flex items-center justify-between px-4 lg:px-6 gap-2">
                     {/* Navbar logo */}
                     <div className="flex lg:flex-1">
@@ -54,6 +62,12 @@ export default function NavBar() {
                     <Link to="/cart" className=" px-4 nav-item">
                       <ShoppingCart/>
                     </Link>
+                    <Link to="/myorders" className=" px-4 nav-item">
+                      <User/>
+                    </Link>
+                    <button onClick={handleLogout} className=" px-4 nav-item">
+                      <LogOut/>
+                    </button>
                   </div>
 
 

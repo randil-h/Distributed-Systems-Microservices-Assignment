@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 
 const initStripe = () => {
     const stripeKey = process.env.REACT_APP_STRIPE_SANDBOX_FRONTEND_API_KEY;
@@ -23,6 +23,7 @@ const stripePromise = initStripe();
 const CheckoutForm = ({ orderDetails }) => {
     const stripe = useStripe();
     const elements = useElements();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [messageType, setMessageType] = useState("");
@@ -30,11 +31,11 @@ const CheckoutForm = ({ orderDetails }) => {
     useEffect(() => {
         if (messageType === "success") {
             const timer = setTimeout(() => {
-                console.log("Redirecting to success page with status: success");
+                navigate('/myorders')
             }, 3000);
             return () => clearTimeout(timer);
         }
-    }, [messageType]);
+    }, );
 
     const handleSubmit = async (e) => {
         e.preventDefault();

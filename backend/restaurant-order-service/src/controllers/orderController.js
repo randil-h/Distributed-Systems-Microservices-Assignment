@@ -1,5 +1,6 @@
 // controllers/orderController.js
 const orderService = require("../services/orderService");
+const Order = require("../models/Order");
 
 /**
  * Create orders
@@ -140,6 +141,16 @@ const getOrders = async (req, res) => {
   }
 };
 
+// Get all orders (requires authentication)
+const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find();
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 /**
  * Update order status
  * @param {Object} req - Request object
@@ -154,7 +165,7 @@ const updateOrder = async (req, res) => {
       return res.status(400).json({ error: "Order status is required" });
     }
 
-    const validStatuses = ["pending", "confirmed", "preparing", "delivered", "cancelled"];
+    const validStatuses = ["pending", "confirmed", "preparing", "delivered", "cancelled", "In Transit"];
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ error: "Invalid status value" });
     }
@@ -176,5 +187,6 @@ module.exports = {
   createOrder,
   checkout,
   getOrders,
+  getAllOrders,
   updateOrder
 };

@@ -1,12 +1,42 @@
 version: '3.8'
 
 services:
-  api-gateway:
-    build: ./api-gateway
+  frontend:
+    build: ./NomNOM-frontend
     ports:
-      - "8000:8000"
+      - "80:80"  # Access frontend at localhost:3000
     environment:
-      - PORT=8000
+      - REACT_APP_MAPBOX_ACCESS_TOKEN=pk.eyJ1IjoiYmltaWR1IiwiYSI6ImNtOGlmejI3ZzBjbmgyanBtMHZwdWlzZWcifQ.oR1p3_F9f9mqEaIxpklDOg
+      - REACT_APP_GOOGLE_MAPS_API_KEY=AIzaSyDAafsxTWu44e0AxfoOwvtxl9TKUN-bLNE
+      - REACT_APP_API_URL=http://localhost:8080/api
+      - REACT_APP_RESTAURANT_API_URL=http://localhost:8080/api
+      - REACT_APP_RESTAURANT_ORDER_API_URL=http://localhost:8080/api
+      - REACT_APP_RESTAURANT_OPS_API_URL=http://localhost:8080/api
+      - REACT_APP_STRIPE_SANDBOX_FRONTEND_API_KEY=pk_test_51R7VyNR93v4JXVfEJM0SZma0agX27NyAQzTcVlMLJtuUasqlC3dZkcXILpaGgfh5SL5S9saDZ42hv3bp8e64Escj00288uGayR
+    restart: always
+    depends_on:
+      - api-gateway
+
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-gateway:
+    build: backend/api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
       - RESTAURANT_ADMIN_SERVICE_URL=http://restaurant-admin-service:5556
       - RESTAURANT_DELIVERY_SERVICE_URL=http://restaurant-delivery-service:5003
       - RESTAURANT_OPS_SERVICE_URL=http://restaurant-ops-service:6966
@@ -25,65 +55,71 @@ services:
       - utility-auth-service
       - utility-notifications-service
       - utility-payment-service
+      - rabbitmq
     networks:
       - app-network
 
   restaurant-admin-service:
-    build: ./restaurant-admin-service
+    build: backend/restaurant-admin-service
     environment:
       - PORT=5556
       - MONGODB_URI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/RestaurantDB?retryWrites=true&w=majority&appName=Cluster0
       - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     networks:
       - app-network
 
   restaurant-delivery-service:
-    build: ./restaurant-delivery-service
+    build: backend/restaurant-delivery-service
     environment:
       - PORT=5003
       - MONGO_URI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/DeliveryDB?retryWrites=true&w=majority&appName=Cluster0
       - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     networks:
       - app-network
 
   restaurant-ops-service:
-    build: ./restaurant-ops-service
+    build: backend/restaurant-ops-service
     environment:
       - PORT=6966
       - MONGOURI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/ResOpsDB?retryWrites=true&w=majority&appName=Cluster0
       - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     networks:
       - app-network
 
   restaurant-order-service:
-    build: ./restaurant-order-service
+    build: backend/restaurant-order-service
     environment:
       - PORT=6967
       - MONGOURI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/OrderDB?retryWrites=true&w=majority&appName=Cluster0
       - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     networks:
       - app-network
 
   system-admin-service:
-    build: ./system-admin-service
+    build: backend/system-admin-service
     environment:
       - PORT=5555
       - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     networks:
       - app-network
 
   utility-auth-service:
-    build: ./utility-auth-service
+    build: backend/utility-auth-service
     environment:
       - PORT=6969
       - MONGO_URI=mongodb+srv://restaurantadmin:l6bXfcMuv7vng50T@cluster0.sa2mz.mongodb.net/AuthDB?retryWrites=true&w=majority&appName=Cluster0
@@ -91,37 +127,33 @@ services:
       - TOKEN_EXPIRY=1h
       - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     networks:
       - app-network
 
   utility-notifications-service:
-    build: ./utility-notifications-service
+    build: backend/utility-notifications-service
     environment:
       - PORT=5554
       - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     networks:
       - app-network
 
   utility-payment-service:
-    build: ./utility-payment-service
+    build: backend/utility-payment-service
     environment:
       - PORT=2703
       - RABBITMQ_URL=amqp://rabbitmq:5672
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     networks:
       - app-network
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    networks:
-      - app-network
 
 networks:
   app-network:
