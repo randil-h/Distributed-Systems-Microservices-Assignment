@@ -1,0 +1,16 @@
+FROM node:23.11.0-alpine
+
+WORKDIR /app
+
+# Copy package files first for better caching
+COPY package*.json ./
+RUN npm install
+
+# Copy the rest of the application
+COPY . .
+
+# Expose the port that React's development server uses
+EXPOSE 3000
+
+# Command to start the development server with hot-reloading
+CMD ["npm", "start"]
