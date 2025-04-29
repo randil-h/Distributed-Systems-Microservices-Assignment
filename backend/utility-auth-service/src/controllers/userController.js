@@ -1,7 +1,7 @@
 const User = require('../models/User'); // Assuming your user model is in userModel.js
 const mongoose = require('mongoose');
 
-// Get all users (requires authentication and admin role)
+// Get all users
 const getAllUsers = async (req, res) => {
     try {
         if (req.user.role !== 'system-admin') {
@@ -34,7 +34,7 @@ const deleteUser = async (req, res) => {
     }
 };
 
-const checkAndUnblockUser = async (userId) => { //must run at login attempt before the user logs in
+const checkAndUnblockUser = async (userId) => {
     const user = await User.findById(userId);
     if (user && user.isBlocked && user.blockExpiry && new Date() > new Date(user.blockExpiry)) {
         user.isBlocked = false;
@@ -54,7 +54,6 @@ const updateBlockStatus = async (req, res) => {
             return res.status(400).json({ message: 'Invalid id format.' });
         }
 
-        // If we're unblocking a user, we don't need duration or unit
         if (isBlocked === false) {
             const updatedUser = await User.findByIdAndUpdate(
                 id,
@@ -69,7 +68,6 @@ const updateBlockStatus = async (req, res) => {
             return res.status(200).json({ message: 'User reactivated successfully.', user: updatedUser });
         }
 
-        // For blocking users, validate blockDuration and durationUnit
         if (typeof isBlocked !== 'boolean' || !blockDuration || !['hours', 'days'].includes(durationUnit)) {
             return res.status(400).json({ message: 'Invalid input.' });
         }

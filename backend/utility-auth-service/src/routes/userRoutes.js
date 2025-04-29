@@ -3,7 +3,6 @@ const router = express.Router();
 const { getAllUsers, updateBlockStatus, deleteUser } = require('../controllers/userController');
 const { authenticate, authorizeRole } = require('../middleware/authMiddleware');
 
-// Protected route to get all users (requires admin role)
 router.get('/',
     authenticate,
     authorizeRole(['system-admin']),

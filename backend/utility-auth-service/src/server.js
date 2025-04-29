@@ -39,7 +39,6 @@ const limiter = rateLimit({
     message: "Too many requests from this IP, please try again later"
 });
 
-// Routes
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', service: 'utility-auth-service' });

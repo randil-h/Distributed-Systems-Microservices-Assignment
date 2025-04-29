@@ -8,7 +8,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
     const userRole = getRole();
     if (!allowedRoles.includes(userRole)) {
-        return <Navigate to="/" />; // Redirect unauthorized users to homepage
+        return <Navigate to="/" />;
     }
 
     return children;

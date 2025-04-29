@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AddMenuItemModal = ({ isOpen, onClose, onSave, restaurantId }) => {
-    // Define initial form state outside component to avoid recreation
     const initialFormData = {
         name: '',
         description: '',
@@ -103,7 +102,7 @@ const AddMenuItemModal = ({ isOpen, onClose, onSave, restaurantId }) => {
             );
 
             onSave(response.data);
-            resetForm(); // Reset form after successful submission
+            resetForm();
             onClose();
         } catch (err) {
             setError(err.response?.data?.message || 'Failed to save menu item');

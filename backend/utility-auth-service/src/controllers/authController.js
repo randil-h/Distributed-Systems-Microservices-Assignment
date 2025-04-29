@@ -76,10 +76,10 @@ exports.login = async (req, res) => {
             name: user.name
         });
     } catch (error) {
-        console.error("Login error:", error); // This will show the actual error
+        console.error("Login error:", error);
         res.status(500).json({
             success: false,
-            error: error.message // Send actual error message
+            error: error.message
         });
     }
 };
@@ -88,11 +88,11 @@ exports.verifyToken = async (req, res) => {
     if (!token) return res.status(401).json({message: "Unauthorized"});
 
     try {
-        const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET); // Remove 'Bearer '
+        const decoded = jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
 
         await checkAndUnblockUser(decoded.userId);
 
-        res.json({user: decoded}); // Send the user data
+        res.json({user: decoded});
     } catch (error) {
         res.status(401).json({message: "Invalid token"});
     }

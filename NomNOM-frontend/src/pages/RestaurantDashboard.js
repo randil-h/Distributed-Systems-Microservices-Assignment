@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { logout } from "../api/auth";
 import { useNavigate } from "react-router-dom";
-import { PlusCircle, List, Clock } from 'lucide-react';
+import { List, Clock } from 'lucide-react';
 import axios from "axios";
 import RestaurantAdminSidebar from '../components/admin_components/RestaurantAdminSidebar';
-import NavBar from "../components/utility_components/Navbar"; // Import the sidebar component
+import NavBar from "../components/utility_components/Navbar";
 
 const RestaurantDashboard = () => {
     const navigate = useNavigate();

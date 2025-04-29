@@ -83,7 +83,6 @@ const updateRestaurant = async (req, res) => {
         if (isAdmin) {
             updateData.registrationStatus = req.body.registrationStatus;
             updateData.rejectionReason = req.body.rejectionReason;
-            // Optionally, allow admins to update other fields as well
             Object.keys(req.body).forEach(key => {
                 if (!['registrationStatus', 'rejectionReason'].includes(key)) {
                     updateData[key] = req.body[key];
@@ -122,7 +121,7 @@ const getRestaurant = async (req, res) => {
     }
 };
 
-// Delete a restaurant (only owner can delete)
+// Delete a restaurant
 const deleteRestaurant = async (req, res) => {
     try {
         const restaurant = await Restaurant.findById(req.params.id);
@@ -145,7 +144,7 @@ const deleteRestaurant = async (req, res) => {
     }
 };
 
-// Get all restaurants (requires authentication)
+// Get all restaurants
 const getAllRestaurants = async (req, res) => {
     try {
         const restaurants = await Restaurant.find();

@@ -16,16 +16,13 @@ router.put('/:id',
     updateRestaurant
 );
 
-// New route to get pending restaurants
 router.get('/pending',
   authenticate,
-  authorizeRole(['system-admin']), // Only system admins should see pending requests
+  authorizeRole(['system-admin']),
   getPendingRestaurants
 );
 
 router.get('/:id',
-    // authenticate,
-    // authorizeRole(['restaurant-admin']),
     getRestaurant
 );
 

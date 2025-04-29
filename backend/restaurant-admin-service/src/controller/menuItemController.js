@@ -38,11 +38,6 @@ const getMenuItemsByRestaurant = async (req, res) => {
             return res.status(404).json({ message: 'Restaurant not found' });
         }
 
-        // Only allow restaurant owner or system admin to view menu
-        // if (req.user.role !== 'system-admin' && restaurant.ownerId.toString() !== req.user.id) {
-        //     return res.status(403).json({ message: 'Not authorized to view this menu' });
-        // }
-
         const menuItems = await MenuItem.find({ restaurantId: req.params.restaurantId });
         res.json(menuItems);
     } catch (error) {

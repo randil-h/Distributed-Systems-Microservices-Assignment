@@ -64,7 +64,6 @@ app.use('/api/auth', createProxyMiddleware({
   },
 }));
 
-// Protected routes
 // Restaurant admin routes
 app.use('/api/admin', authenticate, createProxyMiddleware({
   target: process.env.RESTAURANT_ADMIN_SERVICE_URL,

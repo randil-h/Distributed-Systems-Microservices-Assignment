@@ -212,7 +212,6 @@ const RestaurantList = () => {
                 handleLogout={handleLogout}
             />
 
-            {/* Main Content Area - Removed container mx-auto to prevent centering */}
             <div className={`flex-1 overflow-y-auto transition-all duration-300 ${isSidebarOpen ? 'ml-6 pl-6' : 'ml-0 pl-0'}`}>
                 <div className="px-4 py-8">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
@@ -220,7 +219,7 @@ const RestaurantList = () => {
                             <h1 className="text-3xl font-bold text-gray-900">Restaurants</h1>
                             <p className="text-gray-500 mt-1">Manage your restaurant listings</p>
                         </div>
-                        {/* Changed Add Restaurant button to black */}
+
                         <button
                             onClick={() => navigate("/register-restaurant")}
                             className="mt-4 md:mt-0 flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-all shadow-md"

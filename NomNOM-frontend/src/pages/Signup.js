@@ -21,15 +21,7 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      // The register function expects individual parameters in this order:
-      // register(name, email, password, role, selectedRestaurant)
-      // But we need to pass address and use restaurantId instead of selectedRestaurant
-
-      // First, we'll extract the restaurantId from selectedRestaurant when appropriate
       const restaurantId = role === 'restaurant-staff' ? selectedRestaurant : null;
-
-      // Then modify how we call register to match its expected parameters
-      // We need to modify the request body in-place at the API call
       await register(name, email, password, role, restaurantId, address);
 
       navigate("/login");

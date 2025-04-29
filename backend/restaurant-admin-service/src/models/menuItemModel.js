@@ -5,9 +5,9 @@ const menuItemSchema = new mongoose.Schema({
     name: { type: String, required: true },
     description: { type: String },
     price: { type: Number, required: true },
-    category: { type: String, required: true }, // e.g., "Appetizers", "Main Course", "Desserts"
+    category: { type: String, required: true },
     // ingredients: [{ type: String }],
-    dietaryRestrictions: [{ type: String }], // e.g., "Vegetarian", "Vegan", "Gluten-Free"
+    dietaryRestrictions: [{ type: String }],
     preparationTime: { type: Number }, // in minutes
     image: { type: String }, // Base64 string or URL
     isAvailable: { type: Boolean, default: true },

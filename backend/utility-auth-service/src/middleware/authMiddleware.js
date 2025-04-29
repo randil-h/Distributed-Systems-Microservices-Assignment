@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const authenticate = (req, res, next) => {
     const authHeader = req.header("Authorization");
-    console.log("Raw Authorization Header:", authHeader); // Added console log
+    console.log("Raw Authorization Header:", authHeader);
 
     if (!authHeader) {
         return res.status(401).json({ message: "Unauthorized: No token provided" });
@@ -20,7 +20,7 @@ const authenticate = (req, res, next) => {
         req.user = decoded;
         next();
     } catch (error) {
-        console.log("JWT Verification Error:", error); // added console log.
+        console.log("JWT Verification Error:", error);
         return res.status(403).json({ message: "Unauthorized: Invalid token" });
     }
 };

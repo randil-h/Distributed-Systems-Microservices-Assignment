@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import RestaurantAdminSidebar from '../components/admin_components/RestaurantAdminSidebar'; // Import the sidebar
+import RestaurantAdminSidebar from '../components/admin_components/RestaurantAdminSidebar';
 
 const RestaurantRegister = () => {
     const [formData, setFormData] = useState({
@@ -33,7 +33,7 @@ const RestaurantRegister = () => {
 
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State for sidebar visibility
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const navigate = useNavigate();
 
     const cuisineTypes = ["Italian", "Chinese", "Indian", "Mexican", "Japanese", "American", "Mediterranean", "Thai", "French", "Other"];
@@ -42,13 +42,11 @@ const RestaurantRegister = () => {
     const paymentMethodsList = ["Credit Card", "Debit Card", "Cash", "Mobile Payment", "Online Payment"];
 
     const handleLogout = () => {
-        localStorage.removeItem("token"); // Clear the token
+        localStorage.removeItem("token");
         navigate("/login");
     };
 
     const fetchRestaurants = () => {
-        // This function might not be directly used in the registration form,
-        // but it's passed to the sidebar for potential navigation.
         navigate("/restaurants");
     };
 
@@ -76,7 +74,7 @@ const RestaurantRegister = () => {
             reader.onloadend = () => {
                 setFormData({
                     ...formData,
-                    [name]: reader.result // Store Base64 string, name will be 'logo' or 'coverImage'
+                    [name]: reader.result
                 });
             };
             reader.readAsDataURL(file);
@@ -288,7 +286,7 @@ const RestaurantRegister = () => {
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    name="coverImage" // Name for the cover image field
+                                    name="coverImage"
                                     onChange={handleImageUpload}
                                     className="w-full p-2 border rounded"
                                 />
@@ -444,7 +442,7 @@ const RestaurantRegister = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className={`w-full bg-nomnom text-white py-2 rounded-full hover:bg-green-600 ${
+                            className={`w-full bg-black text-white py-2 rounded-full hover:bg-green-600 ${
                                 loading ? "opacity-50 cursor-not-allowed" : ""
                             }`}
                         >

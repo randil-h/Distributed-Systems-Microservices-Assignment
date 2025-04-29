@@ -150,7 +150,6 @@ const MenuItemsPage = () => {
             );
         } catch (error) {
             console.error('Failed to update availability:', error);
-            // Optionally, show an error message to the user
         }
     };
 

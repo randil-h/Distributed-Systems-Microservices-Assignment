@@ -107,7 +107,7 @@ const MenuItemForm = ({ isEdit = false }) => {
                     {error && <div className="text-red-500 mb-4">{error}</div>}
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {/* Form fields remain the same as before */}
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Name</label>
                             <input
@@ -120,7 +120,6 @@ const MenuItemForm = ({ isEdit = false }) => {
                             />
                         </div>
 
-                        {/* Add all other form fields here */}
 
                         <div className="flex justify-end space-x-3">
                             <button

@@ -1,4 +1,3 @@
-// src/modals/DeleteConfirmationModal.js
 import React from 'react';
 
 const DeleteConfirmationModal = ({
