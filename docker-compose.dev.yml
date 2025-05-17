@@ -13,13 +13,10 @@ services:
       # Prevent overwriting node_modules with a volume
       - /app/node_modules
     environment:
-      - REACT_APP_MAPBOX_ACCESS_TOKEN=pk.eyJ1IjoiYmltaWR1IiwiYSI6ImNtOGlmejI3ZzBjbmgyanBtMHZwdWlzZWcifQ.oR1p3_F9f9mqEaIxpklDOg
-      - REACT_APP_GOOGLE_MAPS_API_KEY=AIzaSyDAafsxTWu44e0AxfoOwvtxl9TKUN-bLNE
       - REACT_APP_API_URL=http://localhost:8080/api
       - REACT_APP_RESTAURANT_API_URL=http://localhost:8080/api
       - REACT_APP_RESTAURANT_ORDER_API_URL=http://localhost:8080/api
       - REACT_APP_RESTAURANT_OPS_API_URL=http://localhost:8080/api
-      - REACT_APP_STRIPE_SANDBOX_FRONTEND_API_KEY=pk_test_51R7VyNR93v4JXVfEJM0SZma0agX27NyAQzTcVlMLJtuUasqlC3dZkcXILpaGgfh5SL5S9saDZ42hv3bp8e64Escj00288uGayR
     restart: always
     depends_on:
       - api-gateway
